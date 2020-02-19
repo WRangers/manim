@@ -1,28 +1,31 @@
 # MIT License
-# 
+#
 # Copyright (C) <2020> <Rangers>
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
 # to deal in the Software without restriction, including without limitation
 # the rights to use, copy, modify, merge, publish, distribute, sublicense,
 # and/or sell copies of the Software, and to permit persons to whom the
 # Software is furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in 
+#
+# The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE 
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
 
 from manimlib.imports import *
-from scipy import signal
+from scipy import signal, fftpack
+from sympy import symbols
+from sympy.utilities.lambdify import lambdify, implemented_function
+from sympy.abc import x
 
 
 class MRText(Text):
@@ -272,7 +275,6 @@ class PassagersResponse(GraphScene):
     def construct(self):
         self.setup_axes(animate=True)
 
-
         passagers_graph = []
         for i, k in zip(range(1, 6), [1, 2, 4, 1, 3]):
             passagers_graph.append((self.get_graph(lambda x: 10*k*(x-i-15)*np.exp(-0.5*(x-i-15)),
@@ -300,6 +302,7 @@ class PassagersResponse(GraphScene):
             f += 10*k*(x-i-15)*np.exp(-0.5*(x-i-15))*(x >= i+15)
         return f
 
+
 class PassagersContiniousSignal(GraphScene):
     CONFIG = {
         "x_min": 0,
@@ -315,13 +318,14 @@ class PassagersContiniousSignal(GraphScene):
 
     def construct(self):
         self.setup_axes(animate=True)
-        signal=self.get_graph(lambda x: 0.5*x*np.cos(x)+2,
+        signal = self.get_graph(lambda x: 0.5*x*np.cos(x)+2,
                                 color=WHITE,
                                 x_min=0,
                                 x_max=7)
 
         self.play(ShowCreation(signal), run_time=7)
         self.wait(2)
+
 
 class PassagersContiniousResponse(GraphScene):
     CONFIG = {
@@ -338,13 +342,14 @@ class PassagersContiniousResponse(GraphScene):
 
     def construct(self):
         self.setup_axes(animate=True)
-        graphs=[]
-        for i in np.arange(0,7.01,0.01):
+        graphs = []
+        for i in np.arange(0, 7.01, 0.01):
             graphs.append(self.get_graph(lambda x: (0.5*x*np.cos(x)+2)*10*(x-i)*np.exp(-0.5*(x-i)),
-                                color=RED,
-                                x_min=0,
-                                x_max=7))
-            self.play(ShowCreation(graphs[-1]),run_time=0.01)
+                                         color=RED,
+                                         x_min=0,
+                                         x_max=7))
+            self.play(ShowCreation(graphs[-1]), run_time=0.01)
+
 
 class UnitResponse(GraphScene):
     CONFIG = {
@@ -358,24 +363,27 @@ class UnitResponse(GraphScene):
         "y_axis_label": "$f(t)/y_s(t)$",
         "axes_color": GREEN,
     }
+
     def construct(self):
         self.setup_axes(animate=True)
 
-        unit=Arrow(self.graph_origin,self.coords_to_point(0,1),buff=0.05)
+        unit = Arrow(self.graph_origin, self.coords_to_point(0, 1), buff=0.05)
 
-        response=[]
-        for i,k in zip(range(3,8),[2,3,3,1,5]):
-            line=Line(self.coords_to_point(i,0),self.coords_to_point(i,k),buff=0.05)
-            point=Dot(self.coords_to_point(i,k))
-            line_point=VGroup(line,point)
+        response = []
+        for i, k in zip(range(3, 8), [2, 3, 3, 1, 5]):
+            line = Line(self.coords_to_point(i, 0),
+                        self.coords_to_point(i, k), buff=0.05)
+            point = Dot(self.coords_to_point(i, k))
+            line_point = VGroup(line, point)
             line_point.set_color(RED)
             response.append(line_point)
-        responses=VGroup(*response)
+        responses = VGroup(*response)
 
         self.play(ShowCreation(unit))
         self.wait(0.2)
         self.play(ShowCreation(responses))
         self.wait(2)
+
 
 class ReverseConv(GraphScene):
     CONFIG = {
@@ -389,55 +397,62 @@ class ReverseConv(GraphScene):
         "y_axis_label": "$f(t)/y_s(t)$",
         "axes_color": GREEN,
     }
+
     def construct(self):
         self.setup_axes(animate=True)
 
-        signal=[]
-        for i,k in zip(range(0,5),[1,2,2,1,3]):
-            line=Line(self.coords_to_point(i,0),self.coords_to_point(i,k),buff=0.05)
-            point=Dot(self.coords_to_point(i,k))
-            line_point=VGroup(line,point)
+        signal = []
+        for i, k in zip(range(0, 5), [1, 2, 2, 1, 3]):
+            line = Line(self.coords_to_point(i, 0),
+                        self.coords_to_point(i, k), buff=0.05)
+            point = Dot(self.coords_to_point(i, k))
+            line_point = VGroup(line, point)
             signal.append(line_point)
-        signals=VGroup(*signal)
+        signals = VGroup(*signal)
 
         self.play(ShowCreation(signals))
         self.wait(1)
-        self.play(ApplyMethod(signals.shift,-5*np.array([self.space_unit_to_x, 0, 0])))
+        self.play(ApplyMethod(signals.shift, -5 *
+                              np.array([self.space_unit_to_x, 0, 0])))
 
-        unit=Arrow(self.graph_origin,self.coords_to_point(0,1),buff=0.05)
+        unit = Arrow(self.graph_origin, self.coords_to_point(0, 1), buff=0.05)
         self.play(ShowCreation(unit))
 
-        responses=[]
-        for n in range(0,5):
-            res=[]
-            for i,k in zip(range(3+n,8+n),[2,3,3,1,5]):
-                line=Line(self.coords_to_point(i,0),self.coords_to_point(i,k),buff=0.05)
-                point=Dot(self.coords_to_point(i,k))
-                line_point=VGroup(line,point)
+        responses = []
+        for n in range(0, 5):
+            res = []
+            for i, k in zip(range(3+n, 8+n), [2, 3, 3, 1, 5]):
+                line = Line(self.coords_to_point(i, 0),
+                            self.coords_to_point(i, k), buff=0.05)
+                point = Dot(self.coords_to_point(i, k))
+                line_point = VGroup(line, point)
                 line_point.set_color(RED)
                 res.append(line_point)
-            response=VGroup(*res)
+            response = VGroup(*res)
             responses.append(response)
-        independent_res=VGroup(*responses)
+        independent_res = VGroup(*responses)
 
-        for i in range(0,5):
-            self.play(ApplyMethod(signals[i].shift,(5-i)*np.array([self.space_unit_to_x, 0, 0])))
+        for i in range(0, 5):
+            self.play(ApplyMethod(
+                signals[i].shift, (5-i)*np.array([self.space_unit_to_x, 0, 0])))
             self.play(ShowCreation(responses[i]))
             self.play(FadeOut(signals[i]))
             self.wait(0.5)
         self.play(FadeOut(unit))
 
-        total_response=[]
-        for i,k in zip(range(3,12),[2,5,5,6,11,9,6,5]):
-            line=Line(self.coords_to_point(i,0),self.coords_to_point(i,k),buff=0.05)
-            point=Dot(self.coords_to_point(i,k))
-            line_point=VGroup(line,point)
+        total_response = []
+        for i, k in zip(range(3, 12), [2, 5, 5, 6, 11, 9, 6, 5]):
+            line = Line(self.coords_to_point(i, 0),
+                        self.coords_to_point(i, k), buff=0.05)
+            point = Dot(self.coords_to_point(i, k))
+            line_point = VGroup(line, point)
             line_point.set_color(RED)
             total_response.append(line_point)
-        total_responses=VGroup(*total_response)
+        total_responses = VGroup(*total_response)
 
-        self.play(Transform(independent_res,total_responses))
+        self.play(Transform(independent_res, total_responses))
         self.wait(2)
+
 
 class ReverseConv2(GraphScene):
     CONFIG = {
@@ -451,16 +466,18 @@ class ReverseConv2(GraphScene):
         "y_axis_label": "$f(t)/y_s(t)$",
         "axes_color": GREEN,
     }
+
     def construct(self):
         self.setup_axes(animate=True)
 
-        signal=[]
-        for i,k in zip(range(0,5),[1,2,2,1,3]):
-            line=Line(self.coords_to_point(i,0),self.coords_to_point(i,k),buff=0.05)
-            point=Dot(self.coords_to_point(i,k))
-            line_point=VGroup(line,point)
+        signal = []
+        for i, k in zip(range(0, 5), [1, 2, 2, 1, 3]):
+            line = Line(self.coords_to_point(i, 0),
+                        self.coords_to_point(i, k), buff=0.05)
+            point = Dot(self.coords_to_point(i, k))
+            line_point = VGroup(line, point)
             signal.append(line_point)
-        signals=VGroup(*signal)
+        signals = VGroup(*signal)
 
         # signal2=[]
         # for i,k in zip(range(0,5),[3,1,2,2,1]):
@@ -474,28 +491,34 @@ class ReverseConv2(GraphScene):
         self.play(ShowCreation(signals))
         self.wait(1)
         self.play(
-            ApplyMethod(signal[4].shift,-9*np.array([self.space_unit_to_x, 0, 0])),
-            ApplyMethod(signal[3].shift,-7*np.array([self.space_unit_to_x, 0, 0])),
-            ApplyMethod(signal[2].shift,-5*np.array([self.space_unit_to_x, 0, 0])),
-            ApplyMethod(signal[1].shift,-3*np.array([self.space_unit_to_x, 0, 0])),
-            ApplyMethod(signal[0].shift,-1*np.array([self.space_unit_to_x, 0, 0])),
+            ApplyMethod(signal[4].shift, -9 *
+                        np.array([self.space_unit_to_x, 0, 0])),
+            ApplyMethod(signal[3].shift, -7 *
+                        np.array([self.space_unit_to_x, 0, 0])),
+            ApplyMethod(signal[2].shift, -5 *
+                        np.array([self.space_unit_to_x, 0, 0])),
+            ApplyMethod(signal[1].shift, -3 *
+                        np.array([self.space_unit_to_x, 0, 0])),
+            ApplyMethod(signal[0].shift, -1 *
+                        np.array([self.space_unit_to_x, 0, 0])),
         )
 
-        unit=Arrow(self.graph_origin,self.coords_to_point(0,1),buff=0.05)
+        unit = Arrow(self.graph_origin, self.coords_to_point(0, 1), buff=0.05)
         self.play(ShowCreation(unit))
 
-        total_response=[]
-        for i,k in zip(range(3,12),[2,5,5,6,11,9,6,5]):
-            line=Line(self.coords_to_point(i,0),self.coords_to_point(i,k),buff=0.05)
-            point=Dot(self.coords_to_point(i,k))
-            line_point=VGroup(line,point)
+        total_response = []
+        for i, k in zip(range(3, 12), [2, 5, 5, 6, 11, 9, 6, 5]):
+            line = Line(self.coords_to_point(i, 0),
+                        self.coords_to_point(i, k), buff=0.05)
+            point = Dot(self.coords_to_point(i, k))
+            line_point = VGroup(line, point)
             line_point.set_color(RED)
             total_response.append(line_point)
-        total_responses=VGroup(*total_response)
+        total_responses = VGroup(*total_response)
 
-        self.play(ApplyMethod(signals.shift,5*np.array([self.space_unit_to_x, 0, 0]))
-                ,ShowCreation(total_responses))
-        self.play(FadeOut(signals),FadeOut(unit))
+        self.play(ApplyMethod(signals.shift, 5 *
+                              np.array([self.space_unit_to_x, 0, 0])), ShowCreation(total_responses))
+        self.play(FadeOut(signals), FadeOut(unit))
         self.wait(2)
 
 
@@ -503,6 +526,7 @@ class GraphDot(Dot):
     CONFIG = {
         "radius": 0.02,
     }
+
 
 class ConvolutionExample(GraphScene):
     CONFIG = {
@@ -516,61 +540,62 @@ class ConvolutionExample(GraphScene):
         "y_axis_label": "$f(t)/y_s(t)$",
         "axes_color": GREEN,
     }
-    def func1(self,x):
+
+    def func1(self, x):
         return 1
-    
-    def func2(self,x):
+
+    def func2(self, x):
         return 2
-    
-    def get_conv(self,func1,a,b,func2,c,d):
-        x1=np.arange(a,b,0.01)
-        x2=np.arange(c,d,0.01)
-        x3=np.arange(a+c,b+d-0.01,0.01)
 
-        y1=[1] * x1.size
-        y2=[2] * x2.size
+    def get_conv(self, func1, a, b, func2, c, d):
+        x1 = np.arange(a, b, 0.01)
+        x2 = np.arange(c, d, 0.01)
+        x3 = np.arange(a+c, b+d-0.01, 0.01)
 
-        conv=signal.fftconvolve(y1,y2)
+        y1 = [1] * x1.size
+        y2 = [2] * x2.size
+
+        conv = signal.fftconvolve(y1, y2)
         # print(conv)
         # print(conv.size)
         # print(x3.size)
-        return x3,conv
+        return x3, conv
 
     def construct(self):
         self.setup_axes()
 
-        fun1_graph1=self.get_graph(
+        fun1_graph1 = self.get_graph(
             lambda x: 40,
             x_min=2,
             x_max=5
-        )    
-        fun1_line1=self.get_vertical_line_to_graph(2,fun1_graph1)
-        fun1_line2=self.get_vertical_line_to_graph(5,fun1_graph1)
-        fun1_graph=VGroup(fun1_graph1,fun1_line1,fun1_line2)
+        )
+        fun1_line1 = self.get_vertical_line_to_graph(2, fun1_graph1)
+        fun1_line2 = self.get_vertical_line_to_graph(5, fun1_graph1)
+        fun1_graph = VGroup(fun1_graph1, fun1_line1, fun1_line2)
         fun1_graph.set_color(BLUE)
 
-        fun2_graph1=self.get_graph(
+        fun2_graph1 = self.get_graph(
             lambda x: 80,
             x_min=6,
             x_max=7
-        )    
-        fun2_line1=self.get_vertical_line_to_graph(6,fun2_graph1)
-        fun2_line2=self.get_vertical_line_to_graph(7,fun2_graph1)
-        fun2_graph=VGroup(fun2_graph1,fun2_line1,fun2_line2)
+        )
+        fun2_line1 = self.get_vertical_line_to_graph(6, fun2_graph1)
+        fun2_line2 = self.get_vertical_line_to_graph(7, fun2_graph1)
+        fun2_graph = VGroup(fun2_graph1, fun2_line1, fun2_line2)
         fun2_graph.set_color(RED)
 
-        x,y=self.get_conv(self.func1,2,5,self.func2,6,7)
+        x, y = self.get_conv(self.func1, 2, 5, self.func2, 6, 7)
 
-        conv=[]
-        for i,k in zip(x,y):
-            conv.append(GraphDot(self.coords_to_point(i,k)))
-        conv_graph=VGroup(*conv)
+        conv = []
+        for i, k in zip(x, y):
+            conv.append(GraphDot(self.coords_to_point(i, k)))
+        conv_graph = VGroup(*conv)
         conv_graph.set_color(YELLOW)
 
-        self.add(fun1_graph,fun2_graph)
+        self.add(fun1_graph, fun2_graph)
         self.wait(1)
         self.play(ApplyMethod(fun2_graph.shift,
-                                -8*np.array([self.space_unit_to_x, 0, 0])))
+                              -8*np.array([self.space_unit_to_x, 0, 0])))
         self.play(Rotate(
             fun2_graph,
             PI,
@@ -580,35 +605,182 @@ class ConvolutionExample(GraphScene):
             fun2_graph.shift,
             3*np.array([self.space_unit_to_x, 0, 0])
         ),
-        rate_func=linear
+            rate_func=linear
         )
         self.play(
             ShowCreation(conv_graph),
             ApplyMethod(
-            fun2_graph.shift,
-            4*np.array([self.space_unit_to_x, 0, 0])
-        ),
-        rate_func=lingering
+                fun2_graph.shift,
+                4*np.array([self.space_unit_to_x, 0, 0])
+            ),
+            rate_func=lingering
         )
         self.wait(2)
 
-    
-####### 4 傅里叶级数-变换
+
+# 4 傅里叶级数-变换
+
+class FourierTest(GraphScene):
+    CONFIG = {
+        "x_min": -7,
+        "x_max": 7,
+        "y_min": -1.5,
+        "y_max": 1.5,
+        "y_tick_frequency": 0.5,
+        "x_tick_frequency": 1,
+        "x_axis_label": "$t$",
+        "y_axis_label": "$f(t)$",
+        "graph_origin": ORIGIN,
+        "axes_color": GREEN,
+    }
+
+    def construct(self):
+        self.setup_axes(animate=True)
+
+        semi_sin = self.get_graph(
+            lambda x: np.cos(2*x)*(np.cos(2*x) > 0),
+            x_min=-2*PI,
+            x_max=2*PI
+        )
+        self.play(ShowCreation(semi_sin))
+
+        an_graph = []
+        f0 = lambdify(x, 1/PI)
+        a0_graph = self.get_graph(
+            lambda x: 1/PI+(1/2)*np.cos(x)+(-2/(3*PI))*np.cos(2*x)+
+                        
+                        (2/PI)*(1/-15)*np.cos(4*x),
+            x_min=-2*PI,
+            x_max=2*PI
+        )
+        a0_graph.set_color(RED)
+        an_graph.append(a0_graph)
+        self.play(ShowCreation(a0_graph))
+
+        func = implemented_function('func', lambda x: (1/2)*np.cos(x))
+        f = lambdify(x, func(x))
+        a1_graph = self.get_graph(
+            lambda x: f(x),
+            x_min=-2*PI,
+            x_max=2*PI
+        )
+        a1_graph.set_color(RED)
+        an_graph.append(a1_graph)
+        self.play(ShowCreation(a1_graph))
+
+        self.play(Transform(an_graph[0].deepcopy(), an_graph[1]),
+                  ApplyMethod(an_graph[0].fade, 0.7))
 
 
+class SemiSinFourier(GraphScene):
+    CONFIG = {
+        "x_min": -14,
+        "x_max": 14,
+        "y_min": -1.5,
+        "y_max": 1.5,
+        "y_tick_frequency": 0.5,
+        "x_tick_frequency": 2,
+        "x_axis_label": "$t$",
+        "y_axis_label": "$f(t)$",
+        "graph_origin": ORIGIN,
+        "axes_color": GREEN,
+        "fourier":[
+            lambda x: 1/PI+(1/2)*np.cos(x),
+            lambda x: 1/PI+(1/2)*np.cos(x)+
+                        (2/(3*PI))*np.cos(2*x),
+            lambda x: 1/PI+(1/2)*np.cos(x)+
+                        (2/(3*PI))*np.cos(2*x),
+            lambda x: 1/PI+(1/2)*np.cos(x)+
+                        (2/(3*PI))*np.cos(2*x)+
+                        (-2/(15*PI))*np.cos(4*x),
+            lambda x: 1/PI+(1/2)*np.cos(x)+
+                        (2/(3*PI))*np.cos(2*x)+
+                        (-2/(15*PI))*np.cos(4*x),
+            lambda x: 1/PI+(1/2)*np.cos(x)+
+                        (2/(3*PI))*np.cos(2*x)+
+                        (-2/(15*PI))*np.cos(4*x)+
+                        (2/(35*PI))*np.cos(6*x),
+            lambda x: 1/PI+(1/2)*np.cos(x)+
+                        (2/(3*PI))*np.cos(2*x)+
+                        (-2/(15*PI))*np.cos(4*x)+
+                        (2/(35*PI))*np.cos(6*x)
+        ]
+    }
+
+    def construct(self):
+        self.setup_axes(animate=True)
+
+        semi_sin = self.get_graph(
+            lambda x: np.cos(x)*(np.cos(x) > 0)
+        )
+        semi_sin.set_color(BLUE)
+        self.play(ShowCreation(semi_sin))
+
+        an_graph = []
+        f0 = lambdify(x, 1/PI)
+        a0_graph = self.get_graph(
+            lambda x: f0(x),
+            # x_min=-4*PI,
+            # x_max=4*PI,
+            color=RED
+        )
+
+        func = implemented_function('func', lambda x: (1/2)*np.cos(x))
+        f = lambdify(x, func(x))
+        a1_graph = self.get_graph(
+            lambda x: f(x),
+            # x_min=-4*PI,
+            # x_max=4*PI,
+            color=RED
+        )
+        an_graph.append(a1_graph)
+
+        for i in range(2, 8):
+            a_graph = self.get_graph(
+                lambda x: (2/PI)*(1/(1-i ^ 2))*np.cos(i*PI/2)*np.cos(i*x),
+                # x_min=-4*PI,
+                # x_max=4*PI,
+                color=RED
+            )
+            an_graph.append(a_graph)
+
+        fourier_graph=[
+            self.get_graph(
+                f,
+                # x_min=-4*PI,
+                # x_max=4*PI,
+                color=RED
+            )
+            for f in self.fourier
+        ]
+
+        combine=[]
+        self.play(ShowCreation(a0_graph))
+        for i in range(0,7):
+            self.wait(0.3)
+            self.play(ShowCreation(an_graph[i]))
+            self.wait(0.3)
+            if i==0:
+                combine.append(VGroup(a0_graph.deepcopy(),an_graph[i].deepcopy()))
+                self.play(Transform(combine[-1],
+                    fourier_graph[i]
+                    ),
+                    ApplyMethod(a0_graph.fade,0.9),
+                    ApplyMethod(an_graph[i].fade,0.9))
+            else:
+                combine.append(VGroup(fourier_graph[i-1],an_graph[i].deepcopy()))
+                self.play(Transform(combine[-1],
+                    fourier_graph[i]
+                    ),
+                    ApplyMethod(an_graph[i].fade,0.9),
+                    ApplyMethod(combine[i-1].fade,1))
+        self.wait(2)
 
 
+# 5 周期傅里叶变换与抽样
 
 
+# 6 拉普拉斯变换
 
 
-####### 5 周期傅里叶变换与抽样
-
-
-
-
-####### 6 拉普拉斯变换
-
-
-
-####### 7 零极图与频率响应
+# 7 零极图与频率响应
