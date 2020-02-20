@@ -1883,3 +1883,7 @@ class Plot3(GraphScene):
                                         step_y
                                     ))
         self.play(Write(self.x_axis),Write(self.y_axis))
+
+class SvgTry(Scene):
+    def construct(self):
+        file_name='bianqian.svg'

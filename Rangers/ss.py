@@ -2,6 +2,9 @@
 #
 # Copyright (C) <2020> <Rangers>
 #
+# The animations were generated using the engine manim based on 3B1B's opensource
+# module: https://github.com/3b1b/manim.
+#
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
 # to deal in the Software without restriction, including without limitation
