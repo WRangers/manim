@@ -262,7 +262,7 @@ class BulletedList(TextMobject):
         "alignment": "",
     }
 
-    def __init__(self, *items, **kwargs):
+    def __init__(self, items, **kwargs):
         line_separated_items = [s + "\\\\" for s in items]
         TextMobject.__init__(self, *line_separated_items, **kwargs)
         for part in self:

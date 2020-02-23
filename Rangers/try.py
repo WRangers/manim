@@ -1998,7 +1998,7 @@ class ZoomedSceneExample(ZoomedScene):
         )
         self.wait()
 
-class Title(Scene):
+class FracalTitle(Scene):
     def construct(self):
         text=TextMobject('Dragon Fractal')
         text.scale(3)
@@ -2028,4 +2028,80 @@ class ImageTest(Scene):
     def construct(self):
         image = ImageMobject("note")
         self.play(FadeIn(image))
+        self.wait()
+
+class ColoringText(Scene):
+    def construct(self):
+        text = TextMobject("Text or object")
+        self.add(text)
+        self.wait(0.5)
+        for letter in text:
+            self.play(LaggedStart(
+                ApplyMethod(letter,
+                lambda m : (m.set_color, YELLOW)),
+                run_time = 0.12
+            ))
+        self.wait(0.5)        
+
+class FrameBox1(Scene):
+    def construct(self):
+        text=TexMobject(
+            "\\hat g(", "f", ")", "=", "\\int", "_{t_1}", "^{t_{2}}",
+            "g(", "t", ")", "e", "^{-2\\pi i", "f", "t}", "dt"
+        )
+        frameBox = SurroundingRectangle(text[4], buff = 0.5*SMALL_BUFF)
+        self.play(Write(text))
+        self.wait(.5)
+        self.play(ShowCreation(frameBox))
+        self.wait(2)
+
+class BraceLabelTest(Scene):
+    def construct(self):
+        text=TexMobject(
+            "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
+            "g(x)\\frac{d}{dx}f(x)"
+        )
+        self.play(Write(text))
+        brace_top = BraceLabel(text[1], "g'f", UP, buff = SMALL_BUFF)
+        brace_bottom = BraceLabel(text[3], "f'g", DOWN, buff = SMALL_BUFF)
+        # text_top = brace_top.get_text("$g'f$")
+        # text_bottom = brace_bottom.get_text("$f'g$")
+        self.play(
+            GrowFromCenter(brace_top),
+            GrowFromCenter(brace_bottom),
+            # FadeIn(text_top),
+            # FadeIn(text_bottom)
+            )
+        self.wait()
+
+class ColoringEquations(Scene):
+    #Grouping and coloring parts of equations
+    def construct(self):
+        line1=TexMobject(r"\text{The vector } \vec{F}_{net} \text{ is the net }",r"\text{force }",r"\text{on object of mass }")
+        line1.set_color_by_tex("force", BLUE) 
+        line1.set_color_by_tex("F", RED) # "F"代表第一部分,即line1的第一部分颜色设置为RED
+        line2=TexMobject("m", "\\text{ and acceleration }", "\\vec{a}", ".  ")
+        line2.set_color_by_tex_to_color_map({
+            "m": YELLOW,
+            "{a}": RED
+        })
+        sentence=VGroup(line1,line2)
+        sentence.arrange_submobjects(DOWN, buff=MED_LARGE_BUFF) # buff是buff distance,可以直接设置数值
+        self.play(Write(sentence))
+
+class BulletedListTest(Scene):
+    def construct(self):
+        text=['1','2','3','4','5','6','7']
+        textlist=BulletedList(text)
+
+        self.play(Write(textlist))
+        self.play(ApplyMethod(textlist.fade_all_but,6))
+        textlist.fade_all_but(3,opacity=0.7)
+        self.wait()
+
+class TitleText(Scene):
+    def construct(self):
+        t=Title('Rangers')
+
+        self.play(ShowCreation(t))
         self.wait()
