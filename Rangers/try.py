@@ -1,4 +1,8 @@
 from manimlib.imports import *
+import os
+
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 ##################### Tutorial ###################
 
@@ -1992,4 +1996,36 @@ class ZoomedSceneExample(ZoomedScene):
             Uncreate(zoomed_display_frame),
             FadeOut(frame),
         )
+        self.wait()
+
+class Title(Scene):
+    def construct(self):
+        text=TextMobject('Dragon Fractal')
+        text.scale(3)
+
+        self.play(Write(text))
+        self.wait()
+        self.play(FadeOut(text))
+
+class AudioTest(Scene):
+    def construct(self):
+        group_dots=VGroup(*[Dot()for _ in range(3)])
+        group_dots.arrange_submobjects(RIGHT)
+        for dot in group_dots:
+            self.add_sound("click",gain=-10)
+            self.add(dot)
+            self.wait()
+        self.wait()
+ 
+class SVGTest(Scene):
+    def construct(self):
+        svg = SVGMobject("finger")
+        #svg = SVGMobject("camera")
+        self.play(DrawBorderThenFill(svg,rate_func=linear))
+        self.wait()
+ 
+class ImageTest(Scene):
+    def construct(self):
+        image = ImageMobject("note")
+        self.play(FadeIn(image))
         self.wait()

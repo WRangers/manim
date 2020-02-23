@@ -29,7 +29,10 @@ from scipy import signal, fftpack
 from sympy import symbols
 from sympy.utilities.lambdify import lambdify, implemented_function
 from sympy.abc import x
+import os
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 class MRText(Text):
     CONFIG = {

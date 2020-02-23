@@ -1,15 +1,8 @@
-old_version = False
-
-if old_version:
-    from big_ol_pile_of_manim_imports import *
-else:
-    from manimlib.imports import *
-
+from manimlib.imports import *
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
 
 class Dragon(MovingCameraScene):
     CONFIG = {
@@ -21,8 +14,6 @@ class Dragon(MovingCameraScene):
                   YELLOW_E,PURPLE_A,PURPLE_C,PURPLE_E]
     }
     def construct(self):
-
-        self.name()
 
         self.color = it.cycle(self.colors)
         path = VGroup()
@@ -77,11 +68,3 @@ class Dragon(MovingCameraScene):
 
     def get_last_point(self, path):
         return 0 if len(path) > 1 else -1
-
-    def name(self):
-        text=Text('Dragon Fractal', font='Palatino-Roman')
-        text.scale(1.2)
-
-        self.play(Write(ShowCreation(text)))
-        self.wait()
-        self.play(FadeOut(text))
