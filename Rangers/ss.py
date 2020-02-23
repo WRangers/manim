@@ -675,7 +675,7 @@ class FourierTest(GraphScene):
                   ApplyMethod(an_graph[0].fade, 0.7))
 
 
-class SemiSinFourier(GraphScene):
+class SemiSinFourier(GraphScene, ZoomedScene):
     CONFIG = {
         "x_min": -14,
         "x_max": 14,
@@ -707,7 +707,14 @@ class SemiSinFourier(GraphScene):
                         (2/(3*PI))*np.cos(2*x)+
                         (-2/(15*PI))*np.cos(4*x)+
                         (2/(35*PI))*np.cos(6*x)
-        ]
+        ],
+        "zoom_factor": 0.3,
+        "zoomed_display_height": 1,
+        "zoomed_display_width": 6,
+        "image_frame_stroke_width": 20,
+        "zoomed_camera_config": {
+            "default_frame_stroke_width": 3,
+        },
     }
 
     def construct(self):
@@ -718,6 +725,21 @@ class SemiSinFourier(GraphScene):
         )
         semi_sin.set_color(BLUE)
         self.play(ShowCreation(semi_sin))
+
+        # Set camera
+        self.setup()
+        zoomed_camera = self.zoomed_camera
+        zoomed_display = self.zoomed_display
+        frame = zoomed_camera.frame
+        zoomed_display_frame = zoomed_display.display_frame
+        zoomed_display_frame.set_color(RED)
+
+        self.activate_zooming()
+        # self.play(
+        #     # You have to add this line
+        #     self.get_zoomed_display_pop_out_animation(),
+        #     unfold_camera
+        # )
 
         an_graph = []
         f0 = lambdify(x, 1/PI)

@@ -64,7 +64,7 @@ def tex_to_dvi_or_pdf(tex_file):
             log_file = tex_file.replace(".tex", ".log")
             raise Exception(
                 ("Latex error converting to dvi. " if not TEX_USE_CTEX
-                else "Xelatex error converting to xdv. ") +
+                 else "Xelatex error converting to xdv. ") +
                 "See log output above or the log file: %s" % log_file)
     return result
 
@@ -78,8 +78,8 @@ def dvi_or_pdf_to_svg(dvi_or_pdf_file, regen_if_exists=False):
     """
     if 'pdf' in dvi_or_pdf_file:
         result = dvi_or_pdf_file.replace(".pdf", ".svg")
-        pdf_name=get_pdf_name(dvi_or_pdf_file)
-        old_path=os.getcwd()
+        pdf_name = get_pdf_name(dvi_or_pdf_file)
+        old_path = os.getcwd()
         if not os.path.exists(result):
             commands = [
                 "dvisvgm",
@@ -113,9 +113,8 @@ def dvi_or_pdf_to_svg(dvi_or_pdf_file, regen_if_exists=False):
             ]
             os.system(" ".join(commands))
         return result
-        
 
 
 def get_pdf_name(pdf_file):
-    de_n=len(consts.TEX_DIR)+1
+    de_n = len(consts.TEX_DIR)+1
     return pdf_file[de_n::]
