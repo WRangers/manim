@@ -97,6 +97,14 @@ class FadeOutAndShiftDown(FadeOutAndShift):
         "direction": DOWN,
     }
 
+class FadeOutAndShiftUp(FadeOutAndShift):
+    """
+    Identical to FadeOutAndShift, just with a name that
+    communicates the default
+    """
+    CONFIG = {
+        "direction": -1*DOWN,
+    }
 
 class FadeInFromPoint(FadeIn):
     def __init__(self, mobject, point, **kwargs):

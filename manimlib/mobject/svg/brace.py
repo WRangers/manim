@@ -102,7 +102,7 @@ class BraceLabel(VMobject):
     def creation_anim(self, label_anim=FadeIn, brace_anim=GrowFromCenter):
         return AnimationGroup(brace_anim(self.brace), label_anim(self.label))
 
-    def shift_brace(self, obj, **kwargs):
+    def shift_brace(self, *obj, **kwargs):
         if isinstance(obj, list):
             obj = VMobject(*obj)
         self.brace = Brace(obj, self.brace_direction, **kwargs)
@@ -124,11 +124,11 @@ class BraceLabel(VMobject):
         self.change_label(*text)
         return self
 
-    def copy(self):
-        copy_mobject = copy.copy(self)
-        copy_mobject.brace = self.brace.copy()
-        copy_mobject.label = self.label.copy()
-        copy_mobject.submobjects = [copy_mobject.brace, copy_mobject.label]
+    # def copy(self):
+    #     copy_mobject = copy.copy(self)
+    #     copy_mobject.brace = self.brace.copy()
+    #     copy_mobject.label = self.label.copy()
+    #     copy_mobject.submobjects = [copy_mobject.brace, copy_mobject.label]
 
         return copy_mobject
 

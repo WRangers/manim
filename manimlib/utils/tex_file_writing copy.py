@@ -16,8 +16,8 @@ def tex_hash(expression, template_tex_file_body):
 
 def tex_to_svg_file(expression, template_tex_file_body):
     tex_file = generate_tex_file(expression, template_tex_file_body)
-    dvi_file = tex_to_dvi(tex_file)
-    return dvi_to_svg(dvi_file)
+    dvi_or_pdf_file = tex_to_dvi_or_pdf(tex_file)
+    return dvi_or_pdf_to_svg(dvi_or_pdf_file)
 
 
 def generate_tex_file(expression, template_tex_file_body):
@@ -37,22 +37,20 @@ def generate_tex_file(expression, template_tex_file_body):
     return result
 
 
-def tex_to_dvi(tex_file):
-    result = tex_file.replace(".tex", ".dvi" if not TEX_USE_CTEX else ".xdv")
+def tex_to_dvi_or_pdf(tex_file):
+    result = tex_file.replace(".tex", ".dvi" if not TEX_USE_CTEX else ".pdf")
     if not os.path.exists(result):
         commands = [
             "latex",
-            "-interaction=batchmode",
-            "-halt-on-error",
+            "-synctex=1",
+            "-interaction=nonstopmode",
+            "-file-line-error",
             "-output-directory=\"{}\"".format(consts.TEX_DIR),
             "\"{}\"".format(tex_file),
             ">",
             os.devnull
         ] if not TEX_USE_CTEX else [
             "xelatex",
-            "-no-pdf",
-            # "-interaction=batchmode",
-            # "-halt-on-error",
             "-synctex=1",
             "-interaction=nonstopmode",
             "-file-line-error",
@@ -66,30 +64,57 @@ def tex_to_dvi(tex_file):
             log_file = tex_file.replace(".tex", ".log")
             raise Exception(
                 ("Latex error converting to dvi. " if not TEX_USE_CTEX
-                else "Xelatex error converting to xdv. ") +
+                 else "Xelatex error converting to xdv. ") +
                 "See log output above or the log file: %s" % log_file)
     return result
 
 
-def dvi_to_svg(dvi_file, regen_if_exists=False):
+def dvi_or_pdf_to_svg(dvi_or_pdf_file, regen_if_exists=False):
     """
     Converts a dvi, which potentially has multiple slides, into a
     directory full of enumerated pngs corresponding with these slides.
     Returns a list of PIL Image objects for these images sorted as they
     where in the dvi
     """
-    result = dvi_file.replace(".dvi" if not TEX_USE_CTEX else ".xdv", ".svg")
-    if not os.path.exists(result):
-        commands = [
-            "dvisvgm",
-            "\"{}\"".format(dvi_file),
-            "-n",
-            "-v",
-            "0",
-            "-o",
-            "\"{}\"".format(result),
-            ">",
-            os.devnull
-        ]
-        os.system(" ".join(commands))
-    return result
+    if 'pdf' in dvi_or_pdf_file:
+        result = dvi_or_pdf_file.replace(".pdf", ".svg")
+        pdf_name = get_pdf_name(dvi_or_pdf_file)
+        old_path = os.getcwd()
+        if not os.path.exists(result):
+            commands = [
+                "dvisvgm",
+                "-P",
+                # "-n",
+                # "-v",
+                # "0",
+                # "-o",
+                "\"{}\"".format(pdf_name),
+                # pdf_file,
+                ">",
+                os.devnull
+            ]
+            os.chdir(consts.TEX_DIR)
+            os.system(" ".join(commands))
+            os.chdir(old_path)
+        return result
+    else:
+        result = dvi_or_pdf_file.replace(".dvi", ".svg")
+        if not os.path.exists(result):
+            commands = [
+                "dvisvgm",
+                "\"{}\"".format(dvi_or_pdf_file),
+                "-n",
+                "-v",
+                "0",
+                "-o",
+                "\"{}\"".format(result),
+                ">",
+                os.devnull
+            ]
+            os.system(" ".join(commands))
+        return result
+
+
+def get_pdf_name(pdf_file):
+    de_n = len(consts.TEX_DIR)+1
+    return pdf_file[de_n::]
