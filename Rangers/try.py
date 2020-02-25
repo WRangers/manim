@@ -934,25 +934,6 @@ class ForEachExample(Scene):
             text_group=VGroup(text_group,text_list[i-1])
         self.wait()
 
-class example(Scene):
-    def construct(self):
-        title = TextMobject("This is some \\LaTeX")
-        basel = TexMobject(
-            "\\sum_{n=1}^\\infty "
-            "\\frac{1}{n^2} = \\frac{\\pi^2}{6}"
-        )
-        VGroup(title, basel).arrange_submobjects(DOWN)
-        self.play(
-            Write(title),
-            FadeInFrom(basel, UP),
-        )
-        self.wait()
-        self.play(
-            LaggedStart(FadeOutAndShiftUp,title),
-            LaggedStart(FadeOutAndShiftDown, basel),
-        )
-        self.wait()
-
 
 class DotMap(Scene):
     def construct(self):
@@ -1776,8 +1757,8 @@ class ExampleTikz(Scene):
 #     "camera_config":{"background_color":RED}
 # }
     def construct(self):
-        # w=TextMobject(r"Hello, world!\\你好,世界!\\こんにちは世界！\\안녕하세요 세상!")
-        # w.set_color(RED)
+        w=TextMobject(r"Hello, world!$\Sigma$\\你好,世界!\\こんにちは世界！\\안녕하세요 세상!")
+        w.set_color(RED)
         circuit = TikzMobject(r"""
             \begin{circuitikz}[american voltages]
             \draw
@@ -1795,7 +1776,7 @@ class ExampleTikz(Scene):
             """)
         # circuit.set_color(RED)
         self.play(Write(circuit))
-        # self.play(Write(w))
+        self.play(Write(w))
         self.wait()
 
 
@@ -2104,4 +2085,467 @@ class TitleText(Scene):
         t=Title('Rangers')
 
         self.play(ShowCreation(t))
+        self.wait()
+
+class CameraPosition2(ThreeDScene):
+    def construct(self):
+        axes = ThreeDAxes()
+        circle=Circle()
+        self.set_camera_orientation(phi=0 * DEGREES)
+        self.play(ShowCreation(circle),ShowCreation(axes))
+        self.wait()
+
+class FormulaColor3Fixed2(Scene): 
+    def construct(self): 
+        text = TexMobject("\\sqrt{","\\int_","{a}^","{b}","{\\left(","{x","\\over","y}","\\right)}","d","x",".}")
+        text[0].set_color(RED)
+        text[1].set_color(BLUE)
+        text[2].set_color(GREEN)
+        text[3].set_color(YELLOW)
+        text[4].set_color(PINK)
+        text[5].set_color(ORANGE)
+        text[6].set_color(PURPLE)
+        text[7].set_color(MAROON)
+        text[8].set_color(TEAL)
+        text[9].set_color(GOLD)
+        self.play(Write(text))
+        self.wait(3)
+
+# class TransformPathStyle(PathScene):
+#     def construct(self):
+#         path = VMobject()
+#         path.set_points_as_corners([*[coord(x,y) for x,y in self.tuples]])
+#         self.add(path)
+#         self.play(path.make_smooth)
+#         self.wait()
+#         """
+#         There are 3 methods:
+#             path.make_smooth()
+#             path.make_jagged()
+#             path.change_anchor_mode()
+#         """
+
+class PointCloundDotTest(Scene):
+    CONFIG = {
+        "color": YELLOW,
+    }
+    def construct(self):
+        p=Point()
+
+        self.play(ShowCreation(p))
+        self.wait()        
+
+class BroadcastTest(Scene):
+    def construct(self):
+        b=Broadcast(1)
+
+        self.add(b)
+
+
+class ExampleRateFunc(Scene):
+    def construct(self):
+        path = Line(LEFT*5,RIGHT*5)
+        dot = Dot(path.get_start())
+        self.add(path,dot)
+        self.play(
+            # This works with any animation
+            MoveAlongPath(
+                dot,path,
+                rate_func=lambda t: smooth(1-t),
+                # rate_func = smooth <- by default
+                run_time=4 # 4 sec
+            )
+        )
+        self.wait()
+
+class ExampleRateFunc2(Scene):
+    def construct(self):
+        text = TextMobject("Hello world!").scale(3)
+        self.play(Write(
+            text,
+            rate_func=lambda t: smooth(1-t)
+        ))
+        self.wait()
+
+# Install via pip:
+# matplotlib
+# pandas
+# sklearn
+import matplotlib.pyplot as plt 
+import pandas as pd 
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures 
+
+class ExampleRateFuncCustom(Scene):
+    def construct(self):
+        datas = pd.read_csv('data.csv')
+        print(datas)
+        X = datas.iloc[:, 0:1].values
+        y = datas.iloc[:, 1].values
+        poly = PolynomialFeatures(degree = 8)
+        X_poly = poly.fit_transform(X)
+        poly.fit(X_poly, y)
+        lin = LinearRegression()
+        lin.fit(X_poly, y)
+        plt.scatter(X, y, color = 'blue') 
+  
+        plt.plot(X, lin.predict(poly.fit_transform(X)), color = 'red') 
+        plt.title('Polynomial Regression') 
+        plt.xlabel('Time') 
+        plt.ylabel('Animation progression %') 
+        plt.show() 
+        # See manimlib/utils/bezier.py
+        reg_func = bezier(lin.predict(poly.fit_transform(X)))
+
+        path = Line(LEFT*5,RIGHT*5)
+        dot = Dot(path.get_start())
+        self.add(path,dot)
+        self.play(
+            MoveAlongPath(
+                dot,path,
+                rate_func=reg_func,
+                run_time=4
+            )
+        )
+        self.wait()
+
+# Custom
+
+def custom_time(t,partitions,start,end,func):
+    duration = end - start
+    fragment_time = 1 / partitions
+    start_time = start * fragment_time
+    end_time = end * fragment_time
+    duration_time = duration * fragment_time
+    def fix_time(x):
+        return (x - start_time) / duration_time
+    if t < start_time: 
+        return func(fix_time(start_time))
+    elif start_time <= t < end_time:
+        return func(fix_time(t))
+    else:
+        return func(fix_time(end_time))
+
+def Custom(partitions,start,end,func=smooth):
+    return lambda t: custom_time(t,partitions,start,end,func)
+
+class CustomRateFunc(Scene):
+    def construct(self):
+        c = Circle().scale(2)
+        s = Square().scale(2)
+        l = Line(DOWN,UP).scale(2)
+        time = DecimalNumber(self.time).add_updater(lambda m: m.set_value(self.time))
+        time.to_corner(DL)
+        self.add(time)
+        self.play(
+            # 6 partitions, that is (total_time = 4):
+            # ShowCreation starts at t=(0/6)*total_time=0s and end t=(5/6)*total_time=3.333s
+            ShowCreation(c,  rate_func=Custom(6,0,5)),
+            # FadeIn starts at t=(2/6)*total_time=1.3333s and end t=(4/6)*total_time=2.6666s
+            FadeIn(s,        rate_func=Custom(6,2,4,func=there_and_back)),
+            # GrowFromCenter starts at t=(4/6)*total_time=2.6666s and end t=(6/6)*total_time=4s
+            GrowFromCenter(l,rate_func=Custom(6,4,6)),
+            run_time=4 # <- total_time
+            )
+        self.wait()
+
+# COMPARATION
+class TestPath(VGroup):
+    def __init__(self,name,**kwargs):
+        super().__init__(**kwargs)
+        self.name = name.__name__
+        self.func = name
+        self.title = Text(f"{self.name}",font="Monaco",stroke_width=0)
+        self.title.set_height(0.24)
+        self.line = Line(LEFT*5,RIGHT*5)
+        self.dot = Dot(self.line.get_start())
+        self.title.next_to(self.line,LEFT,buff=0.3)
+        self.add(self.title,self.line,self.dot)
+
+class RateFunctions(Scene):
+    CONFIG = {
+        "rate_functions": [
+            smooth,
+            linear,
+            rush_into,
+            rush_from,
+            slow_into,
+            double_smooth,
+            there_and_back,
+            running_start,
+            wiggle,
+            lingering,
+            exponential_decay
+        ],
+        "rt": 3
+    }
+    def construct(self):
+        time_ad = [*[Text("%d"%i,font="Arial",stroke_width=0).to_corner(UL) for i in range(1,4)]][::-1]
+        
+        rf_group = VGroup(*[
+            TestPath(rf)
+            for rf in self.rate_functions
+        ])
+        for rf in rf_group:
+            rf.title.set_color(TEAL)
+            rf.line.set_color([RED,BLUE,YELLOW])
+        rf_group.arrange(DOWN,aligned_edge=RIGHT)
+        init_point = rf_group[0].line.get_start()
+        init_point[0] = 0
+        end_point = rf_group[-1].line.get_end()
+        brace = Brace(rf_group[-1].line,DOWN,buff=0.5)
+        brace_text = brace.get_text("\\tt run\\_time = %d"%self.rt).scale(0.8)
+        end_point[0] = 0
+
+        div_lines = VGroup()
+        div_texts = VGroup()
+        for i in range(11):
+            proportion = i / 10
+            text = TexMobject("\\frac{%s}{10}"%i)
+            text.set_height(0.5)
+            coord_proportion = rf_group[0].line.point_from_proportion(proportion)
+            coord_proportion[1] = 0
+            v_line = DashedLine(
+                init_point + coord_proportion + UP*0.5,
+                end_point  + coord_proportion + DOWN*0.5,
+                stroke_opacity=0.5
+            )
+            text.next_to(v_line,UP,buff=0.1)
+            div_texts.add(text)
+            div_lines.add(v_line)
+        self.add(rf_group,div_lines,div_texts,brace,brace_text)
+        for i in range(3):
+            self.add(time_ad[i])
+            self.wait()
+            self.remove(time_ad[i])
+        self.play(*[
+            MoveAlongPath(vg.dot,vg.line,rate_func=vg.func)
+            for vg in rf_group 
+            ],
+            run_time=self.rt
+        )
+        self.wait(2)
+
+class R(Scene):
+    def construct(self):
+        text=TextMobject("start")
+        text.to_corner(RIGHT + UP)
+        squares = VGroup()
+        for i in range(9):
+            squares.add(Square())
+        squares.arrange_in_grid(n_rows=3, n_cols=3)
+        self.add(squares)
+        anims=[]
+        for i in range(18):
+            anims.append(FadeToColor(squares[i%9],RED,rate_func=there_and_back))
+        self.play(Write(text))
+        self.play(Succession(
+            *anims,
+            lag_ratio=0.1,
+            # group=Group(*[anim.mobject for anim in anims])
+            ))
+        self.play(Transform(text,TextMobject("end").to_corner(RIGHT + UP)))
+        self.wait()
+
+##############################################################################################
+
+def return_random_from_word(word):
+    """
+    This function receives a TextMobject, 
+    obtains its length: 
+        len(TextMobject("Some text"))
+    and returns a random list, example:
+
+    INPUT: word = TextMobjecT("Hello")
+    length = len(word) # 4
+    rango = list(range(length)) # [0,1,2,3]
+
+    OUTPUT: [3,0,2,1] # Random list
+    """
+    rango = list(range(len(word)))
+    random.shuffle(rango)
+    return rango
+
+def return_random_direction(word):
+    """
+    This function returns a list of random UP or DOWN:
+    [UP,UP,DOWN,UP,DOWN,DOWN,...]
+    """
+    return [random.choice([UP,DOWN]) for _ in range(len(word))]
+
+def get_random_coord(r_x,r_y,step_x,step_y):
+    """
+    Given two ranges (a, b) and (c, d), this function returns an 
+    intermediate array (x, y) such that "x" belongs to (a, c) 
+    and "y" belongs to (b, d).
+    """
+    range_x = list(range(r_x[0],r_x[1],step_x))
+    range_y = list(range(r_y[0],r_y[1],step_y))
+    select_x = random.choice(range_x)
+    select_y = random.choice(range_y)
+    return np.array([select_x,select_y,0])
+
+def return_random_coords(word,r_x,r_y,step_x,step_y):
+    """
+    This function returns a random coordinate array, 
+    given the length of a TextMobject
+    """
+    rango = range(len(word))
+    return [word.get_center() + get_random_coord(r_x,r_y,step_x,step_y) for _ in rango]
+
+
+class WriteRandom(LaggedStart):
+    CONFIG = {
+        "lag_ratio":0.1,
+        "run_time":2.5,
+        "anim_kwargs":{},
+        "anim_type":Write
+    }
+    def __init__(self,text,**kwargs):
+        digest_config(self, kwargs)
+        super().__init__(*[
+            self.anim_type(text[i],**self.anim_kwargs)
+            for i in return_random_from_word(text)
+        ])
+
+class UnWriteRandom(WriteRandom):
+    CONFIG = {
+        "anim_kwargs": {
+            "rate_func": lambda t: smooth(1-t)
+        },
+        "remover": True,
+    }
+
+class FadeInRandom(WriteRandom):
+    CONFIG = {
+        "anim_type": FadeIn
+    }
+
+class FadeOutRandom(WriteRandom):
+    CONFIG = {
+        "anim_type": FadeOut
+    }
+
+class GrowRandom(WriteRandom):
+    CONFIG = {
+        "anim_type": GrowFromCenter
+    }
+
+class UnGrowRandom(GrowRandom):
+    CONFIG = {
+        "anim_kwargs": {
+            "rate_func": lambda t: smooth(1-t),
+        },
+        "remover": True,
+    }
+
+class FadeInFromRandom(LaggedStart):
+    CONFIG = {
+        "lag_ratio":0.08,
+        "anim_type":FadeInFrom,
+        "anim_kwargs":{}
+    }
+    def __init__(self,text,**kwargs):
+        digest_config(self, kwargs)
+        super().__init__(*[
+            self.anim_type(text[i],d,**self.anim_kwargs)
+            for i,d in zip(return_random_from_word(text),return_random_direction(text))
+        ])
+
+class FadeOutFromRandom(FadeInFromRandom):
+    CONFIG = {
+        "anim_type":FadeOutAndShiftDown
+    }
+
+class GrowFromRandom(LaggedStart):
+    CONFIG = {
+        "lag_ratio":0.2,
+        "anim_kwargs":{}
+    }
+    def __init__(self,text,r_x=[-2,3],r_y=[-2,3],step_x=1,step_y=1,**kwargs):
+        digest_config(self, kwargs)
+        super().__init__(*[
+            GrowFromPoint(text[i],d,**self.anim_kwargs)
+            for i,d in zip(return_random_from_word(text),return_random_coords(text,r_x,r_y,step_x,step_y))
+        ])
+
+class UnGrowFromRandom(GrowFromRandom):
+    CONFIG = {
+        "anim_kwargs": {
+            "rate_func": lambda t: smooth(1-t)
+        },
+        "remover": True
+    }
+
+class WriteRandomScene(Scene):
+    def construct(self):
+        text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
+        self.wait(3)
+        # Why text[0]?
+        # answer: https://www.youtube.com/watch?v=qfifBmYTEfA
+        self.play(WriteRandom(text[0]))
+        self.wait()
+        self.play(UnWriteRandom(text[0]))
+        self.wait(3)
+
+
+class FadeFromRandomScene(Scene):
+    def construct(self):
+        text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
+        # Why text[0]?
+        # answer: https://www.youtube.com/watch?v=qfifBmYTEfA
+        self.play(FadeInFromRandom(text[0]))
+        self.wait()
+        self.play(FadeOutFromRandom(text[0]))
+        self.wait(3)
+
+class GrowFromRandomScene(Scene):
+    def construct(self):
+        text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
+        # Why text[0]?
+        # answer: https://www.youtube.com/watch?v=qfifBmYTEfA
+        self.play(GrowFromRandom(text[0]))
+        self.wait()
+        self.play(UnGrowFromRandom(text[0]))
+        self.wait(3)
+
+class FadeRandomScene(Scene):
+    def construct(self):
+        text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
+        # Why text[0]?
+        # answer: https://www.youtube.com/watch?v=qfifBmYTEfA
+        self.play(FadeInRandom(text[0]))
+        self.wait()
+        self.play(FadeOutRandom(text[0]))
+        self.wait(3)
+
+class GrowRandomScene(Scene):
+    def construct(self):
+        text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
+        # Why text[0]?
+        # answer: https://www.youtube.com/watch?v=qfifBmYTEfA
+        self.play(GrowRandom(text[0]))
+        self.wait()
+        self.play(UnGrowRandom(text[0]))
+        self.wait(3)
+
+#########################################################################################
+
+class example(Scene):
+    def construct(self):
+        title = TextMobject("This is some \\LaTeX")
+        basel = TexMobject(
+            "\\sum_{n=1}^\\infty "
+            "\\frac{1}{n^2} = \\frac{\\pi^2}{6}"
+        )
+        VGroup(title, basel).arrange_submobjects(DOWN)
+        self.play(
+            Write(title),
+            FadeInFrom(basel, UP),
+        )
+        self.wait()
+        self.play(
+            LaggedStart(*[FadeOutAndShiftUp(i) for i in title[0]]),
+            LaggedStart(*list(map(FadeOutAndShiftDown,basel[0]))),
+        )
         self.wait()
