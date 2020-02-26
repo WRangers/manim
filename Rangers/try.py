@@ -2,7 +2,7 @@ from manimlib.imports import *
 import os
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 ##################### Tutorial ###################
 
@@ -2547,5 +2547,696 @@ class example(Scene):
         self.play(
             LaggedStart(*[FadeOutAndShiftUp(i) for i in title[0]]),
             LaggedStart(*list(map(FadeOutAndShiftDown,basel[0]))),
+        )
+        self.wait()
+
+NEW_BLUE = "#68a8e1"
+
+class Thumbnail(GraphScene):
+    CONFIG = {
+        "y_max": 8,
+        "y_axis_height": 5,
+    }
+
+    def construct(self):
+        self.show_function_graph()
+
+    def show_function_graph(self):
+        self.setup_axes(animate=False)
+        def func(x):
+            return 0.1 * (x + 3-5) * (x - 3-5) * (x-5) + 5
+
+        def rect(x):
+            return 2.775*(x-1.5)+3.862
+        recta = self.get_graph(rect,x_min=-1,x_max=5)
+        graph = self.get_graph(func,x_min=0.2,x_max=9)
+        graph.set_color(NEW_BLUE)
+        input_tracker_p1 = ValueTracker(1.5)
+        input_tracker_p2 = ValueTracker(3.5)
+
+        def get_x_value(input_tracker):
+            return input_tracker.get_value()
+
+        def get_y_value(input_tracker):
+            return graph.underlying_function(get_x_value(input_tracker))
+
+        def get_x_point(input_tracker):
+            return self.coords_to_point(get_x_value(input_tracker), 0)
+
+        def get_y_point(input_tracker):
+            return self.coords_to_point(0, get_y_value(input_tracker))
+
+        def get_graph_point(input_tracker):
+            return self.coords_to_point(get_x_value(input_tracker), get_y_value(input_tracker))
+
+        def get_v_line(input_tracker):
+            return DashedLine(get_x_point(input_tracker), get_graph_point(input_tracker), stroke_width=2)
+
+        def get_h_line(input_tracker):
+            return DashedLine(get_graph_point(input_tracker), get_y_point(input_tracker), stroke_width=2)
+        # 
+        input_triangle_p1 = RegularPolygon(n=3, start_angle=TAU / 4)
+        output_triangle_p1 = RegularPolygon(n=3, start_angle=0)
+        for triangle in input_triangle_p1, output_triangle_p1:
+            triangle.set_fill(WHITE, 1)
+            triangle.set_stroke(width=0)
+            triangle.scale(0.1)
+        # 
+        input_triangle_p2 = RegularPolygon(n=3, start_angle=TAU / 4)
+        output_triangle_p2 = RegularPolygon(n=3, start_angle=0)
+        for triangle in input_triangle_p2, output_triangle_p2:
+            triangle.set_fill(WHITE, 1)
+            triangle.set_stroke(width=0)
+            triangle.scale(0.1)
+        
+        # 
+        x_label_p1 = TexMobject("a")
+        output_label_p1 = TexMobject("f(a)")
+        x_label_p2 = TexMobject("b")
+        output_label_p2 = TexMobject("f(b)")
+        v_line_p1 = get_v_line(input_tracker_p1)
+        v_line_p2 = get_v_line(input_tracker_p2)
+        h_line_p1 = get_h_line(input_tracker_p1)
+        h_line_p2 = get_h_line(input_tracker_p2)
+        graph_dot_p1 = Dot(color=WHITE)
+        graph_dot_p2 = Dot(color=WHITE)
+
+        # reposition mobjects
+        x_label_p1.next_to(v_line_p1, DOWN)
+        x_label_p2.next_to(v_line_p2, DOWN)
+        output_label_p1.next_to(h_line_p1, LEFT)
+        output_label_p2.next_to(h_line_p2, LEFT)
+        input_triangle_p1.next_to(v_line_p1, DOWN, buff=0)
+        input_triangle_p2.next_to(v_line_p2, DOWN, buff=0)
+        output_triangle_p1.next_to(h_line_p1, LEFT, buff=0)
+        output_triangle_p2.next_to(h_line_p2, LEFT, buff=0)
+        graph_dot_p1.move_to(get_graph_point(input_tracker_p1))
+        graph_dot_p2.move_to(get_graph_point(input_tracker_p2))
+
+
+        #
+        self.play(
+            ShowCreation(graph),
+        )
+        # Animacion del punto a
+        self.add_foreground_mobject(graph_dot_p1)
+        self.add_foreground_mobject(graph_dot_p2)
+        self.play(
+            DrawBorderThenFill(input_triangle_p1),
+            Write(x_label_p1),
+            ShowCreation(v_line_p1),
+            GrowFromCenter(graph_dot_p1),
+            ShowCreation(h_line_p1),
+            Write(output_label_p1),
+            DrawBorderThenFill(output_triangle_p1),
+            DrawBorderThenFill(input_triangle_p2),
+            Write(x_label_p2),
+            ShowCreation(v_line_p2),
+            GrowFromCenter(graph_dot_p2),
+            ShowCreation(h_line_p2),
+            Write(output_label_p2),
+            DrawBorderThenFill(output_triangle_p2),
+            run_time=0.5
+        )
+        self.add(
+            input_triangle_p2,
+            x_label_p2,
+            graph_dot_p2,
+            v_line_p2,
+            h_line_p2,
+            output_triangle_p2,
+            output_label_p2,
+        )
+        ###################
+        pendiente_recta = self.get_secant_slope_group(
+            1.9, recta, dx = 1.4,
+            df_label = None,
+            dx_label = None,
+            dx_line_color = PURPLE,
+            df_line_color= ORANGE,
+            )
+        grupo_secante = self.get_secant_slope_group(
+            1.5, graph, dx = 2,
+            df_label = None,
+            dx_label = None,
+            dx_line_color = "#942357",
+            df_line_color= "#3f7d5c",
+            secant_line_color = RED,
+        )
+
+
+        self.add(
+            input_triangle_p2,
+            graph_dot_p2,
+            v_line_p2,
+            h_line_p2,
+            output_triangle_p2,
+        )
+        self.play(FadeIn(grupo_secante))
+
+        kwargs = {
+            "x_min" : 4,
+            "x_max" : 9,
+            "fill_opacity" : 0.75,
+            "stroke_width" : 0.25,
+        }
+        self.graph=graph
+        iteraciones=6
+
+
+        self.rect_list = self.get_riemann_rectangles_list(
+            graph, iteraciones,start_color=PURPLE,end_color=ORANGE, **kwargs
+        )
+        flat_rects = self.get_riemann_rectangles(
+            self.get_graph(lambda x : 0), dx = 0.5,start_color=invert_color(PURPLE),end_color=invert_color(ORANGE),**kwargs
+        )
+        rects = self.rect_list[0]
+        self.transform_between_riemann_rects(
+            flat_rects, rects, 
+            replace_mobject_with_target_in_scene = True,
+            run_time=0.9
+        )
+
+        # adding manim
+        picture = Group(*self.mobjects)
+        picture.scale(0.6).to_edge(LEFT, buff=SMALL_BUFF)
+        manim = TextMobject("Manim").set_height(1.5) \
+                                    .next_to(picture, RIGHT) \
+                                    .shift(DOWN * 0.7)
+        self.add(manim)
+
+class UpdatersExample(Scene):
+    def construct(self):
+        decimal = DecimalNumber(
+            0,
+            show_ellipsis=True,
+            num_decimal_places=3,
+            include_sign=True,
+        )
+        square = Square().to_edge(UP)
+
+        decimal.add_updater(lambda d: d.next_to(square, RIGHT))
+        decimal.add_updater(lambda d: d.set_value(square.get_center()[1]))
+        self.add(square, decimal)
+        self.play(
+            square.to_edge, DOWN,
+            rate_func=there_and_back,
+            run_time=5,
+        )
+        self.wait()
+
+class LaggedStartMapTest(Scene):
+    def construct(self):
+        title = TextMobject("This is some \\LaTeX")
+        basel = TexMobject(
+            "\\sum_{n=1}^\\infty "
+            "\\frac{1}{n^2} = \\frac{\\pi^2}{6}"
+        )
+        VGroup(title, basel).arrange_submobjects(DOWN)
+        self.play(
+            Write(title),
+            FadeInFrom(basel, UP),
+        )
+        self.wait()
+        self.play(
+            LaggedStartMap(FadeOutAndShiftUp,title),
+            LaggedStartMap(FadeOutAndShiftDown,basel),
+        )
+        self.wait()
+
+class Curve_3D_test(SpecialThreeDScene):
+    CONFIG = {
+        "default_angled_camera_position": {
+            "phi": 65 * DEGREES, # Angle off z axis
+            "theta": -60 * DEGREES, # Rotation about z axis
+            "distance": 50,
+            "gamma": 0,  # Rotation about normal vector to camera
+            },
+        }
+    def construct(self):
+        self.set_camera_to_default_position()
+        r = 2 # radius
+        w = 4
+        circle = ParametricFunction(lambda t: r * complex_to_R3(np.exp(1j * w * t)),
+                                    t_min=0, t_max=TAU * 1.5, color=RED, stroke_width=8)
+        spiral_line = ParametricFunction(lambda t: r * complex_to_R3(np.exp(1j * w * t)) + OUT * t,
+                                    t_min=0, t_max=TAU * 1.5, color=PINK, stroke_width=8)
+        circle.shift(IN * 2.5), spiral_line.shift(IN * 2.5)
+
+        self.add(axes, circle)
+        self.wait()
+        self.play(TransformFromCopy(circle, spiral_line, rate_func=there_and_back), run_time=4)
+        self.wait(2)
+
+############# Update
+
+
+class AddUpdaterFail(Scene):
+    def construct(self):
+        dot = Dot()
+        text = TextMobject("Label")\
+               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+
+        self.add(dot,text)
+
+        self.play(dot.shift,UP*2)
+        self.wait()
+
+class AddUpdater1(Scene):
+    def construct(self):
+        dot = Dot()
+        text = TextMobject("Label")\
+               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+
+        self.add(dot,text)
+
+        # Update function
+        def update_text(obj):
+            obj.next_to(dot,RIGHT,buff=SMALL_BUFF)
+
+        # Add update function to the objects
+        text.add_updater(update_text)
+
+        # Add the object again
+        self.add(text)
+
+        self.play(dot.shift,UP*2)
+
+        # Remove update function
+        text.remove_updater(update_text)
+
+        self.wait()
+
+class AddUpdater2(Scene):
+    def construct(self):
+        dot = Dot()
+        text = TextMobject("Label")\
+               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+
+        self.add(dot,text)
+
+        # Add update function to the objects
+        text.add_updater(lambda m: m.next_to(dot,RIGHT,buff=SMALL_BUFF))
+
+        # Add the object again
+        self.add(text)
+
+        self.play(dot.shift,UP*2)
+
+        # Remove update function
+        text.clear_updaters()
+
+        self.wait()
+
+class AddUpdater3(Scene):
+    def construct(self):
+        dot = Dot()
+        text = TextMobject("Label")\
+               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+
+        self.add(dot,text)
+
+        def update_text(obj):
+            obj.next_to(dot,RIGHT,buff=SMALL_BUFF)
+
+        # Only works in play
+        self.play(
+                dot.shift,UP*2,
+                UpdateFromFunc(text,update_text)
+            )
+
+        self.wait()
+
+class UpdateNumber(Scene):
+    def construct(self):
+        number_line = NumberLine(x_min=-1,x_max=1)
+        triangle = RegularPolygon(3,start_angle=-PI/2)\
+                   .scale(0.2)\
+                   .next_to(number_line.get_left(),UP,buff=SMALL_BUFF)
+        decimal = DecimalNumber(
+                0,
+                num_decimal_places=3,
+                include_sign=True,
+                unit="\\rm cm", # Change this with None
+            )
+
+        decimal.add_updater(lambda d: d.next_to(triangle, UP*0.1))
+        decimal.add_updater(lambda d: d.set_value(triangle.get_center()[0]))
+        #       You can get the value of decimal with: .get_value()
+
+        self.add(number_line,triangle,decimal)
+
+        self.play(
+                triangle.shift,RIGHT*2,
+                rate_func=there_and_back, # Change this with: linear,smooth
+                run_time=5
+            )
+
+        self.wait()
+
+class UpdateValueTracker1(Scene):
+    def construct(self):
+        theta = ValueTracker(PI/2)
+        line_1= Line(ORIGIN,RIGHT*3,color=RED)
+        line_2= Line(ORIGIN,RIGHT*3,color=GREEN)
+
+        line_2.rotate(theta.get_value(),about_point=ORIGIN)
+
+        line_2.add_updater(
+                lambda m: m.set_angle(
+                                    theta.get_value()
+                                )
+            )
+
+        self.add(line_1,line_2)
+
+        self.play(theta.increment_value,PI/2)
+
+        self.wait()
+
+class UpdateValueTracker2(Scene):
+    CONFIG={
+        "line_1_color":ORANGE,
+        "line_2_color":PINK,
+        "lines_size":3.5,
+        "theta":PI/2,
+        "increment_theta":PI/2,
+        "final_theta":PI,
+        "radius":0.7,
+        "radius_color":YELLOW,
+    }
+    def construct(self):
+        # Set objets
+        theta = ValueTracker(self.theta)
+        line_1= Line(ORIGIN,RIGHT*self.lines_size,color=self.line_1_color)
+        line_2= Line(ORIGIN,RIGHT*self.lines_size,color=self.line_2_color)
+
+        line_2.rotate(theta.get_value(),about_point=ORIGIN)
+        line_2.add_updater(
+                lambda m: m.set_angle(
+                                    theta.get_value()
+                                )
+            )
+
+        angle= Arc(
+                    radius=self.radius,
+                    start_angle=line_1.get_angle(),
+                    angle =line_2.get_angle(),
+                    color=self.radius_color
+            )
+
+        # Show the objects
+
+        self.play(*[
+                ShowCreation(obj)for obj in [line_1,line_2,angle]
+            ])
+
+        # Set update function to angle
+
+        angle.add_updater(
+                    lambda m: m.become(
+                            Arc(
+                                radius=self.radius,
+                                start_angle=line_1.get_angle(),
+                                angle =line_2.get_angle(),
+                                color=self.radius_color
+                            )
+                        )
+            )
+        # Remember to add the objects again to the screen 
+        # when you add the add_updater method.
+        self.add(angle)
+
+        # self.play(theta.increment_value,self.increment_theta)
+        self.play(theta.set_value,self.final_theta)
+
+        self.wait()
+        
+# dt = 1 / fps
+
+class UpdateFunctionWithDt1(Scene):
+    CONFIG={
+        "amp": 2.3,
+        "t_offset": 0,
+        "rate": TAU/4,
+        "sine_graph_config":{
+            "x_min": -TAU/2,
+            "x_max": TAU/2,
+            "color": RED,
+            },
+        "wait_time":15,
+    }
+ 
+    def construct(self):
+
+        def update_curve(c, dt):
+            rate = self.rate * dt
+            c.become(self.get_sin_graph(self.t_offset + rate))
+            # Every frame, the t_offset increase rate / fps
+            self.t_offset += rate
+
+       
+        c = self.get_sin_graph(0)
+
+        self.play(ShowCreation(c))
+        print(f"fps: {self.camera.frame_rate}")
+        print(f"dt: {1 / self.camera.frame_rate}")
+        print(f"rate: {self.rate / self.camera.frame_rate}")
+        print(f"cy_start: {c.points[0][1]}")
+        print(f"cy_end:   {c.points[-1][1]}")
+        print(f"t_offset: {self.t_offset}\n")
+
+        c.add_updater(update_curve)
+        self.add(c)
+
+        # The animation begins
+        self.wait(1)
+        
+        c.remove_updater(update_curve)
+        self.wait()
+
+        print(f"cy_start:  {c.points[0][1]}")
+        print(f"cy_end:    {c.points[-1][1]}")
+        print(f"t_offset: {self.t_offset}\n")
+
+    def get_sin_graph(self, dx):
+        c = FunctionGraph(
+                lambda x: self.amp * np.sin(x - dx),
+                **self.sine_graph_config
+                )
+        return c
+
+class UpdateFunctionWithDt2(Scene):
+    def construct(self):
+        #Se objects
+        self.t_offset=0
+        orbit=Ellipse(color=GREEN).scale(2.5)
+        planet=Dot()
+        text=TextMobject("Update function")
+
+        planet.move_to(orbit.point_from_proportion(0))
+
+        def update_planet(mob,dt):
+            rate=dt*0.3
+            mob.move_to(orbit.point_from_proportion((self.t_offset + rate)%1))
+            self.t_offset += rate
+
+        planet.add_updater(update_planet)
+        self.add(orbit,planet)
+        self.wait(4)
+        self.play(Write(text))
+        self.wait(4)
+        planet.clear_updaters()
+        self.wait(2)
+        self.play(FadeOut(text))
+        self.wait()
+
+class UpdateCurve(Scene):
+    def construct(self):
+        def f(dx=1):
+            return FunctionGraph(lambda x: 2*np.exp(-2 * (x - dx) ** 2))
+
+        c = f()
+        axes=Axes(y_min=-3, y_max=3)
+ 
+        def update_curve(c, alpha):
+            dx = interpolate(1, 4, alpha)
+            c_c = f(dx)
+            c.become(c_c)
+ 
+        self.play(ShowCreation(axes), ShowCreation(c))
+        self.wait()
+        # self.play(UpdateFromAlphaFunc(c,update_curve),rate_func=there_and_back,run_time=4)
+        self.play(c.shift,RIGHT*3,rate_func=there_and_back,run_time=4)
+        self.wait()
+        
+class InterpolateColorScene(Scene):
+    def construct(self):
+        shape = Square(fill_opacity=1).scale(2)
+        shape.set_color(RED)
+
+        def update_color(mob,alpha):
+            dcolor = interpolate(0,mob.alpha_color,alpha)
+            mob.set_color(self.interpolate_color_mob(mob.initial_state,shape.new_color,dcolor))
+
+        self.add(shape)
+        self.change_init_values(shape,TEAL,0.5)
+        self.play(UpdateFromAlphaFunc(shape,update_color))
+
+        self.change_init_values(shape,PINK,0.9)
+        self.play(UpdateFromAlphaFunc(shape,update_color))
+        self.wait()
+
+    def interpolate_color_mob(self,mob,color,alpha):
+        return interpolate_color(mob.get_color(),color,alpha)
+
+    def change_init_values(self,mob,color,alpha):
+        mob.initial_state = mob.copy()
+        mob.new_color = color
+        mob.alpha_color = alpha
+
+class SuccessionExample1Fail(Scene):
+    def construct(self):
+        number_line=NumberLine(x_min=-2,x_max=2)
+        text=TextMobject("Text")\
+             .next_to(number_line,DOWN)
+        dashed_line=DashedLine(
+                                number_line.get_left(),
+                                number_line.get_right(),
+                                color=YELLOW,
+                              ).set_stroke(width=11)
+
+        self.add(number_line)
+        self.wait(0.3)
+        self.play(
+                ShowCreationThenDestruction(
+                                dashed_line,
+                                submobject_mode="lagged_start"
+                                            ),
+                run_time=5
+            )
+        self.play(Write(text))
+
+        self.wait()
+
+class SuccessionExample1(Scene):
+    def construct(self):
+        number_line=NumberLine(x_min=-2,x_max=2)
+        text=TextMobject("Text")\
+             .next_to(number_line,DOWN)
+        dashed_line=DashedLine(
+                                number_line.get_left(),
+                                number_line.get_right(),
+                                color=YELLOW,
+                              ).set_stroke(width=11)
+
+        self.add(number_line)
+        self.wait(0.3)
+        
+        self.play(
+                    ShowCreationThenDestruction(dashed_line,submobject_mode="lagged_start",run_time=5),
+                    Succession(FadeOut, Mobject(), {"run_time" : 2.1},
+                    Write,text)
+            )
+
+        self.wait()
+
+class SuccessionExample2(Scene):
+    def construct(self):
+        number_line=NumberLine(x_min=-2,x_max=2)
+        triangle=RegularPolygon(3,start_angle=-PI/2)\
+                   .scale(0.2)\
+                   .next_to(number_line.get_left(),UP,buff=SMALL_BUFF)
+        text_1=TextMobject("1")\
+               .next_to(number_line.get_tick(-1),DOWN)
+        text_2=TextMobject("2")\
+               .next_to(number_line.get_tick(0),DOWN)
+        text_3=TextMobject("3")\
+               .next_to(number_line.get_tick(1),DOWN)
+        text_4=TextMobject("4")\
+               .next_to(number_line.get_tick(2),DOWN)
+
+        self.add(number_line)
+        self.play(ShowCreation(triangle))
+        self.wait(0.3)
+        
+        self.play(
+                    ApplyMethod(triangle.shift,RIGHT*4,rate_func=linear,run_time=4),
+                    Succession(Animation, Mobject(), {"run_time" : 1},
+                    Write,text_1),
+                    Succession(Animation, Mobject(), {"run_time" : 2},
+                    Write,text_2),
+                    Succession(Animation, Mobject(), {"run_time" : 3},
+                    Write,text_3),
+                    Succession(Animation, Mobject(), {"run_time" : 4},
+                    Write,text_4)
+            )
+
+        self.wait()
+
+class SuccessionExample2Compact(Scene):
+    def construct(self):
+        number_line=NumberLine(x_min=-2,x_max=2)
+        triangle=RegularPolygon(3,start_angle=-PI/2)\
+                   .scale(0.2)\
+                   .next_to(number_line.get_left(),UP,buff=SMALL_BUFF)
+        numbers=VGroup(
+             *[TextMobject("%s"%i)\
+              .next_to(number_line.get_tick(i-2),DOWN) for i in range(1,5)]
+            )
+
+        self.add(number_line)
+        self.play(ShowCreation(triangle))
+        self.wait(0.3)
+        
+        self.play(
+                    ApplyMethod(triangle.shift,RIGHT*4,rate_func=linear,run_time=4),
+                    *[Succession(Animation, Mobject(), {"run_time" : i+1},
+                    Write,numbers[i])for i in range(4)],
+            )
+
+        self.wait()
+
+class SuccessionExample4Fail(Scene):
+    def construct(self):
+        number_line=NumberLine(x_min=-2,x_max=2)
+        text_1=TextMobject("Theorem of")\
+             .next_to(number_line,DOWN)
+        text_2=TextMobject("Beethoven")\
+             .next_to(number_line,DOWN)
+        dashed_line=DashedLine(
+                                number_line.get_left(),
+                                number_line.get_right(),
+                                color=YELLOW,
+                              ).set_stroke(width=11)
+
+        self.add(number_line)
+        
+        self.play(
+                    ShowCreationThenDestruction(dashed_line,submobject_mode="lagged_start",run_time=5),
+                    Succession(Animation,text_1, {"run_time" : 2},
+                    ReplacementTransform,text_1,text_2),
+            )
+
+        self.wait()
+
+class BecomeTest(Scene):
+    def construct(self):
+        c=Circle()
+        l=Line(LEFT,RIGHT)
+
+        self.play(ShowCreation(c))
+        self.wait()
+        c.become(l)
+        self.wait()
+
+class FollowTest(Scene):
+    def construct(self):
+        p=Dot()
+        c=Circle()
+
+        self.play(
+            ShowCreation(c),
+            UpdateFromAlphaFunc(p,lambda p: p.move_to(c.get_end()),alpha=0.1)
         )
         self.wait()
