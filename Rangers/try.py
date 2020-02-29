@@ -1,3 +1,7 @@
+from sklearn.preprocessing import PolynomialFeatures
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 from manimlib.imports import *
 import os
 
@@ -6,19 +10,22 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 ##################### Tutorial ###################
 
+
 class Shapes(Scene):
-    #A few simple shapes
+    # A few simple shapes
     def construct(self):
         circle = Circle()
         square = Square()
-        line=Line(np.array([3,0,0]),np.array([5,0,0]))
-        triangle=Polygon(np.array([0,0,0]),np.array([1,1,0]),np.array([1,-1,0]))
+        line = Line(np.array([3, 0, 0]), np.array([5, 0, 0]))
+        triangle = Polygon(np.array([0, 0, 0]), np.array(
+            [1, 1, 0]), np.array([1, -1, 0]))
 
         self.add(line)
         self.play(ShowCreation(circle))
         self.play(FadeOut(circle))
         self.play(GrowFromCenter(square))
-        self.play(Transform(square,triangle))
+        self.play(Transform(square, triangle))
+
 
 class MoreShapes(Scene):
     def construct(self):
@@ -27,75 +34,81 @@ class MoreShapes(Scene):
         square.move_to(UP+LEFT)
         circle.surround(square)
         rectangle = Rectangle(height=2, width=3)
-        ellipse=Ellipse(width=3, height=1, color=RED)
+        ellipse = Ellipse(width=3, height=1, color=RED)
         ellipse.shift(2*DOWN+2*RIGHT)
-        pointer = CurvedArrow(2*RIGHT,5*RIGHT,color=MAROON_C)
-        arrow = Arrow(LEFT,UP)
-        arrow.next_to(circle,DOWN+LEFT)
-        rectangle.next_to(arrow,DOWN+LEFT)
-        ring=Annulus(inner_radius=.5, outer_radius=1, color=BLUE)
+        pointer = CurvedArrow(2*RIGHT, 5*RIGHT, color=MAROON_C)
+        arrow = Arrow(LEFT, UP)
+        arrow.next_to(circle, DOWN+LEFT)
+        rectangle.next_to(arrow, DOWN+LEFT)
+        ring = Annulus(inner_radius=.5, outer_radius=1, color=BLUE)
         ring.next_to(ellipse, RIGHT)
         # ring.move_to(UP)
 
         self.add(pointer)
         self.play(FadeIn(square))
-        self.play(Rotating(square),FadeIn(circle))
+        self.play(Rotating(square), FadeIn(circle))
         self.play(GrowArrow(arrow))
-        self.play(GrowFromCenter(rectangle), GrowFromCenter(ellipse), GrowFromCenter(ring))
+        self.play(GrowFromCenter(rectangle), GrowFromCenter(
+            ellipse), GrowFromCenter(ring))
+
 
 class AddingText(Scene):
-    #Adding text on the screen
+    # Adding text on the screen
     def construct(self):
-        my_first_text=TextMobject("Writing with manim is fun")
-        second_line=TextMobject("and easy to do!")
-        second_line.next_to(my_first_text,DOWN)
-        third_line=TextMobject("for me and you!")
-        third_line.next_to(my_first_text,DOWN)
+        my_first_text = TextMobject("Writing with manim is fun")
+        second_line = TextMobject("and easy to do!")
+        second_line.next_to(my_first_text, DOWN)
+        third_line = TextMobject("for me and you!")
+        third_line.next_to(my_first_text, DOWN)
 
         self.add(my_first_text, second_line)
         self.wait(2)
-        self.play(Transform(second_line,third_line))
+        self.play(Transform(second_line, third_line))
         self.wait(2)
         second_line.shift(3*DOWN)
-        self.play(ApplyMethod(my_first_text.shift,3*UP))
-        self.play(ApplyMethod(my_first_text.move_to,DOWN*4))
+        self.play(ApplyMethod(my_first_text.shift, 3*UP))
+        self.play(ApplyMethod(my_first_text.move_to, DOWN*4))
+
 
 class AddingMoreText(Scene):
-    #Playing around with text properties
+    # Playing around with text properties
     def construct(self):
         quote = TextMobject("Imagination is more important than knowledge")
         quote.set_color(RED)
         quote.to_edge(UP)
-        quote2 = TextMobject("A person who never made a mistake never tried anything new")
+        quote2 = TextMobject(
+            "A person who never made a mistake never tried anything new")
         quote2.set_color(YELLOW)
-        author=TextMobject("-Albert Einstein")
+        author = TextMobject("-Albert Einstein")
         author.scale(0.75)
-        author.next_to(quote.get_corner(DOWN+RIGHT),DOWN)
+        author.next_to(quote.get_corner(DOWN+RIGHT), DOWN)
 
         self.add(quote)
         self.add(author)
         self.wait(2)
-        self.play(Transform(quote,quote2),
-          ApplyMethod(author.move_to,quote2.get_corner(DOWN+RIGHT)+DOWN+2*LEFT))
-        
-        self.play(ApplyMethod(author.scale,1.5))
+        self.play(Transform(quote, quote2),
+                  ApplyMethod(author.move_to, quote2.get_corner(DOWN+RIGHT)+DOWN+2*LEFT))
+
+        self.play(ApplyMethod(author.scale, 1.5))
         author.match_color(quote2)
         self.play(FadeOut(quote))
 
+
 class RotateAndHighlight(Scene):
-    #Rotation of text and highlighting with surrounding geometries
+    # Rotation of text and highlighting with surrounding geometries
     def construct(self):
-        square=Square(side_length=5,fill_color=YELLOW, fill_opacity=1)
-        label=TextMobject("Text at an angle")
-        label.bg=BackgroundRectangle(label,fill_opacity=1)
-        label_group=VGroup(label.bg,label)  #Order matters
+        square = Square(side_length=5, fill_color=YELLOW, fill_opacity=1)
+        label = TextMobject("Text at an angle")
+        label.bg = BackgroundRectangle(label, fill_opacity=1)
+        label_group = VGroup(label.bg, label)  # Order matters
         label_group.rotate(TAU/8)
         label.bg.rotate(-TAU/8)
-        label2=TextMobject("Boxed text",color=BLACK)
-        label2.bg=SurroundingRectangle(label2,color=BLUE,fill_color=RED, fill_opacity=.5)
-        label2_group=VGroup(label2,label2.bg)
-        label2_group.next_to(label_group,DOWN)
-        label3=TextMobject("Rainbow")
+        label2 = TextMobject("Boxed text", color=BLACK)
+        label2.bg = SurroundingRectangle(
+            label2, color=BLUE, fill_color=RED, fill_opacity=.5)
+        label2_group = VGroup(label2, label2.bg)
+        label2_group.next_to(label_group, DOWN)
+        label3 = TextMobject("Rainbow")
         label3.scale(2)
         label3.set_color_by_gradient(RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE)
         label3.to_edge(DOWN)
@@ -107,40 +120,45 @@ class RotateAndHighlight(Scene):
         self.play(FadeIn(label3))
         # self.play(FadeIn(label4))
 
+
 class BasicEquations(Scene):
-    #A short script showing how to use Latex commands
+    # A short script showing how to use Latex commands
     def construct(self):
-        eq1=TextMobject("$\\vec{X}_0 \\cdot \\vec{Y}_1 = 3$")
-        eq1_1=TextMobject(r"$\vec{X}_0 \cdot \vec{Y}_1 = 3$")
+        eq1 = TextMobject("$\\vec{X}_0 \\cdot \\vec{Y}_1 = 3$")
+        eq1_1 = TextMobject(r"$\vec{X}_0 \cdot \vec{Y}_1 = 3$")
         eq1.shift(2*UP)
-        eq2=TexMobject(r"\vec{F}_{net} = \sum_i \vec{F}_i")
+        eq2 = TexMobject(r"\vec{F}_{net} = \sum_i \vec{F}_i")
         eq2.shift(2*DOWN)
 
         self.play(Write(eq1))
         self.play(Write(eq2))
         self.play(Write(eq1_1))
 
+
 class ColoringEquations(Scene):
-    #Grouping and coloring parts of equations
+    # Grouping and coloring parts of equations
     def construct(self):
-        line1=TexMobject(r"\text{The vector } \vec{F}_{net} \text{ is the net }",r"\text{force }",r"\text{on object of mass }")
+        line1 = TexMobject(r"\text{The vector } \vec{F}_{net} \text{ is the net }",
+                           r"\text{force }", r"\text{on object of mass }")
         line1.set_color_by_tex("force", BLUE)
         line1.set_color_by_tex("F", RED)
-        line2=TexMobject("m", "\\text{ and acceleration }", "\\vec{a}", ".  ")
+        line2 = TexMobject(
+            "m", "\\text{ and acceleration }", "\\vec{a}", ".  ")
         line2.set_color_by_tex_to_color_map({
             "m": YELLOW,
             "{a}": RED
         })
-        line3=TexMobject("\color{red}WANG")
+        line3 = TexMobject("\color{red}WANG")
         line3.move_to(UP*3)
 
-        sentence=VGroup(line1,line2)
+        sentence = VGroup(line1, line2)
         sentence.arrange_submobjects(DOWN, buff=MED_LARGE_BUFF)
         self.play(Write(sentence))
         self.play(Write(line3))
 
+
 class UsingBraces(Scene):
-    #Using braces to group text together
+    # Using braces to group text together
     def construct(self):
         eq1A = TextMobject("4x + 3y")
         eq1B = TextMobject("=")
@@ -148,97 +166,105 @@ class UsingBraces(Scene):
         eq2A = TextMobject("5x -2y")
         eq2B = TextMobject("=")
         eq2C = TextMobject("3")
-        eq1B.next_to(eq1A,RIGHT)
-        eq1C.next_to(eq1B,RIGHT)
+        eq1B.next_to(eq1A, RIGHT)
+        eq1C.next_to(eq1B, RIGHT)
         eq2A.shift(DOWN)
         eq2B.shift(DOWN)
         eq2C.shift(DOWN)
-        eq2A.align_to(eq1A,LEFT)
-        eq2B.align_to(eq1B,LEFT)
-        eq2C.align_to(eq1C,LEFT)
+        eq2A.align_to(eq1A, LEFT)
+        eq2B.align_to(eq1B, LEFT)
+        eq2C.align_to(eq1C, LEFT)
 
-        eq_group=VGroup(eq1A,eq2A)
-        braces=Brace(eq_group,LEFT)
+        eq_group = VGroup(eq1A, eq2A)
+        braces = Brace(eq_group, LEFT)
         eq_text = braces.get_text("A pair of equations")
 
         self.add(eq1A, eq1B, eq1C)
         self.add(eq2A, eq2B, eq2C)
-        self.play(GrowFromCenter(braces),Write(eq_text))
+        self.play(GrowFromCenter(braces), Write(eq_text))
+
 
 class UsingBracesConcise(Scene):
-    #A more concise block of code with all columns aligned
+    # A more concise block of code with all columns aligned
     def construct(self):
-        eq1_text=["4","x","+","3","y","=","0"]
-        eq2_text=["5","x","-","2","y","=","3"]
-        eq1_mob=TexMobject(*eq1_text)
-        eq2_mob=TexMobject(*eq2_text)
+        eq1_text = ["4", "x", "+", "3", "y", "=", "0"]
+        eq2_text = ["5", "x", "-", "2", "y", "=", "3"]
+        eq1_mob = TexMobject(*eq1_text)
+        eq2_mob = TexMobject(*eq2_text)
         eq1_mob.set_color_by_tex_to_color_map({
-            "x":RED_B,
-            "y":GREEN_C
-            })
+            "x": RED_B,
+            "y": GREEN_C
+        })
         eq2_mob.set_color_by_tex_to_color_map({
-            "x":RED_B,
-            "y":GREEN_C
-            })
-        for i,item in enumerate(eq2_mob):
-            item.align_to(eq1_mob[i],LEFT)
-        eq1=VGroup(*eq1_mob)
-        eq2=VGroup(*eq2_mob)
+            "x": RED_B,
+            "y": GREEN_C
+        })
+        for i, item in enumerate(eq2_mob):
+            item.align_to(eq1_mob[i], LEFT)
+        eq1 = VGroup(*eq1_mob)
+        eq2 = VGroup(*eq2_mob)
         eq2.shift(DOWN)
-        eq_group=VGroup(eq1,eq2)
-        braces=Brace(eq_group,LEFT)
+        eq_group = VGroup(eq1, eq2)
+        braces = Brace(eq_group, LEFT)
         eq_text = braces.get_text("A pair of equations")
 
-        self.play(Write(eq1),Write(eq2))
-        self.play(GrowFromCenter(braces),Write(eq_text))
+        self.play(Write(eq1), Write(eq2))
+        self.play(GrowFromCenter(braces), Write(eq_text))
+
 
 class PlotFunctions(GraphScene):
     CONFIG = {
-        "x_min" : -10,
-        "x_max" : 10.3,
-        "y_min" : -1.5,
-        "y_max" : 1.5,
-        "graph_origin" : ORIGIN ,
-        "function_color" : RED ,
-        "axes_color" : GREEN,
-        "x_labeled_nums" :range(-10,12,2),
-    }   
+        "x_min": -10,
+        "x_max": 10.3,
+        "y_min": -1.5,
+        "y_max": 1.5,
+        "graph_origin": ORIGIN,
+        "function_color": RED,
+        "axes_color": GREEN,
+        "x_labeled_nums": range(-10, 12, 2),
+    }
+
     def construct(self):
         self.setup_axes(animate=True)
-        func_graph=self.get_graph(self.func_to_graph,self.function_color)
-        func_graph2=self.get_graph(self.func_to_graph2)
-        vert_line = self.get_vertical_line_to_graph(TAU,func_graph,color=YELLOW)
-        graph_lab = self.get_graph_label(func_graph, label = "\\cos(x)")
-        graph_lab2=self.get_graph_label(func_graph2,label = "\\sin(x)", x_val=-10, direction=UP/2)
+        func_graph = self.get_graph(self.func_to_graph, self.function_color)
+        func_graph2 = self.get_graph(self.func_to_graph2)
+        vert_line = self.get_vertical_line_to_graph(
+            TAU, func_graph, color=YELLOW)
+        graph_lab = self.get_graph_label(func_graph, label="\\cos(x)")
+        graph_lab2 = self.get_graph_label(
+            func_graph2, label="\\sin(x)", x_val=-10, direction=UP/2)
         two_pi = TexMobject("x = 2 \\pi")
-        label_coord = self.input_to_graph_point(TAU,func_graph)
-        two_pi.next_to(label_coord,RIGHT+UP)
+        label_coord = self.input_to_graph_point(TAU, func_graph)
+        two_pi.next_to(label_coord, RIGHT+UP)
 
-        self.play(ShowCreation(func_graph),ShowCreation(func_graph2))
-        self.play(ShowCreation(vert_line), ShowCreation(graph_lab), ShowCreation(graph_lab2),ShowCreation(two_pi))
+        self.play(ShowCreation(func_graph), ShowCreation(func_graph2))
+        self.play(ShowCreation(vert_line), ShowCreation(graph_lab),
+                  ShowCreation(graph_lab2), ShowCreation(two_pi))
 
-    def func_to_graph(self,x):
+    def func_to_graph(self, x):
         return np.cos(x)
 
-    def func_to_graph2(self,x):
+    def func_to_graph2(self, x):
         return np.sin(x)
+
 
 class ExampleApproximation(GraphScene):
     CONFIG = {
-        "function" : lambda x : np.cos(x), 
-        "function_color" : BLUE,
-        "taylor" : [lambda x: 1, lambda x: 1-x**2/2, lambda x: 1-x**2/math.factorial(2)+x**4/math.factorial(4), lambda x: 1-x**2/2+x**4/math.factorial(4)-x**6/math.factorial(6),
-        lambda x: 1-x**2/math.factorial(2)+x**4/math.factorial(4)-x**6/math.factorial(6)+x**8/math.factorial(8), lambda x: 1-x**2/math.factorial(2)+x**4/math.factorial(4)-x**6/math.factorial(6)+x**8/math.factorial(8) - x**10/math.factorial(10)],
-        "center_point" : 0,
-        "approximation_color" : GREEN,
-        "x_min" : -10,
-        "x_max" : 10,
-        "y_min" : -1,
-        "y_max" : 1,
-        "graph_origin" : ORIGIN ,
-        "x_labeled_nums" :range(-10,12,2),
+        "function": lambda x: np.cos(x),
+        "function_color": BLUE,
+        "taylor": [lambda x: 1, lambda x: 1-x**2/2, lambda x: 1-x**2/math.factorial(2)+x**4/math.factorial(4), lambda x: 1-x**2/2+x**4/math.factorial(4)-x**6/math.factorial(6),
+                   lambda x: 1-x**2/math.factorial(2)+x**4/math.factorial(4)-x**6/math.factorial(6)+x**8/math.factorial(8), lambda x: 1-x**2/math.factorial(2)+x**4/math.factorial(4)-x**6/math.factorial(6)+x**8/math.factorial(8) - x**10/math.factorial(10)],
+        "center_point": 0,
+        "approximation_color": GREEN,
+        "x_min": -10,
+        "x_max": 10,
+        "y_min": -1,
+        "y_max": 1,
+        "graph_origin": ORIGIN,
+        "x_labeled_nums": range(-10, 12, 2),
 
     }
+
     def construct(self):
         self.setup_axes(animate=True)
         func_graph = self.get_graph(
@@ -254,13 +280,12 @@ class ExampleApproximation(GraphScene):
         ]
 
         term_num = [
-            TexMobject("n = " + str(n),aligned_edge=DOWN)
-            for n in range(0,8)]
+            TexMobject("n = " + str(n), aligned_edge=DOWN)
+            for n in range(0, 8)]
         #[t.to_edge(BOTTOM,buff=SMALL_BUFF) for t in term_num]
 
-
         #term = TexMobject("")
-        #term.to_edge(BOTTOM,buff=SMALL_BUFF)
+        # term.to_edge(BOTTOM,buff=SMALL_BUFF)
         term = VectorizedPoint(DOWN)
 
         approx_graph = VectorizedPoint(
@@ -270,18 +295,19 @@ class ExampleApproximation(GraphScene):
         self.play(
             ShowCreation(func_graph),
         )
-        for n,graph in enumerate(approx_graphs):
+        for n, graph in enumerate(approx_graphs):
             self.play(
-                Transform(approx_graph, graph, run_time = 2),
-                Transform(term,term_num[n])
+                Transform(approx_graph, graph, run_time=2),
+                Transform(term, term_num[n])
             )
             self.wait()
 
+
 class DrawAnAxis(Scene):
-    CONFIG = { "plane_kwargs" : { 
-        "x_line_frequency" : 2,
-        "y_line_frequency" :2
-        }
+    CONFIG = {"plane_kwargs": {
+        "x_line_frequency": 2,
+        "y_line_frequency": 2
+    }
     }
 
     def construct(self):
@@ -293,94 +319,99 @@ class DrawAnAxis(Scene):
         self.play(FadeIn(circle))
         self.play(FadeOut(circle))
 
+
 class SimpleField(Scene):
     CONFIG = {
-    "plane_kwargs" : {
-        "color" : RED
+        "plane_kwargs": {
+            "color": RED
         },
     }
+
     def construct(self):
         plane = NumberPlane(**self.plane_kwargs)  # **把dictionary解包
-        plane.add(plane.get_axis_labels()) 
-        self.add(plane)  
+        plane.add(plane.get_axis_labels())
+        self.add(plane)
 
         points = [x*RIGHT+y*UP
-            for x in np.arange(-5,5,1)
-            for y in np.arange(-5,5,1)
-            ]     
+                  for x in np.arange(-5, 5, 1)
+                  for y in np.arange(-5, 5, 1)
+                  ]
 
-        vec_field = []  
+        vec_field = []
         for point in points:
-            field = 0.5*RIGHT + 0.5*UP   
-            result = Vector(field).shift(point)  
-            vec_field.append(result)   
+            field = 0.5*RIGHT + 0.5*UP
+            result = Vector(field).shift(point)
+            vec_field.append(result)
 
-        draw_field = VGroup(*vec_field)  
+        draw_field = VGroup(*vec_field)
 
+        self.play(ShowCreation(draw_field))
 
-        self.play(ShowCreation(draw_field)) 
 
 class FieldWithAxes(Scene):
     CONFIG = {
-    "plane_kwargs" : {
-        "color" : RED_B
+        "plane_kwargs": {
+            "color": RED_B
         },
-    "point_charge_loc" : 0.5*RIGHT-1.5*UP,
+        "point_charge_loc": 0.5*RIGHT-1.5*UP,
     }
+
     def construct(self):
         plane = NumberPlane(**self.plane_kwargs)
         plane.add(plane.get_axis_labels())
         self.add(plane)
 
         field = VGroup(*[self.calc_field(x*RIGHT+y*UP)
-            for x in np.arange(-9,9,1)
-            for y in np.arange(-5,5,1)
-            ])
+                         for x in np.arange(-9, 9, 1)
+                         for y in np.arange(-5, 5, 1)
+                         ])
 
         self.play(ShowCreation(field))
 
-
-    def calc_field(self,point):
-        #This calculates the field at a single point.
-        x,y = point[:2]
-        Rx,Ry = self.point_charge_loc[:2]
+    def calc_field(self, point):
+        # This calculates the field at a single point.
+        x, y = point[:2]
+        Rx, Ry = self.point_charge_loc[:2]
         r = math.sqrt((x-Rx)**2 + (y-Ry)**2)
         #efield = (point - self.point_charge_loc)/r**3
-        #efield = np.array((-y,x,0))/math.sqrt(x**2+y**2)  #Try one of these two fields
-        efield = np.array(( -2*(y%2)+1 , -2*(x%2)+1 , 0 ))/3  #Try one of these two fields
-        return Vector(efield,color=YELLOW).shift(point)
+        # efield = np.array((-y,x,0))/math.sqrt(x**2+y**2)  #Try one of these two fields
+        efield = np.array((-2*(y % 2)+1, -2*(x % 2)+1, 0)) / \
+            3  # Try one of these two fields
+        return Vector(efield, color=YELLOW).shift(point)
+
 
 class MovingCharges(Scene):
     CONFIG = {
-    "plane_kwargs" : {
-        "color" : RED_B
+        "plane_kwargs": {
+            "color": RED_B
         },
-    "point_charge_loc" : 0.5*RIGHT-1.5*UP,
+        "point_charge_loc": 0.5*RIGHT-1.5*UP,
     }
+
     def construct(self):
         plane = NumberPlane(**self.plane_kwargs)
         plane.add(plane.get_axis_labels())
         self.add(plane)
 
         field = VGroup(*[self.calc_field(x*RIGHT+y*UP)
-            for x in np.arange(-9,9,1)
-            for y in np.arange(-5,5,1)
-            ])
-        self.field=field
+                         for x in np.arange(-9, 9, 1)
+                         for y in np.arange(-5, 5, 1)
+                         ])
+        self.field = field
         source_charge = self.Positron().move_to(self.point_charge_loc)
         self.play(FadeIn(source_charge))
         self.play(ShowCreation(field))
         self.moving_charge()
 
-    def calc_field(self,point):
-        x,y = point[:2]
-        Rx,Ry = self.point_charge_loc[:2]
+    def calc_field(self, point):
+        x, y = point[:2]
+        Rx, Ry = self.point_charge_loc[:2]
         r = math.sqrt((x-Rx)**2 + (y-Ry)**2)
         efield = (point - self.point_charge_loc)/r**3
         return Vector(efield).shift(point)
 
     def moving_charge(self):
-        numb_charges=4
+        numb_charges = 4
         possible_points = [v.get_start() for v in self.field]
         points = random.sample(possible_points, numb_charges)
         particles = VGroup(*[
@@ -388,17 +419,17 @@ class MovingCharges(Scene):
             for point in points
         ])
         for particle in particles:
-            particle.velocity = np.array((0,0,0))
+            particle.velocity = np.array((0, 0, 0))
 
         self.play(FadeIn(particles))
         self.moving_particles = particles
-        self.add_foreground_mobjects(self.moving_particles )
+        self.add_foreground_mobjects(self.moving_particles)
         self.always_continually_update = True
         self.wait(10)
 
-    def field_at_point(self,point):
-        x,y = point[:2]
-        Rx,Ry = self.point_charge_loc[:2]
+    def field_at_point(self, point):
+        x, y = point[:2]
+        Rx, Ry = self.point_charge_loc[:2]
         r = math.sqrt((x-Rx)**2 + (y-Ry)**2)
         efield = (point - self.point_charge_loc)/r**3
         return efield
@@ -411,15 +442,15 @@ class MovingCharges(Scene):
                 p.velocity = p.velocity + accel*dt
                 p.shift(p.velocity*dt)
 
-
     class Positron(Circle):
         CONFIG = {
-        "radius" : 0.2,
-        "stroke_width" : 3,
-        "color" : RED,
-        "fill_color" : RED,
-        "fill_opacity" : 0.5,
+            "radius": 0.2,
+            "stroke_width": 3,
+            "color": RED,
+            "fill_color": RED,
+            "fill_opacity": 0.5,
         }
+
         def __init__(self, **kwargs):
             Circle.__init__(self, **kwargs)
             plus = TexMobject("+")
@@ -427,47 +458,47 @@ class MovingCharges(Scene):
             plus.move_to(self)
             self.add(plus)
 
+
 class FieldOfMovingCharge(Scene):
     CONFIG = {
-    "plane_kwargs" : {
-        "color" : RED_B
+        "plane_kwargs": {
+            "color": RED_B
         },
-    "point_charge_start_loc" : 5.5*LEFT-1.5*UP,
+        "point_charge_start_loc": 5.5*LEFT-1.5*UP,
     }
+
     def construct(self):
         plane = NumberPlane(**self.plane_kwargs)
-        #plane.main_lines.fade(.9)
+        # plane.main_lines.fade(.9)
         plane.add(plane.get_axis_labels())
         self.add(plane)
 
-        field = VGroup(*[self.create_vect_field(self.point_charge_start_loc,x*RIGHT+y*UP)
-            for x in np.arange(-9,9,1)
-            for y in np.arange(-5,5,1)
-            ])
-        self.field=field
+        field = VGroup(*[self.create_vect_field(self.point_charge_start_loc, x*RIGHT+y*UP)
+                         for x in np.arange(-9, 9, 1)
+                         for y in np.arange(-5, 5, 1)
+                         ])
+        self.field = field
         self.source_charge = self.Positron().move_to(self.point_charge_start_loc)
-        self.source_charge.velocity = np.array((1,0,0))
+        self.source_charge.velocity = np.array((1, 0, 0))
         self.play(FadeIn(self.source_charge))
         self.play(ShowCreation(field))
         self.moving_charge()
 
-    def create_vect_field(self,source_charge,observation_point):
-        return Vector(self.calc_field(source_charge,observation_point)).shift(observation_point)
+    def create_vect_field(self, source_charge, observation_point):
+        return Vector(self.calc_field(source_charge, observation_point)).shift(observation_point)
 
-    def calc_field(self,source_point,observation_point):
-        x,y,z = observation_point
-        Rx,Ry,Rz = source_point
+    def calc_field(self, source_point, observation_point):
+        x, y, z = observation_point
+        Rx, Ry, Rz = source_point
         r = math.sqrt((x-Rx)**2 + (y-Ry)**2 + (z-Rz)**2)
-        if r<0.0000001:   #Prevent divide by zero  ##Note:  This won't work - fix this
-            efield = np.array((0,0,0))  
+        if r < 0.0000001:  # Prevent divide by zero  ##Note:  This won't work - fix this
+            efield = np.array((0, 0, 0))
         else:
             efield = (observation_point - source_point)/r**3
         return efield
 
-
-
     def moving_charge(self):
-        numb_charges=3
+        numb_charges = 3
         possible_points = [v.get_start() for v in self.field]
         points = random.sample(possible_points, numb_charges)
         particles = VGroup(self.source_charge, *[
@@ -475,13 +506,12 @@ class FieldOfMovingCharge(Scene):
             for point in points
         ])
         for particle in particles[1:]:
-            particle.velocity = np.array((0,0,0))
+            particle.velocity = np.array((0, 0, 0))
         self.play(FadeIn(particles[1:]))
         self.moving_particles = particles
-        self.add_foreground_mobjects(self.moving_particles )
+        self.add_foreground_mobjects(self.moving_particles)
         self.always_continually_update = True
         self.wait(10)
-
 
     def continual_update(self, *args, **kwargs):
         Scene.continual_update(self, *args, **kwargs)
@@ -489,9 +519,10 @@ class FieldOfMovingCharge(Scene):
             dt = self.frame_duration
 
             for v in self.field:
-                field_vect=np.zeros(3)
+                field_vect = np.zeros(3)
                 for p in self.moving_particles:
-                    field_vect = field_vect + self.calc_field(p.get_center(), v.get_start())
+                    field_vect = field_vect + \
+                        self.calc_field(p.get_center(), v.get_start())
                 v.put_start_and_end_on(v.get_start(), field_vect+v.get_start())
 
             for p in self.moving_particles:
@@ -499,15 +530,15 @@ class FieldOfMovingCharge(Scene):
                 p.velocity = p.velocity + accel*dt
                 p.shift(p.velocity*dt)
 
-
     class Positron(Circle):
         CONFIG = {
-        "radius" : 0.2,
-        "stroke_width" : 3,
-        "color" : RED,
-        "fill_color" : RED,
-        "fill_opacity" : 0.5,
+            "radius": 0.2,
+            "stroke_width": 3,
+            "color": RED,
+            "fill_color": RED,
+            "fill_opacity": 0.5,
         }
+
         def __init__(self, **kwargs):
             Circle.__init__(self, **kwargs)
             plus = TexMobject("+")
@@ -518,32 +549,33 @@ class FieldOfMovingCharge(Scene):
 
 class ExampleThreeD(ThreeDScene):
     CONFIG = {
-    "plane_kwargs" : {
-        "color" : RED_B
+        "plane_kwargs": {
+            "color": RED_B
         },
-    "point_charge_loc" : 0.5*RIGHT-1.5*UP,
+        "point_charge_loc": 0.5*RIGHT-1.5*UP,
     }
+
     def construct(self):
         plane = NumberPlane(**self.plane_kwargs)
         plane.add(plane.get_axis_labels())
         self.add(plane)
 
         field2D = VGroup(*[self.calc_field2D(x*RIGHT+y*UP)
-            for x in np.arange(-9,9,1)
-            for y in np.arange(-5,5,1)
-            ])
+                           for x in np.arange(-9, 9, 1)
+                           for y in np.arange(-5, 5, 1)
+                           ])
 
-        self.set_camera_orientation(phi=PI/3,gamma=PI/5)
+        self.set_camera_orientation(phi=PI/3, gamma=PI/5)
         self.play(ShowCreation(field2D))
         self.wait()
-        #self.move_camera(gamma=0,run_time=1)  #currently broken in manim
+        # self.move_camera(gamma=0,run_time=1)  #currently broken in manim
         self.move_camera(phi=3/4*PI, theta=-PI/2)
         self.begin_ambient_camera_rotation(rate=0.1)
         self.wait(6)
 
-    def calc_field2D(self,point):
-        x,y = point[:2]
-        Rx,Ry = self.point_charge_loc[:2]
+    def calc_field2D(self, point):
+        x, y = point[:2]
+        Rx, Ry = self.point_charge_loc[:2]
         r = math.sqrt((x-Rx)**2 + (y-Ry)**2)
         efield = (point - self.point_charge_loc)/r**3
         return Vector(efield).shift(point)
@@ -552,16 +584,19 @@ class ExampleThreeD(ThreeDScene):
 
 #################### 3D-Scenes ####################
 
+
 class CameraPosition4(ThreeDScene):
     def construct(self):
         axes = ThreeDAxes()
-        circle=Circle()
-        self.set_camera_orientation(phi=80 * DEGREES,theta=20*DEGREES,gamma=30*DEGREES,distance=6)
-        self.play(ShowCreation(circle),ShowCreation(axes))
+        circle = Circle()
+        self.set_camera_orientation(
+            phi=80 * DEGREES, theta=20*DEGREES, gamma=30*DEGREES, distance=6)
+        self.play(ShowCreation(circle), ShowCreation(axes))
         self.wait()
+
 
 class MoveCamera1(ThreeDScene):
-    
+
     def get_axis(self, min_val, max_val, axis_config):
         new_config = merge_config([
             axis_config,
@@ -571,15 +606,17 @@ class MoveCamera1(ThreeDScene):
         return NumberLine(**new_config)
 
     def construct(self):
-        
+
         axes = ThreeDAxes()
-        circle=Circle()
-        self.play(ShowCreation(circle),ShowCreation(axes))
-        self.move_camera(phi=0*DEGREES,theta=0*DEGREES,gamma=0*DEGREES,run_time=3)
+        circle = Circle()
+        self.play(ShowCreation(circle), ShowCreation(axes))
+        self.move_camera(phi=0*DEGREES, theta=0*DEGREES,
+                         gamma=0*DEGREES, run_time=3)
         self.wait()
+
 
 class MoveCamera2(ThreeDScene):
-    
+
     def get_axis(self, min_val, max_val, axis_config):
         new_config = merge_config([
             axis_config,
@@ -589,15 +626,17 @@ class MoveCamera2(ThreeDScene):
         return NumberLine(**new_config)
 
     def construct(self):
-        
+
         axes = ThreeDAxes()
-        circle=Circle()
-        self.play(ShowCreation(circle),ShowCreation(axes))
-        self.move_camera(phi=0*DEGREES,theta=0*DEGREES,gamma=90*DEGREES,run_time=1)
+        circle = Circle()
+        self.play(ShowCreation(circle), ShowCreation(axes))
+        self.move_camera(phi=0*DEGREES, theta=0*DEGREES,
+                         gamma=90*DEGREES, run_time=1)
         self.wait()
+
 
 class MoveCamera3(ThreeDScene):
-    
+
     def get_axis(self, min_val, max_val, axis_config):
         new_config = merge_config([
             axis_config,
@@ -607,70 +646,76 @@ class MoveCamera3(ThreeDScene):
         return NumberLine(**new_config)
 
     def construct(self):
-        
+
         axes = ThreeDAxes()
-        circle=Circle()
-        self.play(ShowCreation(circle),ShowCreation(axes))
-        self.move_camera(phi=80*DEGREES,theta=20*DEGREES,gamma=20*DEGREES,run_time=1)
+        circle = Circle()
+        self.play(ShowCreation(circle), ShowCreation(axes))
+        self.move_camera(phi=80*DEGREES, theta=20*DEGREES,
+                         gamma=20*DEGREES, run_time=1)
         self.wait()
+
 
 class MoveCamera4(ThreeDScene):
     def construct(self):
         axes = ThreeDAxes()
-        circle=Circle()
-        self.set_camera_orientation(phi=80 * DEGREES)           
-        self.play(ShowCreation(circle),ShowCreation(axes))
-        self.begin_ambient_camera_rotation(rate=0.1)            #Start move camera
+        circle = Circle()
+        self.set_camera_orientation(phi=80 * DEGREES)
+        self.play(ShowCreation(circle), ShowCreation(axes))
+        self.begin_ambient_camera_rotation(rate=0.1)  # Start move camera
         self.wait(5)
-        self.stop_ambient_camera_rotation()                     #Stop move camera
-        self.move_camera(phi=80*DEGREES,theta=-PI/2)            #Return the position of the camera
+        self.stop_ambient_camera_rotation()  # Stop move camera
+        # Return the position of the camera
+        self.move_camera(phi=80*DEGREES, theta=-PI/2)
         self.wait()
+
 
 class ParametricCurve1(ThreeDScene):
     def construct(self):
-        curve1=ParametricFunction(
-                lambda u : np.array([
+        curve1 = ParametricFunction(
+            lambda u: np.array([
                 1.2*np.cos(u),
                 1.2*np.sin(u),
                 u/2
-            ]),color=RED,t_min=-TAU,t_max=TAU,
-            )
-        curve2=ParametricFunction(
-                lambda u : np.array([
+            ]), color=RED, t_min=-TAU, t_max=TAU,
+        )
+        curve2 = ParametricFunction(
+            lambda u: np.array([
                 1.2*np.cos(u),
                 1.2*np.sin(u),
                 u
-            ]),color=RED,t_min=-TAU,t_max=TAU,
-            )
+            ]), color=RED, t_min=-TAU, t_max=TAU,
+        )
         axes = ThreeDAxes()
 
         self.add(axes)
 
-        self.set_camera_orientation(phi=80 * DEGREES,theta=-60*DEGREES)
-        self.begin_ambient_camera_rotation(rate=0.1) 
+        self.set_camera_orientation(phi=80 * DEGREES, theta=-60*DEGREES)
+        self.begin_ambient_camera_rotation(rate=0.1)
         self.play(ShowCreation(curve1))
         self.wait()
-        self.play(Transform(curve1,curve2),rate_func=there_and_back,run_time=3)
+        self.play(Transform(curve1, curve2),
+                  rate_func=there_and_back, run_time=3)
         self.wait()
 
 # Add this in the object: .set_shade_in_3d(True)
 
+
 class ParametricCurve2(ThreeDScene):
     def construct(self):
-        curve1=ParametricFunction(
-                lambda u : np.array([
+        curve1 = ParametricFunction(
+            lambda u: np.array([
                 1.2*np.cos(u),
                 1.2*np.sin(u),
                 u/2
-            ]),color=RED,t_min=-TAU,t_max=TAU,
-            )
-        curve2=ParametricFunction(
-                lambda u : np.array([
+            ]), color=RED, t_min=-TAU, t_max=TAU,
+        )
+        curve2 = ParametricFunction(
+            lambda u: np.array([
                 1.2*np.cos(u),
                 1.2*np.sin(u),
                 u
-            ]),color=RED,t_min=-TAU,t_max=TAU,
-            )
+            ]), color=RED, t_min=-TAU, t_max=TAU,
+        )
 
         curve1.set_shade_in_3d(True)
         curve2.set_shade_in_3d(True)
@@ -679,14 +724,17 @@ class ParametricCurve2(ThreeDScene):
 
         self.add(axes)
 
-        self.set_camera_orientation(phi=80 * DEGREES,theta=-60*DEGREES)
-        self.begin_ambient_camera_rotation(rate=0.1) 
+        self.set_camera_orientation(phi=80 * DEGREES, theta=-60*DEGREES)
+        self.begin_ambient_camera_rotation(rate=0.1)
         self.play(ShowCreation(curve1))
         self.wait()
-        self.play(Transform(curve1,curve2),rate_func=there_and_back,run_time=3)
+        self.play(Transform(curve1, curve2),
+                  rate_func=there_and_back, run_time=3)
         self.wait()
 
     #----- Surfaces
+
+
 class SurfacesAnimation(ThreeDScene):  # 圆面
     def get_axis(self, min_val, max_val, axis_config):
         new_config = merge_config([
@@ -695,26 +743,26 @@ class SurfacesAnimation(ThreeDScene):  # 圆面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         sphere = ParametricSurface(
             lambda u, v: np.array([
                 1.5*np.cos(u)*np.cos(v),
                 1.5*np.cos(u)*np.sin(v),
                 1.5*np.sin(u)
-            ]),v_min=0,v_max=TAU,u_min=-PI/2,u_max=PI/2,checkerboard_colors=[RED_D, RED_E],
+            ]), v_min=0, v_max=TAU, u_min=-PI/2, u_max=PI/2, checkerboard_colors=[RED_D, RED_E],
             resolution=(15, 32)).scale(2)
-
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(sphere))
         self.wait(5)
-        
+
+
 class SurfacesAnimation2(ThreeDScene):  # 圆柱面
     def get_axis(self, min_val, max_val, axis_config):
         new_config = merge_config([
@@ -723,25 +771,25 @@ class SurfacesAnimation2(ThreeDScene):  # 圆柱面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         cylinder = ParametricSurface(
-			lambda u, v: np.array([
+            lambda u, v: np.array([
                 np.cos(TAU * v),
                 np.sin(TAU * v),
                 2 * (1 - u)
             ]),
-            resolution=(6, 32)).fade(0.5) #Resolution of the surfaces
-
+            resolution=(6, 32)).fade(0.5)  # Resolution of the surfaces
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(cylinder))
         self.wait(5)
+
 
 class SurfacesAnimation3(ThreeDScene):  # 抛物面
     def get_axis(self, min_val, max_val, axis_config):
@@ -751,25 +799,26 @@ class SurfacesAnimation3(ThreeDScene):  # 抛物面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         paraboloid = ParametricSurface(
             lambda u, v: np.array([
                 np.cos(v)*u,
                 np.sin(v)*u,
                 u**2
-            ]),v_max=TAU,
+            ]), v_max=TAU,
             checkerboard_colors=[PURPLE_D, PURPLE_E],
             resolution=(10, 32)).scale(2)
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(paraboloid))
         self.wait(5)
+
 
 class SurfacesAnimation4(ThreeDScene):  # 马鞍面
     def get_axis(self, min_val, max_val, axis_config):
@@ -779,24 +828,25 @@ class SurfacesAnimation4(ThreeDScene):  # 马鞍面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         para_hyp = ParametricSurface(
             lambda u, v: np.array([
                 u,
                 v,
                 u**2-v**2
-            ]),v_min=-2,v_max=2,u_min=-2,u_max=2,checkerboard_colors=[BLUE_D, BLUE_E],
+            ]), v_min=-2, v_max=2, u_min=-2, u_max=2, checkerboard_colors=[BLUE_D, BLUE_E],
             resolution=(15, 32)).scale(1)
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(para_hyp))
         self.wait(5)
+
 
 class SurfacesAnimation5(ThreeDScene):  # 圆锥面
     def get_axis(self, min_val, max_val, axis_config):
@@ -806,24 +856,25 @@ class SurfacesAnimation5(ThreeDScene):  # 圆锥面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         cone = ParametricSurface(
             lambda u, v: np.array([
                 u*np.cos(v),
                 u*np.sin(v),
                 u
-            ]),v_min=0,v_max=TAU,u_min=-2,u_max=2,checkerboard_colors=[GREEN_D, GREEN_E],
+            ]), v_min=0, v_max=TAU, u_min=-2, u_max=2, checkerboard_colors=[GREEN_D, GREEN_E],
             resolution=(15, 32)).scale(1)
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(cone))
         self.wait(5)
+
 
 class SurfacesAnimation6(ThreeDScene):   # 双曲面
     def get_axis(self, min_val, max_val, axis_config):
@@ -833,24 +884,25 @@ class SurfacesAnimation6(ThreeDScene):   # 双曲面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         hip_one_side = ParametricSurface(
             lambda u, v: np.array([
                 np.cosh(u)*np.cos(v),
                 np.cosh(u)*np.sin(v),
                 np.sinh(u)
-            ]),v_min=0,v_max=TAU,u_min=-2,u_max=2,checkerboard_colors=[YELLOW_D, YELLOW_E],
+            ]), v_min=0, v_max=TAU, u_min=-2, u_max=2, checkerboard_colors=[YELLOW_D, YELLOW_E],
             resolution=(15, 32))
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(hip_one_side))
         self.wait(5)
+
 
 class SurfacesAnimation7(ThreeDScene):  # 椭圆面
     def get_axis(self, min_val, max_val, axis_config):
@@ -860,24 +912,25 @@ class SurfacesAnimation7(ThreeDScene):  # 椭圆面
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
+
         ellipsoid = ParametricSurface(
             lambda u, v: np.array([
                 1*np.cos(u)*np.cos(v),
                 2*np.cos(u)*np.sin(v),
                 0.5*np.sin(u)
-            ]),v_min=0,v_max=TAU,u_min=-PI/2,u_max=PI/2,checkerboard_colors=[TEAL_D, TEAL_E],
+            ]), v_min=0, v_max=TAU, u_min=-PI/2, u_max=PI/2, checkerboard_colors=[TEAL_D, TEAL_E],
             resolution=(15, 32)).scale(2)
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(ellipsoid))
         self.wait(5)
+
 
 class SurfacesAnimation8(ThreeDScene):
     def get_axis(self, min_val, max_val, axis_config):
@@ -887,34 +940,34 @@ class SurfacesAnimation8(ThreeDScene):
             self.number_line_config,
         ])
         return NumberLine(**new_config)
+
     def construct(self):
         axes = ThreeDAxes()
-        
-        ellipsoid=ParametricSurface(
+
+        ellipsoid = ParametricSurface(
             lambda u, v: np.array([
                 1*np.cos(u)*np.cos(v),
                 2*np.cos(u)*np.sin(v),
                 0.5*np.sin(u)
-            ]),v_min=0,v_max=TAU,u_min=-PI/2,u_max=PI/2,checkerboard_colors=[TEAL_D, TEAL_E],
+            ]), v_min=0, v_max=TAU, u_min=-PI/2, u_max=PI/2, checkerboard_colors=[TEAL_D, TEAL_E],
             resolution=(15, 32)).scale(2)
         sphere = ParametricSurface(
             lambda u, v: np.array([
                 1.5*np.cos(u)*np.cos(v),
                 1.5*np.cos(u)*np.sin(v),
                 1.5*np.sin(u)
-            ]),v_min=0,v_max=TAU,u_min=-PI/2,u_max=PI/2,checkerboard_colors=[RED_D, RED_E],
+            ]), v_min=0, v_max=TAU, u_min=-PI/2, u_max=PI/2, checkerboard_colors=[RED_D, RED_E],
             resolution=(15, 32)).scale(2)
 
         self.set_camera_orientation(phi=75 * DEGREES)
         self.begin_ambient_camera_rotation(rate=0.2)
 
-
         self.add(axes)
         self.play(Write(sphere))
         self.wait()
-        self.play(ReplacementTransform(sphere,ellipsoid))
+        self.play(ReplacementTransform(sphere, ellipsoid))
         self.wait(1)
-        
+
 
 ###################################################
 
@@ -922,16 +975,16 @@ class SurfacesAnimation8(ThreeDScene):
 
 class ForEachExample(Scene):
     def construct(self):
-        text_list=[]
-        text_group=VGroup()
-        for i in range(1,13):
-            t=str(i)
-            text=TextMobject(t)
+        text_list = []
+        text_group = VGroup()
+        for i in range(1, 13):
+            t = str(i)
+            text = TextMobject(t)
             text.move_to(UP*2.5)
-            text.rotate(-PI/6*i,about_point=ORIGIN)
-            self.play(Write(text),run_time=0.2)
+            text.rotate(-PI/6*i, about_point=ORIGIN)
+            self.play(Write(text), run_time=0.2)
             text_list.append(text)
-            text_group=VGroup(text_group,text_list[i-1])
+            text_group = VGroup(text_group, text_list[i-1])
         self.wait()
 
 
@@ -951,6 +1004,7 @@ class DotMap(Scene):
             self.wait(0.2)
             self.remove(anno)
 
+
 class CoorPolygon(Scene):
     def construct(self):
         for x in range(-7, 8):
@@ -963,6 +1017,7 @@ class CoorPolygon(Scene):
             np.array([-4, 4, 0]))
         self.add(polygon)
         self.play(Uncreate(polygon))
+
 
 class CoorAlias(Scene):
     def construct(self):
@@ -998,6 +1053,7 @@ class CoorAlias(Scene):
             self.wait(0.2)
             self.play(FadeOut(anno, run_time=0.2))
 
+
 class CoorArithmetic(Scene):
     def construct(self):
         for x in range(-7, 8):
@@ -1025,44 +1081,49 @@ class CoorArithmetic(Scene):
             self.wait(0.2)
             self.play(FadeOut(anno, run_time=0.2))
 
+
 class R(Scene):
     def construct(self):
-        text=TextMobject("start")
+        text = TextMobject("start")
         text.to_corner(RIGHT + UP)
         squares = VGroup()
         for i in range(9):
             squares.add(Square())
         squares.arrange_in_grid(n_rows=3, n_cols=3)
         self.add(squares)
-        anims=[]
+        anims = []
         for i in range(18):
-            anims.append(FadeToColor(squares[i%9],RED,rate_func=there_and_back))
+            anims.append(FadeToColor(
+                squares[i % 9], RED, rate_func=there_and_back))
         self.play(Write(text))
         self.play(AnimationGroup(
             *anims,
             lag_ratio=0.1,
             group=Group(*[anim.mobject for anim in anims])))
-        self.play(Transform(text,TextMobject("end").to_corner(RIGHT + UP)))
+        self.play(Transform(text, TextMobject("end").to_corner(RIGHT + UP)))
         self.wait()
+
 
 class AnimationFadeOut(Scene):
     def construct(self):
         square = Square()
 
-        anno = TextMobject("Fade Out") # 淡出效果
+        anno = TextMobject("Fade Out")  # 淡出效果
         anno.shift(2 * DOWN)
         self.add(anno)
         self.add(square)
         self.play(FadeOut(square))
 
+
 class AnimationFadeIn(Scene):
     def construct(self):
         square = Square()
-        
-        anno = TextMobject("Fade In") # 淡入效果
+
+        anno = TextMobject("Fade In")  # 淡入效果
         anno.shift(2 * DOWN)
         self.add(anno)
         self.play(FadeIn(square))
+
 
 class AnimationFadeInFrom(Scene):
     def construct(self):
@@ -1076,8 +1137,10 @@ class AnimationFadeInFrom(Scene):
 
             self.play(FadeInFrom(square, edge))
             self.remove(anno, square)
-                  
+
 # 从上下左右四个方向淡出
+
+
 class AnimationFadeOutAndShift(Scene):
     def construct(self):
         square = Square()
@@ -1092,6 +1155,8 @@ class AnimationFadeOutAndShift(Scene):
             self.remove(anno, square)
 
 # 从点淡入
+
+
 class AnimationFadeInFromPoint(Scene):
     def construct(self):
         square = Square()
@@ -1103,6 +1168,8 @@ class AnimationFadeInFromPoint(Scene):
             self.remove(anno, square)
 
 # 从以一定的比例放大或缩小淡入
+
+
 class AnimationFadeInFromLarge(Scene):
     def construct(self):
         square = Square()
@@ -1114,6 +1181,7 @@ class AnimationFadeInFromLarge(Scene):
 
             self.play(FadeInFromLarge(square, scale_factor=factor))
             self.remove(anno, square)
+
 
 class AnimationGrowFromEdge(Scene):
     def construct(self):
@@ -1128,6 +1196,7 @@ class AnimationGrowFromEdge(Scene):
             self.play(GrowFromEdge(square, edge))
             self.remove(anno, square)
 
+
 class AnimationGrowFromCenter(Scene):
     def construct(self):
         square = Square()
@@ -1138,12 +1207,14 @@ class AnimationGrowFromCenter(Scene):
 
         self.play(GrowFromCenter(square))
 
+
 class AnimationFadeInFromDiagonal(Scene):
     def construct(self):
         square = Square()
         for diag in [UP + LEFT, UP + RIGHT, DOWN + LEFT, DOWN + RIGHT]:
             self.play(FadeInFrom(square, diag))
-                           
+
+
 class AnimationGrowFromPoint(Scene):
     def construct(self):
         square = Square()
@@ -1152,7 +1223,8 @@ class AnimationGrowFromPoint(Scene):
             anno.shift(2 * DOWN)
             self.add(anno)
             self.play(GrowFromPoint(square, point=i))
-            self.remove(anno, square)   
+            self.remove(anno, square)
+
 
 class AnimationIndicate(Scene):
     def construct(self):
@@ -1161,12 +1233,14 @@ class AnimationIndicate(Scene):
         self.add(anno)
         self.play(Indicate(anno))
 
+
 class AnimationFocusOn(Scene):
     def construct(self):
         anno = TextMobject("Focus On")
 
         self.add(anno)
-        self.play(FocusOn(anno,opacity=0.7))
+        self.play(FocusOn(anno, opacity=0.7))
+
 
 class AnimationFlash(Scene):
     def construct(self):
@@ -1175,12 +1249,14 @@ class AnimationFlash(Scene):
         self.add(anno)
         self.play(Flash(anno))
 
+
 class AnimationCircleIndicate(Scene):
     def construct(self):
         anno = TextMobject("CircleIndicate")
 
         self.add(anno)
         self.play(CircleIndicate(anno))
+
 
 class AnimationShowPassingFlash(Scene):
     def construct(self):
@@ -1189,12 +1265,14 @@ class AnimationShowPassingFlash(Scene):
         self.add(anno)
         self.play(ShowPassingFlash(anno))
 
+
 class AnimationShowCreationThenDestruction(Scene):
     def construct(self):
         anno = TextMobject("ShowCreationThenDestruction")
 
         self.add(anno)
         self.play(ShowCreationThenDestruction(anno))
+
 
 class AnimationShowCreationThenFadeOut(Scene):
     def construct(self):
@@ -1203,12 +1281,14 @@ class AnimationShowCreationThenFadeOut(Scene):
         self.add(anno)
         self.play(ShowCreationThenFadeOut(anno))
 
+
 class AnimationAnimationOnSurroundingRectangle(Scene):
     def construct(self):
         anno = TextMobject("AnimationOnSurroundingRectangle")
 
         self.add(anno)
         self.play(AnimationOnSurroundingRectangle(anno))
+
 
 class AnimationShowPassingFlashAround(Scene):
     def construct(self):
@@ -1217,6 +1297,7 @@ class AnimationShowPassingFlashAround(Scene):
         self.add(anno)
         self.play(ShowPassingFlashAround(anno))
 
+
 class AnimationShowCreationThenDestructionAround(Scene):
     def construct(self):
         anno = TextMobject("ShowCreationThenDestructionAround")
@@ -1224,6 +1305,7 @@ class AnimationShowCreationThenDestructionAround(Scene):
         self.add(anno)
         self.play(ShowCreationThenDestructionAround(anno))
         self.wait(2)
+
 
 class AnimationShowCreationThenFadeAround(Scene):
     def construct(self):
@@ -1242,6 +1324,7 @@ class AnimationApplyWave(Scene):
         self.play(ApplyWave(anno))
         self.wait(2)
 
+
 class AnimationWiggleOutThenIn(Scene):
     def construct(self):
         anno = TextMobject("WiggleOutThenIn")
@@ -1249,6 +1332,7 @@ class AnimationWiggleOutThenIn(Scene):
         self.add(anno)
         self.play(WiggleOutThenIn(anno))
         self.wait(2)
+
 
 class AnimationTurnInsideOut(Scene):
     def construct(self):
@@ -1258,6 +1342,7 @@ class AnimationTurnInsideOut(Scene):
         self.play(TurnInsideOut(anno))
         self.wait(2)
 
+
 class HomotopyExample(Scene):
     def construct(self):
         def plane_wave_homotopy(x, y, z, t):
@@ -1266,10 +1351,10 @@ class HomotopyExample(Scene):
             alpha = sigmoid(tau)
             return [x, y + 0.5*np.sin(2*np.pi*alpha)-t*SMALL_BUFF/2, z]
 
-        mobjects=VGroup(
+        mobjects = VGroup(
             TextMobject("Text").scale(3),
             Square(),
-        ).arrange_submobjects(RIGHT,buff=2)
+        ).arrange_submobjects(RIGHT, buff=2)
 
         self.add(mobjects)
         self.play(
@@ -1280,41 +1365,44 @@ class HomotopyExample(Scene):
         )
         self.wait(0.3)
 
+
 class PhaseFlowExample(Scene):
     def construct(self):
         def func(t):
             return t*0.5*RIGHT
 
-        mobjects=VGroup(
+        mobjects = VGroup(
             TextMobject("Text").scale(3),
             Square(),
-        ).arrange_submobjects(RIGHT,buff=2)
+        ).arrange_submobjects(RIGHT, buff=2)
 
         self.play(
             *[PhaseFlow(
                 func, mob,
-                run_time = 2,
+                run_time=2,
             )for mob in mobjects]
         )
 
         self.wait()
 
+
 class MoveAlongPathExample(Scene):
     def construct(self):
-        line=Line(ORIGIN,RIGHT*FRAME_WIDTH,buff=1)
+        line = Line(ORIGIN, RIGHT*FRAME_WIDTH, buff=1)
         line.move_to(ORIGIN)
-        dot=Dot()
+        dot = Dot()
         dot.move_to(line.get_start())
 
-        self.add(line,dot)
+        self.add(line, dot)
         self.play(
-            MoveAlongPath(dot,line)
+            MoveAlongPath(dot, line)
         )
         self.wait(0.3)
 
+
 class RotatingExample(Scene):
     def construct(self):
-        square=Square().scale(2)
+        square = Square().scale(2)
         self.add(square)
 
         self.play(
@@ -1335,9 +1423,10 @@ class RotatingExample(Scene):
         )
         self.wait(0.3)
 
+
 class RotateExample(Scene):
     def construct(self):
-        square=Square().scale(2)
+        square = Square().scale(2)
         self.add(square)
 
         self.play(
@@ -1358,15 +1447,16 @@ class RotateExample(Scene):
         )
         self.wait(0.3)
 
+
 class DrawBorderThenFillExample(Scene):
     def construct(self):
         vmobjects = VGroup(
-                Circle(),
-                Circle(fill_opacity=1),
-                TextMobject("Text").scale(2)
-            )
+            Circle(),
+            Circle(fill_opacity=1),
+            TextMobject("Text").scale(2)
+        )
         vmobjects.scale(1.5)
-        vmobjects.arrange_submobjects(RIGHT,buff=2)
+        vmobjects.arrange_submobjects(RIGHT, buff=2)
 
         self.play(
             *[DrawBorderThenFill(mob) for mob in vmobjects]
@@ -1374,15 +1464,16 @@ class DrawBorderThenFillExample(Scene):
 
         self.wait()
 
+
 class SpinInFromNothingExample(Scene):
     def construct(self):
         mobjects = VGroup(
-                Square(),
-                RegularPolygon(fill_opacity=1),
-                TextMobject("Text").scale(2)
-            )
+            Square(),
+            RegularPolygon(fill_opacity=1),
+            TextMobject("Text").scale(2)
+        )
         mobjects.scale(1.5)
-        mobjects.arrange_submobjects(RIGHT,buff=2)
+        mobjects.arrange_submobjects(RIGHT, buff=2)
 
         self.play(
             *[SpinInFromNothing(mob) for mob in mobjects]
@@ -1390,15 +1481,16 @@ class SpinInFromNothingExample(Scene):
 
         self.wait()
 
+
 class ShrinkToCenterExample(Scene):
     def construct(self):
         mobjects = VGroup(
-                Square(),
-                RegularPolygon(fill_opacity=1),
-                TextMobject("Text").scale(2)
-            )
+            Square(),
+            RegularPolygon(fill_opacity=1),
+            TextMobject("Text").scale(2)
+        )
         mobjects.scale(1.5)
-        mobjects.arrange_submobjects(RIGHT,buff=2)
+        mobjects.arrange_submobjects(RIGHT, buff=2)
 
         self.play(
             *[ShrinkToCenter(mob) for mob in mobjects]
@@ -1406,13 +1498,14 @@ class ShrinkToCenterExample(Scene):
 
         self.wait()
 
+
 class TransformExample(Scene):
     def construct(self):
         mobject = RegularPolygon(3).scale(2)
 
         self.add(mobject)
 
-        for n in range(4,9):
+        for n in range(4, 9):
             self.play(
                 Transform(
                     mobject,
@@ -1422,9 +1515,10 @@ class TransformExample(Scene):
 
         self.wait(0.3)
 
+
 class ReplacementTransformExample(Scene):
     def construct(self):
-        polygons = [*[RegularPolygon(n).scale(2) for n in range(3,9)]]
+        polygons = [*[RegularPolygon(n).scale(2) for n in range(3, 9)]]
 
         self.add(polygons[0])
 
@@ -1445,7 +1539,7 @@ class TransformFromCopyExample(Scene):
 
         self.add(mobject)
 
-        for n in range(4,9):
+        for n in range(4, 9):
             self.play(
                 TransformFromCopy(
                     mobject,
@@ -1455,11 +1549,12 @@ class TransformFromCopyExample(Scene):
 
         self.wait(0.3)
 
+
 class ClockwiseTransformExample(Scene):
     def construct(self):
         polygons = VGroup(
-              *[RegularPolygon(n).scale(0.7) for n in range(3,9)]
-        ).arrange_submobjects(RIGHT,buff=1)
+            *[RegularPolygon(n).scale(0.7) for n in range(3, 9)]
+        ).arrange_submobjects(RIGHT, buff=1)
 
         self.add(polygons[0])
 
@@ -1477,8 +1572,8 @@ class ClockwiseTransformExample(Scene):
 class CounterclockwiseTransformExample(Scene):
     def construct(self):
         polygons = VGroup(
-            *[RegularPolygon(n).scale(0.7) for n in range(3,9)]
-        ).arrange_submobjects(RIGHT,buff=1)
+            *[RegularPolygon(n).scale(0.7) for n in range(3, 9)]
+        ).arrange_submobjects(RIGHT, buff=1)
 
         self.add(polygons[0])
 
@@ -1492,17 +1587,18 @@ class CounterclockwiseTransformExample(Scene):
 
         self.wait(0.3)
 
+
 class MoveToTargetExample(Scene):
     def construct(self):
-        mobject=Square()
+        mobject = Square()
         mobject.generate_target()
-        VGroup(mobject,mobject.target)\
-            .arrange_submobjects(RIGHT,buff=3)
+        VGroup(mobject, mobject.target)\
+            .arrange_submobjects(RIGHT, buff=3)
 
         mobject.target.rotate(PI/4)\
                       .scale(2)\
-                      .set_stroke(PURPLE,9)\
-                      .set_fill(ORANGE,1)
+                      .set_stroke(PURPLE, 9)\
+                      .set_fill(ORANGE, 1)
 
         self.add(mobject)
         self.wait(0.3)
@@ -1510,20 +1606,23 @@ class MoveToTargetExample(Scene):
         self.play(MoveToTarget(mobject))
         self.wait(0.3)
 
+
 class ApplyMethodExample(Scene):
     def construct(self):
         dot = Dot()
         text = TextMobject("Text")
 
-        dot.next_to(text,LEFT)
+        dot.next_to(text, LEFT)
 
-        self.add(text,dot)
+        self.add(text, dot)
 
-        self.play(ApplyMethod(text.scale,3,{"about_point":dot.get_center()}))
+        self.play(ApplyMethod(text.scale, 3, {
+                  "about_point": dot.get_center()}))
         #                                  --------------------------------
         #                                          Optional parameters
 
         self.wait(0.3)
+
 
 class ApplyPointwiseFunctionExample(Scene):
     def construct(self):
@@ -1541,6 +1640,7 @@ class ApplyPointwiseFunctionExample(Scene):
             ApplyPointwiseFunction(spread_out, text)
         )
 
+
 class ApplyPointwiseFunctionToCenterExample(Scene):
     def construct(self):
         text = TextMobject("Text")
@@ -1557,61 +1657,65 @@ class ApplyPointwiseFunctionToCenterExample(Scene):
             ApplyPointwiseFunctionToCenter(spread_out, text)
         )
 
+
 class FadeToColorExample(Scene):
     def construct(self):
         text = TextMobject("Text")\
-               .set_width(FRAME_WIDTH)
+            .set_width(FRAME_WIDTH)
 
-        colors=[RED,PURPLE,GOLD,TEAL]
+        colors = [RED, PURPLE, GOLD, TEAL]
 
         self.add(text)
 
         for color in colors:
-            self.play(FadeToColor(text,color))
+            self.play(FadeToColor(text, color))
 
         self.wait(0.3)
+
 
 class ScaleInPlaceExample(Scene):
     def construct(self):
         text = TextMobject("Text")\
-               .set_width(FRAME_WIDTH/2)
+            .set_width(FRAME_WIDTH/2)
 
-        scale_factors=[2,0.3,0.6,2]
+        scale_factors = [2, 0.3, 0.6, 2]
 
         self.add(text)
 
         for scale_factor in scale_factors:
-            self.play(ScaleInPlace(text,scale_factor))
+            self.play(ScaleInPlace(text, scale_factor))
 
         self.wait(0.3)
+
 
 class RestoreExample(Scene):
     def construct(self):
         text = TextMobject("Original")\
-               .set_width(FRAME_WIDTH/2)
+            .set_width(FRAME_WIDTH/2)
 
         text.save_state()
 
         text_2 = TextMobject("Modified")\
-               .set_width(FRAME_WIDTH/1.5)\
-               .set_color(ORANGE)\
-               .to_corner(DL)
+            .set_width(FRAME_WIDTH/1.5)\
+            .set_color(ORANGE)\
+            .to_corner(DL)
 
         self.add(text)
 
-        self.play(Transform(text,text_2))
+        self.play(Transform(text, text_2))
         self.play(
-            text.shift,RIGHT,
-            text.rotate,PI/4
-            )
+            text.shift, RIGHT,
+            text.rotate, PI/4
+        )
         self.play(Restore(text))
 
         self.wait(0.7)
 
+
 class ApplyFunctionExample(Scene):
     def construct(self):
         text = TextMobject("Text")\
-               .to_corner(DL)
+            .to_corner(DL)
 
         self.add(text)
 
@@ -1631,66 +1735,62 @@ class ApplyFunctionExample(Scene):
 
         self.wait(0.3)
 
+
 class HelloWorld(Scene):
     def construct(self):
         helloWorld = TextMobject("Hello world!")
         self.play(Write(helloWorld))
         self.wait()
 
+
 class RiemannRectanglesAnimation(GraphScene):
     CONFIG = {
         "y_max": 8,
         "y_axis_height": 5,
-        "init_dx":0.5,
+        "init_dx": 0.5,
     }
+
     def construct(self):
         self.setup_axes()
+
         def func(x):
             return 0.1 * (x + 3-5) * (x - 3-5) * (x-5) + 5
 
-        graph=self.get_graph(func,x_min=0.3,x_max=9.2)
+        graph = self.get_graph(func, x_min=0.3, x_max=9.2)
         kwargs = {
-            "x_min" : 2,
-            "x_max" : 8,
-            "fill_opacity" : 0.75,
-            "stroke_width" : 0.25,
+            "x_min": 2,
+            "x_max": 8,
+            "fill_opacity": 0.75,
+            "stroke_width": 0.25,
         }
         flat_rectangles = self.get_riemann_rectangles(
-                                self.get_graph(lambda x : 0),
-                                dx=self.init_dx,
-                                start_color=invert_color(PURPLE),
-                                end_color=invert_color(ORANGE),
-                                **kwargs
+            self.get_graph(lambda x: 0),
+            dx=self.init_dx,
+            start_color=invert_color(PURPLE),
+            end_color=invert_color(ORANGE),
+            **kwargs
         )
         riemann_rectangles_list = self.get_riemann_rectangles_list(
-                                graph,
-                                6,
-                                max_dx=self.init_dx,
-                                power_base=2,
-                                start_color=PURPLE,
-                                end_color=ORANGE,
-                                 **kwargs
+            graph,
+            6,
+            max_dx=self.init_dx,
+            power_base=2,
+            start_color=PURPLE,
+            end_color=ORANGE,
+            **kwargs
         )
         self.add(graph)
         # Show Riemann rectangles
-        self.play(ReplacementTransform(flat_rectangles,riemann_rectangles_list[0]))
+        self.play(ReplacementTransform(
+            flat_rectangles, riemann_rectangles_list[0]))
         self.wait()
-        for r in range(1,len(riemann_rectangles_list)):
+        for r in range(1, len(riemann_rectangles_list)):
             self.transform_between_riemann_rects(
-                    riemann_rectangles_list[r-1],
-                    riemann_rectangles_list[r],
-                    replace_mobject_with_target_in_scene = True,
-                )
+                riemann_rectangles_list[r-1],
+                riemann_rectangles_list[r],
+                replace_mobject_with_target_in_scene=True,
+            )
         self.wait()
-
-
-
-
-
-
-
-
-
 
 
 ###################################################
@@ -1700,50 +1800,56 @@ class RiemannRectanglesAnimation(GraphScene):
 class TrySuccession(Scene):
     def construct(self):
         circle = Circle()
-        T=TexMobject(r"\text{This is an } \alpha.")
+        T = TexMobject(r"\text{This is an } \alpha.")
 
         self.play(Succession(T))
         self.wait(2)
-        
+
+
 class TryLaggedStart(Scene):
     def construct(self):
         circle = Circle()
-        T=TexMobject(r"\text{This is an } \alpha.")
+        T = TexMobject(r"\text{This is an } \alpha.")
 
         self.play(Write(T))
-        self.play(LaggedStart(FadeOutAndShiftDown,T))
+        self.play(LaggedStart(FadeOutAndShiftDown, T))
+
 
 class TrySpeedometer(Scene):
     def construct(self):
-        l=Speedometer()
-        
+        l = Speedometer()
+
         self.play(ShowCreation(l))
         self.wait(0.7)
+
 
 class TryLaptop(Scene):
     def construct(self):
-        l=Laptop()
-        
+        l = Laptop()
+
         self.play(ShowCreation(l))
         self.wait(0.7)
+
 
 class TryClock(Scene):
     def construct(self):
-        l=Clock()
-        
+        l = Clock()
+
         self.play(ShowCreation(l))
         self.wait(0.7)
 
+
 class TryTikz(Scene):
     def construct(self):
-        l=TikzMobject(r"""
+        l = TikzMobject(r"""
     woshifsihfis 
     \tikz \draw (0,0)--(0,1);
         """
-        )
-        
+                        )
+
         self.add(l)
         self.wait(0.7)
+
 
 class TikzMobject(TextMobject):
     CONFIG = {
@@ -1752,12 +1858,13 @@ class TikzMobject(TextMobject):
         "stroke_opacity": 1,
     }
 
+
 class ExampleTikz(Scene):
-#     CONFIG={
-#     "camera_config":{"background_color":RED}
-# }
+    #     CONFIG={
+    #     "camera_config":{"background_color":RED}
+    # }
     def construct(self):
-        w=TextMobject(r"Hello, world!$\Sigma$\\你好,世界!\\こんにちは世界！\\안녕하세요 세상!")
+        w = TextMobject(r"Hello, world!$\Sigma$\\你好,世界!\\こんにちは世界！\\안녕하세요 세상!")
         w.set_color(RED)
         circuit = TikzMobject(r"""
             \begin{circuitikz}[american voltages]
@@ -1783,19 +1890,20 @@ class ExampleTikz(Scene):
 class C(Scene):
     def construct(self):
         HelloWorld1 = Text('Hello, World!')
-        t=TextMobject(r"\calligra{Rangers}")
+        t = TextMobject(r"\calligra{Rangers}")
         self.play(Write(t))
         self.wait()
 
+
 class BraceText(Scene):
     def construct(self):
-        text=TexMobject(
-            "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
+        text = TexMobject(
+            "\\frac{d}{dx}f(x)g(x)=", "f(x)\\frac{d}{dx}g(x)", "+",
             "g(x)\\frac{d}{dx}f(x)"
         )
         self.play(Write(text))
-        brace_top = Brace(text[1], UP, buff = SMALL_BUFF)
-        brace_bottom = Brace(text[3], DOWN, buff = SMALL_BUFF)
+        brace_top = Brace(text[1], UP, buff=SMALL_BUFF)
+        brace_bottom = Brace(text[3], DOWN, buff=SMALL_BUFF)
         text_top = brace_top.get_text("$g'f$")
         text_bottom = brace_bottom.get_text("$f'g$")
         self.play(
@@ -1803,7 +1911,7 @@ class BraceText(Scene):
             GrowFromCenter(brace_bottom),
             FadeIn(text_top),
             FadeIn(text_bottom)
-            )
+        )
         self.wait()
 
 
@@ -1812,66 +1920,71 @@ class MRText(Text):
         'font': 'MR CANFIELDS',
         'size': 0.7
     }
+
+
 class Rangers(Scene):
     def construct(self):
         eng = TextMobject('Animation Engine')
         man = MRText('Manim')
         man.next_to(eng, DOWN)
-        manim=VGroup(eng,man)
+        manim = VGroup(eng, man)
         manim.move_to(LEFT*3.5)
 
-        l=Line(np.array([0,1,0]),np.array([0,-1,0]))
+        l = Line(np.array([0, 1, 0]), np.array([0, -1, 0]))
 
         ma = TextMobject('Maker')
         me = MRText('Rangers')
-        me.next_to(ma,DOWN)
-        rangers=VGroup(ma,me)
+        me.next_to(ma, DOWN)
+        rangers = VGroup(ma, me)
         rangers.move_to(RIGHT*3.5)
-
 
         self.play(Write(manim))
         self.play(Write(rangers))
         self.play(ShowCreation(l))
         self.wait(2)
 
+
 class Plot3(GraphScene):
     CONFIG = {
-        "y_max" : 50,
-        "y_min" : 0,
-        "x_max" : 7,
-        "x_min" : 0,
-        "y_tick_frequency" : 10,
-        "axes_color" : BLUE,
+        "y_max": 50,
+        "y_min": 0,
+        "x_max": 7,
+        "x_min": 0,
+        "y_tick_frequency": 10,
+        "axes_color": BLUE,
     }
+
     def construct(self):
         self.setup_axes()
-        graph = self.get_graph(lambda x : x**2, color = GREEN)
+        graph = self.get_graph(lambda x: x**2, color=GREEN)
 
         self.play(
             ShowCreation(graph),
-            run_time = 2
+            run_time=2
         )
         self.wait()
-        
+
     def setup_axes(self):
         GraphScene.setup_axes(self)
         # Custom parametters
-        self.x_axis.add_numbers(*[0,2,5,4])
+        self.x_axis.add_numbers(*[0, 2, 5, 4])
         # Y parametters
         init_label_y = 0
         end_label_y = 50
         step_y = 5
         self.y_axis.label_direction = LEFT
         self.y_axis.add_numbers(*range(
-                                        init_label_y,
-                                        end_label_y+step_y,
-                                        step_y
-                                    ))
-        self.play(Write(self.x_axis),Write(self.y_axis))
+            init_label_y,
+            end_label_y+step_y,
+            step_y
+        ))
+        self.play(Write(self.x_axis), Write(self.y_axis))
+
 
 class SvgTry(Scene):
     def construct(self):
-        file_name='bianqian.svg'
+        file_name = 'bianqian.svg'
+
 
 class ZoomedSceneExample(ZoomedScene):
     CONFIG = {
@@ -1888,13 +2001,13 @@ class ZoomedSceneExample(ZoomedScene):
         # Set objects
         dot = Dot().shift(UL*2)
 
-        image=ImageMobject(np.uint8([[ 0, 100,30 , 200],
-                                     [255,0,5 , 33]]))
+        image = ImageMobject(np.uint8([[0, 100, 30, 200],
+                                       [255, 0, 5, 33]]))
         image.set_height(7)
-        frame_text=TextMobject("Frame",color=PURPLE).scale(1.4)
-        zoomed_camera_text=TextMobject("Zommed camera",color=RED).scale(1.4)
+        frame_text = TextMobject("Frame", color=PURPLE).scale(1.4)
+        zoomed_camera_text = TextMobject("Zommed camera", color=RED).scale(1.4)
 
-        self.add(image,dot)
+        self.add(image, dot)
 
         # Set camera
         zoomed_camera = self.zoomed_camera
@@ -1923,7 +2036,7 @@ class ZoomedSceneExample(ZoomedScene):
             lambda rect: rect.replace(zoomed_display)
         )
 
-        frame_text.next_to(frame,DOWN)
+        frame_text.next_to(frame, DOWN)
 
         self.play(
             ShowCreation(frame),
@@ -1939,11 +2052,11 @@ class ZoomedSceneExample(ZoomedScene):
             unfold_camera
         )
 
-        zoomed_camera_text.next_to(zoomed_display_frame,DOWN)
+        zoomed_camera_text.next_to(zoomed_display_frame, DOWN)
         self.play(FadeInFromDown(zoomed_camera_text))
 
         # Scale in     x   y  z
-        scale_factor=[0.5,1.5,0]
+        scale_factor = [0.5, 1.5, 0]
 
         # Resize the frame and zoomed camera
         self.play(
@@ -1955,15 +2068,14 @@ class ZoomedSceneExample(ZoomedScene):
 
         # Resize the frame
         self.play(
-            frame.scale,3,
-            frame.shift,2.5*DOWN
+            frame.scale, 3,
+            frame.shift, 2.5*DOWN
         )
 
         # Resize zoomed camera
         self.play(
-            ScaleInPlace(zoomed_display,2)
+            ScaleInPlace(zoomed_display, 2)
         )
-
 
         self.wait()
 
@@ -1979,37 +2091,42 @@ class ZoomedSceneExample(ZoomedScene):
         )
         self.wait()
 
+
 class FracalTitle(Scene):
     def construct(self):
-        text=TextMobject('Dragon Fractal')
+        text = TextMobject('Dragon Fractal')
         text.scale(3)
 
         self.play(Write(text))
         self.wait()
         self.play(FadeOut(text))
 
+
 class AudioTest(Scene):
     def construct(self):
-        group_dots=VGroup(*[Dot()for _ in range(3)])
+        group_dots = VGroup(*[Dot()for _ in range(3)])
         group_dots.arrange_submobjects(RIGHT)
         for dot in group_dots:
-            self.add_sound("click",gain=-10)
+            self.add_sound("click", gain=-10)
             self.add(dot)
             self.wait()
         self.wait()
- 
+
+
 class SVGTest(Scene):
     def construct(self):
         svg = SVGMobject("finger")
         #svg = SVGMobject("camera")
-        self.play(DrawBorderThenFill(svg,rate_func=linear))
+        self.play(DrawBorderThenFill(svg, rate_func=linear))
         self.wait()
- 
+
+
 class ImageTest(Scene):
     def construct(self):
         image = ImageMobject("note")
         self.play(FadeIn(image))
         self.wait()
+
 
 class ColoringText(Scene):
     def construct(self):
@@ -2019,32 +2136,34 @@ class ColoringText(Scene):
         for letter in text:
             self.play(LaggedStart(
                 ApplyMethod(letter,
-                lambda m : (m.set_color, YELLOW)),
-                run_time = 0.12
+                            lambda m: (m.set_color, YELLOW)),
+                run_time=0.12
             ))
-        self.wait(0.5)        
+        self.wait(0.5)
+
 
 class FrameBox1(Scene):
     def construct(self):
-        text=TexMobject(
+        text = TexMobject(
             "\\hat g(", "f", ")", "=", "\\int", "_{t_1}", "^{t_{2}}",
             "g(", "t", ")", "e", "^{-2\\pi i", "f", "t}", "dt"
         )
-        frameBox = SurroundingRectangle(text[4], buff = 0.5*SMALL_BUFF)
+        frameBox = SurroundingRectangle(text[4], buff=0.5*SMALL_BUFF)
         self.play(Write(text))
         self.wait(.5)
         self.play(ShowCreation(frameBox))
         self.wait(2)
 
+
 class BraceLabelTest(Scene):
     def construct(self):
-        text=TexMobject(
-            "\\frac{d}{dx}f(x)g(x)=","f(x)\\frac{d}{dx}g(x)","+",
+        text = TexMobject(
+            "\\frac{d}{dx}f(x)g(x)=", "f(x)\\frac{d}{dx}g(x)", "+",
             "g(x)\\frac{d}{dx}f(x)"
         )
         self.play(Write(text))
-        brace_top = BraceLabel(text[1], "g'f", UP, buff = SMALL_BUFF)
-        brace_bottom = BraceLabel(text[3], "f'g", DOWN, buff = SMALL_BUFF)
+        brace_top = BraceLabel(text[1], "g'f", UP, buff=SMALL_BUFF)
+        brace_bottom = BraceLabel(text[3], "f'g", DOWN, buff=SMALL_BUFF)
         # text_top = brace_top.get_text("$g'f$")
         # text_bottom = brace_bottom.get_text("$f'g$")
         self.play(
@@ -2052,52 +2171,61 @@ class BraceLabelTest(Scene):
             GrowFromCenter(brace_bottom),
             # FadeIn(text_top),
             # FadeIn(text_bottom)
-            )
+        )
         self.wait()
 
+
 class ColoringEquations(Scene):
-    #Grouping and coloring parts of equations
+    # Grouping and coloring parts of equations
     def construct(self):
-        line1=TexMobject(r"\text{The vector } \vec{F}_{net} \text{ is the net }",r"\text{force }",r"\text{on object of mass }")
-        line1.set_color_by_tex("force", BLUE) 
-        line1.set_color_by_tex("F", RED) # "F"代表第一部分,即line1的第一部分颜色设置为RED
-        line2=TexMobject("m", "\\text{ and acceleration }", "\\vec{a}", ".  ")
+        line1 = TexMobject(r"\text{The vector } \vec{F}_{net} \text{ is the net }",
+                           r"\text{force }", r"\text{on object of mass }")
+        line1.set_color_by_tex("force", BLUE)
+        line1.set_color_by_tex("F", RED)  # "F"代表第一部分,即line1的第一部分颜色设置为RED
+        line2 = TexMobject(
+            "m", "\\text{ and acceleration }", "\\vec{a}", ".  ")
         line2.set_color_by_tex_to_color_map({
             "m": YELLOW,
             "{a}": RED
         })
-        sentence=VGroup(line1,line2)
-        sentence.arrange_submobjects(DOWN, buff=MED_LARGE_BUFF) # buff是buff distance,可以直接设置数值
+        sentence = VGroup(line1, line2)
+        # buff是buff distance,可以直接设置数值
+        sentence.arrange_submobjects(DOWN, buff=MED_LARGE_BUFF)
         self.play(Write(sentence))
+
 
 class BulletedListTest(Scene):
     def construct(self):
-        text=['1','2','3','4','5','6','7']
-        textlist=BulletedList(text)
+        text = ['1', '2', '3', '4', '5', '6', '7']
+        textlist = BulletedList(text)
 
         self.play(Write(textlist))
-        self.play(ApplyMethod(textlist.fade_all_but,6))
-        textlist.fade_all_but(3,opacity=0.7)
+        self.play(ApplyMethod(textlist.fade_all_but, 6))
+        textlist.fade_all_but(3, opacity=0.7)
         self.wait()
+
 
 class TitleText(Scene):
     def construct(self):
-        t=Title('Rangers')
+        t = Title('Rangers')
 
         self.play(ShowCreation(t))
         self.wait()
 
+
 class CameraPosition2(ThreeDScene):
     def construct(self):
         axes = ThreeDAxes()
-        circle=Circle()
+        circle = Circle()
         self.set_camera_orientation(phi=0 * DEGREES)
-        self.play(ShowCreation(circle),ShowCreation(axes))
+        self.play(ShowCreation(circle), ShowCreation(axes))
         self.wait()
 
-class FormulaColor3Fixed2(Scene): 
-    def construct(self): 
-        text = TexMobject("\\sqrt{","\\int_","{a}^","{b}","{\\left(","{x","\\over","y}","\\right)}","d","x",".}")
+
+class FormulaColor3Fixed2(Scene):
+    def construct(self):
+        text = TexMobject("\\sqrt{", "\\int_", "{a}^", "{b}",
+                          "{\\left(", "{x", "\\over", "y}", "\\right)}", "d", "x", ".}")
         text[0].set_color(RED)
         text[1].set_color(BLUE)
         text[2].set_color(GREEN)
@@ -2125,38 +2253,42 @@ class FormulaColor3Fixed2(Scene):
 #             path.change_anchor_mode()
 #         """
 
+
 class PointCloundDotTest(Scene):
     CONFIG = {
         "color": YELLOW,
     }
+
     def construct(self):
-        p=Point()
+        p = Point()
 
         self.play(ShowCreation(p))
-        self.wait()        
+        self.wait()
+
 
 class BroadcastTest(Scene):
     def construct(self):
-        b=Broadcast(1)
+        b = Broadcast(1)
 
         self.add(b)
 
 
 class ExampleRateFunc(Scene):
     def construct(self):
-        path = Line(LEFT*5,RIGHT*5)
+        path = Line(LEFT*5, RIGHT*5)
         dot = Dot(path.get_start())
-        self.add(path,dot)
+        self.add(path, dot)
         self.play(
             # This works with any animation
             MoveAlongPath(
-                dot,path,
+                dot, path,
                 rate_func=lambda t: smooth(1-t),
                 # rate_func = smooth <- by default
-                run_time=4 # 4 sec
+                run_time=4  # 4 sec
             )
         )
         self.wait()
+
 
 class ExampleRateFunc2(Scene):
     def construct(self):
@@ -2167,14 +2299,12 @@ class ExampleRateFunc2(Scene):
         ))
         self.wait()
 
+
 # Install via pip:
 # matplotlib
 # pandas
 # sklearn
-import matplotlib.pyplot as plt 
-import pandas as pd 
-from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import PolynomialFeatures 
+
 
 class ExampleRateFuncCustom(Scene):
     def construct(self):
@@ -2182,27 +2312,27 @@ class ExampleRateFuncCustom(Scene):
         print(datas)
         X = datas.iloc[:, 0:1].values
         y = datas.iloc[:, 1].values
-        poly = PolynomialFeatures(degree = 8)
+        poly = PolynomialFeatures(degree=8)
         X_poly = poly.fit_transform(X)
         poly.fit(X_poly, y)
         lin = LinearRegression()
         lin.fit(X_poly, y)
-        plt.scatter(X, y, color = 'blue') 
-  
-        plt.plot(X, lin.predict(poly.fit_transform(X)), color = 'red') 
-        plt.title('Polynomial Regression') 
-        plt.xlabel('Time') 
-        plt.ylabel('Animation progression %') 
-        plt.show() 
+        plt.scatter(X, y, color='blue')
+
+        plt.plot(X, lin.predict(poly.fit_transform(X)), color='red')
+        plt.title('Polynomial Regression')
+        plt.xlabel('Time')
+        plt.ylabel('Animation progression %')
+        plt.show()
         # See manimlib/utils/bezier.py
         reg_func = bezier(lin.predict(poly.fit_transform(X)))
 
-        path = Line(LEFT*5,RIGHT*5)
+        path = Line(LEFT*5, RIGHT*5)
         dot = Dot(path.get_start())
-        self.add(path,dot)
+        self.add(path, dot)
         self.play(
             MoveAlongPath(
-                dot,path,
+                dot, path,
                 rate_func=reg_func,
                 run_time=4
             )
@@ -2211,56 +2341,64 @@ class ExampleRateFuncCustom(Scene):
 
 # Custom
 
-def custom_time(t,partitions,start,end,func):
+
+def custom_time(t, partitions, start, end, func):
     duration = end - start
     fragment_time = 1 / partitions
     start_time = start * fragment_time
     end_time = end * fragment_time
     duration_time = duration * fragment_time
+
     def fix_time(x):
         return (x - start_time) / duration_time
-    if t < start_time: 
+    if t < start_time:
         return func(fix_time(start_time))
     elif start_time <= t < end_time:
         return func(fix_time(t))
     else:
         return func(fix_time(end_time))
 
-def Custom(partitions,start,end,func=smooth):
-    return lambda t: custom_time(t,partitions,start,end,func)
+
+def Custom(partitions, start, end, func=smooth):
+    return lambda t: custom_time(t, partitions, start, end, func)
+
 
 class CustomRateFunc(Scene):
     def construct(self):
         c = Circle().scale(2)
         s = Square().scale(2)
-        l = Line(DOWN,UP).scale(2)
-        time = DecimalNumber(self.time).add_updater(lambda m: m.set_value(self.time))
+        l = Line(DOWN, UP).scale(2)
+        time = DecimalNumber(self.time).add_updater(
+            lambda m: m.set_value(self.time))
         time.to_corner(DL)
         self.add(time)
         self.play(
             # 6 partitions, that is (total_time = 4):
             # ShowCreation starts at t=(0/6)*total_time=0s and end t=(5/6)*total_time=3.333s
-            ShowCreation(c,  rate_func=Custom(6,0,5)),
+            ShowCreation(c,  rate_func=Custom(6, 0, 5)),
             # FadeIn starts at t=(2/6)*total_time=1.3333s and end t=(4/6)*total_time=2.6666s
-            FadeIn(s,        rate_func=Custom(6,2,4,func=there_and_back)),
+            FadeIn(s,        rate_func=Custom(6, 2, 4, func=there_and_back)),
             # GrowFromCenter starts at t=(4/6)*total_time=2.6666s and end t=(6/6)*total_time=4s
-            GrowFromCenter(l,rate_func=Custom(6,4,6)),
-            run_time=4 # <- total_time
-            )
+            GrowFromCenter(l, rate_func=Custom(6, 4, 6)),
+            run_time=4  # <- total_time
+        )
         self.wait()
 
 # COMPARATION
+
+
 class TestPath(VGroup):
-    def __init__(self,name,**kwargs):
+    def __init__(self, name, **kwargs):
         super().__init__(**kwargs)
         self.name = name.__name__
         self.func = name
-        self.title = Text(f"{self.name}",font="Monaco",stroke_width=0)
+        self.title = Text(f"{self.name}", font="Monaco", stroke_width=0)
         self.title.set_height(0.24)
-        self.line = Line(LEFT*5,RIGHT*5)
+        self.line = Line(LEFT*5, RIGHT*5)
         self.dot = Dot(self.line.get_start())
-        self.title.next_to(self.line,LEFT,buff=0.3)
-        self.add(self.title,self.line,self.dot)
+        self.title.next_to(self.line, LEFT, buff=0.3)
+        self.add(self.title, self.line, self.dot)
+
 
 class RateFunctions(Scene):
     CONFIG = {
@@ -2279,75 +2417,82 @@ class RateFunctions(Scene):
         ],
         "rt": 3
     }
+
     def construct(self):
-        time_ad = [*[Text("%d"%i,font="Arial",stroke_width=0).to_corner(UL) for i in range(1,4)]][::-1]
-        
+        time_ad = [*[Text("%d" % i, font="Arial", stroke_width=0).to_corner(UL)
+                     for i in range(1, 4)]][::-1]
+
         rf_group = VGroup(*[
             TestPath(rf)
             for rf in self.rate_functions
         ])
         for rf in rf_group:
             rf.title.set_color(TEAL)
-            rf.line.set_color([RED,BLUE,YELLOW])
-        rf_group.arrange(DOWN,aligned_edge=RIGHT)
+            rf.line.set_color([RED, BLUE, YELLOW])
+        rf_group.arrange(DOWN, aligned_edge=RIGHT)
         init_point = rf_group[0].line.get_start()
         init_point[0] = 0
         end_point = rf_group[-1].line.get_end()
-        brace = Brace(rf_group[-1].line,DOWN,buff=0.5)
-        brace_text = brace.get_text("\\tt run\\_time = %d"%self.rt).scale(0.8)
+        brace = Brace(rf_group[-1].line, DOWN, buff=0.5)
+        brace_text = brace.get_text(
+            "\\tt run\\_time = %d" % self.rt).scale(0.8)
         end_point[0] = 0
 
         div_lines = VGroup()
         div_texts = VGroup()
         for i in range(11):
             proportion = i / 10
-            text = TexMobject("\\frac{%s}{10}"%i)
+            text = TexMobject("\\frac{%s}{10}" % i)
             text.set_height(0.5)
-            coord_proportion = rf_group[0].line.point_from_proportion(proportion)
+            coord_proportion = rf_group[0].line.point_from_proportion(
+                proportion)
             coord_proportion[1] = 0
             v_line = DashedLine(
                 init_point + coord_proportion + UP*0.5,
-                end_point  + coord_proportion + DOWN*0.5,
+                end_point + coord_proportion + DOWN*0.5,
                 stroke_opacity=0.5
             )
-            text.next_to(v_line,UP,buff=0.1)
+            text.next_to(v_line, UP, buff=0.1)
             div_texts.add(text)
             div_lines.add(v_line)
-        self.add(rf_group,div_lines,div_texts,brace,brace_text)
+        self.add(rf_group, div_lines, div_texts, brace, brace_text)
         for i in range(3):
             self.add(time_ad[i])
             self.wait()
             self.remove(time_ad[i])
         self.play(*[
-            MoveAlongPath(vg.dot,vg.line,rate_func=vg.func)
-            for vg in rf_group 
-            ],
+            MoveAlongPath(vg.dot, vg.line, rate_func=vg.func)
+            for vg in rf_group
+        ],
             run_time=self.rt
         )
         self.wait(2)
 
+
 class R(Scene):
     def construct(self):
-        text=TextMobject("start")
+        text = TextMobject("start")
         text.to_corner(RIGHT + UP)
         squares = VGroup()
         for i in range(9):
             squares.add(Square())
         squares.arrange_in_grid(n_rows=3, n_cols=3)
         self.add(squares)
-        anims=[]
+        anims = []
         for i in range(18):
-            anims.append(FadeToColor(squares[i%9],RED,rate_func=there_and_back))
+            anims.append(FadeToColor(
+                squares[i % 9], RED, rate_func=there_and_back))
         self.play(Write(text))
         self.play(Succession(
             *anims,
             lag_ratio=0.1,
             # group=Group(*[anim.mobject for anim in anims])
-            ))
-        self.play(Transform(text,TextMobject("end").to_corner(RIGHT + UP)))
+        ))
+        self.play(Transform(text, TextMobject("end").to_corner(RIGHT + UP)))
         self.wait()
 
 ##############################################################################################
+
 
 def return_random_from_word(word):
     """
@@ -2366,47 +2511,52 @@ def return_random_from_word(word):
     random.shuffle(rango)
     return rango
 
+
 def return_random_direction(word):
     """
     This function returns a list of random UP or DOWN:
     [UP,UP,DOWN,UP,DOWN,DOWN,...]
     """
-    return [random.choice([UP,DOWN]) for _ in range(len(word))]
+    return [random.choice([UP, DOWN]) for _ in range(len(word))]
 
-def get_random_coord(r_x,r_y,step_x,step_y):
+
+def get_random_coord(r_x, r_y, step_x, step_y):
     """
     Given two ranges (a, b) and (c, d), this function returns an 
     intermediate array (x, y) such that "x" belongs to (a, c) 
     and "y" belongs to (b, d).
     """
-    range_x = list(range(r_x[0],r_x[1],step_x))
-    range_y = list(range(r_y[0],r_y[1],step_y))
+    range_x = list(range(r_x[0], r_x[1], step_x))
+    range_y = list(range(r_y[0], r_y[1], step_y))
     select_x = random.choice(range_x)
     select_y = random.choice(range_y)
-    return np.array([select_x,select_y,0])
+    return np.array([select_x, select_y, 0])
 
-def return_random_coords(word,r_x,r_y,step_x,step_y):
+
+def return_random_coords(word, r_x, r_y, step_x, step_y):
     """
     This function returns a random coordinate array, 
     given the length of a TextMobject
     """
     rango = range(len(word))
-    return [word.get_center() + get_random_coord(r_x,r_y,step_x,step_y) for _ in rango]
+    return [word.get_center() + get_random_coord(r_x, r_y, step_x, step_y) for _ in rango]
 
 
 class WriteRandom(LaggedStart):
     CONFIG = {
-        "lag_ratio":0.1,
-        "run_time":2.5,
-        "anim_kwargs":{},
-        "anim_type":Write
+        "lag_ratio": 0.1,
+        "run_time": 2.5,
+        "anim_kwargs": {},
+        "anim_type": Write
     }
-    def __init__(self,text,**kwargs):
+
+    def __init__(self, text, **kwargs):
         digest_config(self, kwargs)
         super().__init__(*[
-            self.anim_type(text[i],**self.anim_kwargs)
+            self.anim_type(text[i], **self.anim_kwargs)
             for i in return_random_from_word(text)
         ])
+
 
 class UnWriteRandom(WriteRandom):
     CONFIG = {
@@ -2416,20 +2566,24 @@ class UnWriteRandom(WriteRandom):
         "remover": True,
     }
 
+
 class FadeInRandom(WriteRandom):
     CONFIG = {
         "anim_type": FadeIn
     }
+
 
 class FadeOutRandom(WriteRandom):
     CONFIG = {
         "anim_type": FadeOut
     }
 
+
 class GrowRandom(WriteRandom):
     CONFIG = {
         "anim_type": GrowFromCenter
     }
+
 
 class UnGrowRandom(GrowRandom):
     CONFIG = {
@@ -2439,35 +2593,41 @@ class UnGrowRandom(GrowRandom):
         "remover": True,
     }
 
+
 class FadeInFromRandom(LaggedStart):
     CONFIG = {
-        "lag_ratio":0.08,
-        "anim_type":FadeInFrom,
-        "anim_kwargs":{}
+        "lag_ratio": 0.08,
+        "anim_type": FadeInFrom,
+        "anim_kwargs": {}
     }
-    def __init__(self,text,**kwargs):
+
+    def __init__(self, text, **kwargs):
         digest_config(self, kwargs)
         super().__init__(*[
-            self.anim_type(text[i],d,**self.anim_kwargs)
-            for i,d in zip(return_random_from_word(text),return_random_direction(text))
+            self.anim_type(text[i], d, **self.anim_kwargs)
+            for i, d in zip(return_random_from_word(text), return_random_direction(text))
         ])
+
 
 class FadeOutFromRandom(FadeInFromRandom):
     CONFIG = {
-        "anim_type":FadeOutAndShiftDown
+        "anim_type": FadeOutAndShiftDown
     }
+
 
 class GrowFromRandom(LaggedStart):
     CONFIG = {
-        "lag_ratio":0.2,
-        "anim_kwargs":{}
+        "lag_ratio": 0.2,
+        "anim_kwargs": {}
     }
-    def __init__(self,text,r_x=[-2,3],r_y=[-2,3],step_x=1,step_y=1,**kwargs):
+
+    def __init__(self, text, r_x=[-2, 3], r_y=[-2, 3], step_x=1, step_y=1, **kwargs):
         digest_config(self, kwargs)
         super().__init__(*[
-            GrowFromPoint(text[i],d,**self.anim_kwargs)
-            for i,d in zip(return_random_from_word(text),return_random_coords(text,r_x,r_y,step_x,step_y))
+            GrowFromPoint(text[i], d, **self.anim_kwargs)
+            for i, d in zip(return_random_from_word(text), return_random_coords(text, r_x, r_y, step_x, step_y))
         ])
+
 
 class UnGrowFromRandom(GrowFromRandom):
     CONFIG = {
@@ -2476,6 +2636,7 @@ class UnGrowFromRandom(GrowFromRandom):
         },
         "remover": True
     }
+
 
 class WriteRandomScene(Scene):
     def construct(self):
@@ -2499,6 +2660,7 @@ class FadeFromRandomScene(Scene):
         self.play(FadeOutFromRandom(text[0]))
         self.wait(3)
 
+
 class GrowFromRandomScene(Scene):
     def construct(self):
         text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
@@ -2509,6 +2671,7 @@ class GrowFromRandomScene(Scene):
         self.play(UnGrowFromRandom(text[0]))
         self.wait(3)
 
+
 class FadeRandomScene(Scene):
     def construct(self):
         text = TextMobject("This is some text").set_width(FRAME_WIDTH-0.5)
@@ -2518,6 +2681,7 @@ class FadeRandomScene(Scene):
         self.wait()
         self.play(FadeOutRandom(text[0]))
         self.wait(3)
+
 
 class GrowRandomScene(Scene):
     def construct(self):
@@ -2530,6 +2694,7 @@ class GrowRandomScene(Scene):
         self.wait(3)
 
 #########################################################################################
+
 
 class example(Scene):
     def construct(self):
@@ -2546,11 +2711,13 @@ class example(Scene):
         self.wait()
         self.play(
             LaggedStart(*[FadeOutAndShiftUp(i) for i in title[0]]),
-            LaggedStart(*list(map(FadeOutAndShiftDown,basel[0]))),
+            LaggedStart(*list(map(FadeOutAndShiftDown, basel[0]))),
         )
         self.wait()
 
+
 NEW_BLUE = "#68a8e1"
+
 
 class Thumbnail(GraphScene):
     CONFIG = {
@@ -2563,13 +2730,14 @@ class Thumbnail(GraphScene):
 
     def show_function_graph(self):
         self.setup_axes(animate=False)
+
         def func(x):
             return 0.1 * (x + 3-5) * (x - 3-5) * (x-5) + 5
 
         def rect(x):
             return 2.775*(x-1.5)+3.862
-        recta = self.get_graph(rect,x_min=-1,x_max=5)
-        graph = self.get_graph(func,x_min=0.2,x_max=9)
+        recta = self.get_graph(rect, x_min=-1, x_max=5)
+        graph = self.get_graph(func, x_min=0.2, x_max=9)
         graph.set_color(NEW_BLUE)
         input_tracker_p1 = ValueTracker(1.5)
         input_tracker_p2 = ValueTracker(3.5)
@@ -2594,22 +2762,22 @@ class Thumbnail(GraphScene):
 
         def get_h_line(input_tracker):
             return DashedLine(get_graph_point(input_tracker), get_y_point(input_tracker), stroke_width=2)
-        # 
+        #
         input_triangle_p1 = RegularPolygon(n=3, start_angle=TAU / 4)
         output_triangle_p1 = RegularPolygon(n=3, start_angle=0)
         for triangle in input_triangle_p1, output_triangle_p1:
             triangle.set_fill(WHITE, 1)
             triangle.set_stroke(width=0)
             triangle.scale(0.1)
-        # 
+        #
         input_triangle_p2 = RegularPolygon(n=3, start_angle=TAU / 4)
         output_triangle_p2 = RegularPolygon(n=3, start_angle=0)
         for triangle in input_triangle_p2, output_triangle_p2:
             triangle.set_fill(WHITE, 1)
             triangle.set_stroke(width=0)
             triangle.scale(0.1)
-        
-        # 
+
+        #
         x_label_p1 = TexMobject("a")
         output_label_p1 = TexMobject("f(a)")
         x_label_p2 = TexMobject("b")
@@ -2632,7 +2800,6 @@ class Thumbnail(GraphScene):
         output_triangle_p2.next_to(h_line_p2, LEFT, buff=0)
         graph_dot_p1.move_to(get_graph_point(input_tracker_p1))
         graph_dot_p2.move_to(get_graph_point(input_tracker_p2))
-
 
         #
         self.play(
@@ -2669,21 +2836,20 @@ class Thumbnail(GraphScene):
         )
         ###################
         pendiente_recta = self.get_secant_slope_group(
-            1.9, recta, dx = 1.4,
-            df_label = None,
-            dx_label = None,
-            dx_line_color = PURPLE,
-            df_line_color= ORANGE,
-            )
-        grupo_secante = self.get_secant_slope_group(
-            1.5, graph, dx = 2,
-            df_label = None,
-            dx_label = None,
-            dx_line_color = "#942357",
-            df_line_color= "#3f7d5c",
-            secant_line_color = RED,
+            1.9, recta, dx=1.4,
+            df_label=None,
+            dx_label=None,
+            dx_line_color=PURPLE,
+            df_line_color=ORANGE,
         )
-
+        grupo_secante = self.get_secant_slope_group(
+            1.5, graph, dx=2,
+            df_label=None,
+            dx_label=None,
+            dx_line_color="#942357",
+            df_line_color="#3f7d5c",
+            secant_line_color=RED,
+        )
 
         self.add(
             input_triangle_p2,
@@ -2695,25 +2861,24 @@ class Thumbnail(GraphScene):
         self.play(FadeIn(grupo_secante))
 
         kwargs = {
-            "x_min" : 4,
-            "x_max" : 9,
-            "fill_opacity" : 0.75,
-            "stroke_width" : 0.25,
+            "x_min": 4,
+            "x_max": 9,
+            "fill_opacity": 0.75,
+            "stroke_width": 0.25,
         }
-        self.graph=graph
-        iteraciones=6
-
+        self.graph = graph
+        iteraciones = 6
 
         self.rect_list = self.get_riemann_rectangles_list(
-            graph, iteraciones,start_color=PURPLE,end_color=ORANGE, **kwargs
+            graph, iteraciones, start_color=PURPLE, end_color=ORANGE, **kwargs
         )
         flat_rects = self.get_riemann_rectangles(
-            self.get_graph(lambda x : 0), dx = 0.5,start_color=invert_color(PURPLE),end_color=invert_color(ORANGE),**kwargs
+            self.get_graph(lambda x: 0), dx=0.5, start_color=invert_color(PURPLE), end_color=invert_color(ORANGE), **kwargs
         )
         rects = self.rect_list[0]
         self.transform_between_riemann_rects(
-            flat_rects, rects, 
-            replace_mobject_with_target_in_scene = True,
+            flat_rects, rects,
+            replace_mobject_with_target_in_scene=True,
             run_time=0.9
         )
 
@@ -2724,6 +2889,7 @@ class Thumbnail(GraphScene):
                                     .next_to(picture, RIGHT) \
                                     .shift(DOWN * 0.7)
         self.add(manim)
+
 
 class UpdatersExample(Scene):
     def construct(self):
@@ -2745,6 +2911,7 @@ class UpdatersExample(Scene):
         )
         self.wait()
 
+
 class LaggedStartMapTest(Scene):
     def construct(self):
         title = TextMobject("This is some \\LaTeX")
@@ -2760,61 +2927,65 @@ class LaggedStartMapTest(Scene):
         self.wait()
         self.play(
             LaggedStartMap(FadeOutAndShiftUp,
-                            VGroup(*[i for i in title[0]]),rate_func=there_and_back),
+                           VGroup(*[i for i in title[0]]), rate_func=there_and_back),
             LaggedStartMap(FadeOutAndShiftDown,
-                            VGroup(*[i for i in basel[0]]),rate_func=smooth),
+                           VGroup(*[i for i in basel[0]]), rate_func=smooth),
         )
         self.wait()
+
 
 class Curve_3D_test(SpecialThreeDScene):
     CONFIG = {
         "default_angled_camera_position": {
-            "phi": 65 * DEGREES, # Angle off z axis
-            "theta": -60 * DEGREES, # Rotation about z axis
+            "phi": 65 * DEGREES,  # Angle off z axis
+            "theta": -60 * DEGREES,  # Rotation about z axis
             "distance": 50,
             "gamma": 0,  # Rotation about normal vector to camera
-            },
-        }
+        },
+    }
+
     def construct(self):
         self.set_camera_to_default_position()
-        r = 2 # radius
+        r = 2  # radius
         w = 4
         circle = ParametricFunction(lambda t: r * complex_to_R3(np.exp(1j * w * t)),
                                     t_min=0, t_max=TAU * 1.5, color=RED, stroke_width=8)
         spiral_line = ParametricFunction(lambda t: r * complex_to_R3(np.exp(1j * w * t)) + OUT * t,
-                                    t_min=0, t_max=TAU * 1.5, color=PINK, stroke_width=8)
+                                         t_min=0, t_max=TAU * 1.5, color=PINK, stroke_width=8)
         circle.shift(IN * 2.5), spiral_line.shift(IN * 2.5)
 
         self.add(axes, circle)
         self.wait()
-        self.play(TransformFromCopy(circle, spiral_line, rate_func=there_and_back), run_time=4)
+        self.play(TransformFromCopy(circle, spiral_line,
+                                    rate_func=there_and_back), run_time=4)
         self.wait(2)
 
-############# Update
+# Update
 
 
 class AddUpdaterFail(Scene):
     def construct(self):
         dot = Dot()
         text = TextMobject("Label")\
-               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+            .next_to(dot, RIGHT, buff=SMALL_BUFF)
 
-        self.add(dot,text)
+        self.add(dot, text)
 
-        self.play(dot.shift,UP*2)
+        self.play(dot.shift, UP*2)
         self.wait()
+
 
 class AddUpdater1(Scene):
     def construct(self):
         dot = Dot()
         text = TextMobject("Label")\
-               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+            .next_to(dot, RIGHT, buff=SMALL_BUFF)
 
-        self.add(dot,text)
+        self.add(dot, text)
 
         # Update function
         def update_text(obj):
-            obj.next_to(dot,RIGHT,buff=SMALL_BUFF)
+            obj.next_to(dot, RIGHT, buff=SMALL_BUFF)
 
         # Add update function to the objects
         text.add_updater(update_text)
@@ -2822,173 +2993,180 @@ class AddUpdater1(Scene):
         # Add the object again
         self.add(text)
 
-        self.play(dot.shift,UP*2)
+        self.play(dot.shift, UP*2)
 
         # Remove update function
         text.remove_updater(update_text)
 
         self.wait()
 
+
 class AddUpdater2(Scene):
     def construct(self):
         dot = Dot()
         text = TextMobject("Label")\
-               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+            .next_to(dot, RIGHT, buff=SMALL_BUFF)
 
-        self.add(dot,text)
+        self.add(dot, text)
 
         # Add update function to the objects
-        text.add_updater(lambda m: m.next_to(dot,RIGHT,buff=SMALL_BUFF))
+        text.add_updater(lambda m: m.next_to(dot, RIGHT, buff=SMALL_BUFF))
 
         # Add the object again
         self.add(text)
 
-        self.play(dot.shift,UP*2)
+        self.play(dot.shift, UP*2)
 
         # Remove update function
         text.clear_updaters()
 
         self.wait()
 
+
 class AddUpdater3(Scene):
     def construct(self):
         dot = Dot()
         text = TextMobject("Label")\
-               .next_to(dot,RIGHT,buff=SMALL_BUFF)
+            .next_to(dot, RIGHT, buff=SMALL_BUFF)
 
-        self.add(dot,text)
+        self.add(dot, text)
 
         def update_text(obj):
-            obj.next_to(dot,RIGHT,buff=SMALL_BUFF)
+            obj.next_to(dot, RIGHT, buff=SMALL_BUFF)
 
         # Only works in play
         self.play(
-                dot.shift,UP*2,
-                UpdateFromFunc(text,update_text)
-            )
+            dot.shift, UP*2,
+            UpdateFromFunc(text, update_text)
+        )
 
         self.wait()
 
+
 class UpdateNumber(Scene):
     def construct(self):
-        number_line = NumberLine(x_min=-1,x_max=1)
-        triangle = RegularPolygon(3,start_angle=-PI/2)\
-                   .scale(0.2)\
-                   .next_to(number_line.get_left(),UP,buff=SMALL_BUFF)
+        number_line = NumberLine(x_min=-1, x_max=1)
+        triangle = RegularPolygon(3, start_angle=-PI/2)\
+            .scale(0.2)\
+            .next_to(number_line.get_left(), UP, buff=SMALL_BUFF)
         decimal = DecimalNumber(
-                0,
-                num_decimal_places=3,
-                include_sign=True,
-                unit="\\rm cm", # Change this with None
-            )
+            0,
+            num_decimal_places=3,
+            include_sign=True,
+            unit="\\rm cm",  # Change this with None
+        )
 
         decimal.add_updater(lambda d: d.next_to(triangle, UP*0.1))
         decimal.add_updater(lambda d: d.set_value(triangle.get_center()[0]))
         #       You can get the value of decimal with: .get_value()
 
-        self.add(number_line,triangle,decimal)
+        self.add(number_line, triangle, decimal)
 
         self.play(
-                triangle.shift,RIGHT*2,
-                rate_func=there_and_back, # Change this with: linear,smooth
-                run_time=5
-            )
+            triangle.shift, RIGHT*2,
+            rate_func=there_and_back,  # Change this with: linear,smooth
+            run_time=5
+        )
 
         self.wait()
+
 
 class UpdateValueTracker1(Scene):
     def construct(self):
         theta = ValueTracker(PI/2)
-        line_1= Line(ORIGIN,RIGHT*3,color=RED)
-        line_2= Line(ORIGIN,RIGHT*3,color=GREEN)
+        line_1 = Line(ORIGIN, RIGHT*3, color=RED)
+        line_2 = Line(ORIGIN, RIGHT*3, color=GREEN)
 
-        line_2.rotate(theta.get_value(),about_point=ORIGIN)
+        line_2.rotate(theta.get_value(), about_point=ORIGIN)
 
         line_2.add_updater(
-                lambda m: m.set_angle(
-                                    theta.get_value()
-                                )
+            lambda m: m.set_angle(
+                theta.get_value()
             )
+        )
 
-        self.add(line_1,line_2)
+        self.add(line_1, line_2)
 
-        self.play(theta.increment_value,PI/2)
+        self.play(theta.increment_value, PI/2)
 
         self.wait()
 
+
 class UpdateValueTracker2(Scene):
-    CONFIG={
-        "line_1_color":ORANGE,
-        "line_2_color":PINK,
-        "lines_size":3.5,
-        "theta":PI/2,
-        "increment_theta":PI/2,
-        "final_theta":PI,
-        "radius":0.7,
-        "radius_color":YELLOW,
+    CONFIG = {
+        "line_1_color": ORANGE,
+        "line_2_color": PINK,
+        "lines_size": 3.5,
+        "theta": PI/2,
+        "increment_theta": PI/2,
+        "final_theta": PI,
+        "radius": 0.7,
+        "radius_color": YELLOW,
     }
+
     def construct(self):
         # Set objets
         theta = ValueTracker(self.theta)
-        line_1= Line(ORIGIN,RIGHT*self.lines_size,color=self.line_1_color)
-        line_2= Line(ORIGIN,RIGHT*self.lines_size,color=self.line_2_color)
+        line_1 = Line(ORIGIN, RIGHT*self.lines_size, color=self.line_1_color)
+        line_2 = Line(ORIGIN, RIGHT*self.lines_size, color=self.line_2_color)
 
-        line_2.rotate(theta.get_value(),about_point=ORIGIN)
+        line_2.rotate(theta.get_value(), about_point=ORIGIN)
         line_2.add_updater(
-                lambda m: m.set_angle(
-                                    theta.get_value()
-                                )
+            lambda m: m.set_angle(
+                theta.get_value()
             )
+        )
 
-        angle= Arc(
-                    radius=self.radius,
-                    start_angle=line_1.get_angle(),
-                    angle =line_2.get_angle(),
-                    color=self.radius_color
-            )
+        angle = Arc(
+            radius=self.radius,
+            start_angle=line_1.get_angle(),
+            angle=line_2.get_angle(),
+            color=self.radius_color
+        )
 
         # Show the objects
 
         self.play(*[
-                ShowCreation(obj)for obj in [line_1,line_2,angle]
-            ])
+            ShowCreation(obj)for obj in [line_1, line_2, angle]
+        ])
 
         # Set update function to angle
 
         angle.add_updater(
-                    lambda m: m.become(
-                            Arc(
-                                radius=self.radius,
-                                start_angle=line_1.get_angle(),
-                                angle =line_2.get_angle(),
-                                color=self.radius_color
-                            )
-                        )
+            lambda m: m.become(
+                Arc(
+                    radius=self.radius,
+                    start_angle=line_1.get_angle(),
+                    angle=line_2.get_angle(),
+                    color=self.radius_color
+                )
             )
-        # Remember to add the objects again to the screen 
+        )
+        # Remember to add the objects again to the screen
         # when you add the add_updater method.
         self.add(angle)
 
         # self.play(theta.increment_value,self.increment_theta)
-        self.play(theta.set_value,self.final_theta)
+        self.play(theta.set_value, self.final_theta)
 
         self.wait()
-        
+
 # dt = 1 / fps
 
+
 class UpdateFunctionWithDt1(Scene):
-    CONFIG={
+    CONFIG = {
         "amp": 2.3,
         "t_offset": 0,
         "rate": TAU/4,
-        "sine_graph_config":{
+        "sine_graph_config": {
             "x_min": -TAU/2,
             "x_max": TAU/2,
             "color": RED,
-            },
-        "wait_time":15,
+        },
+        "wait_time": 15,
     }
- 
+
     def construct(self):
 
         def update_curve(c, dt):
@@ -2997,7 +3175,6 @@ class UpdateFunctionWithDt1(Scene):
             # Every frame, the t_offset increase rate / fps
             self.t_offset += rate
 
-       
         c = self.get_sin_graph(0)
 
         self.play(ShowCreation(c))
@@ -3013,7 +3190,7 @@ class UpdateFunctionWithDt1(Scene):
 
         # The animation begins
         self.wait(1)
-        
+
         c.remove_updater(update_curve)
         self.wait()
 
@@ -3023,28 +3200,30 @@ class UpdateFunctionWithDt1(Scene):
 
     def get_sin_graph(self, dx):
         c = FunctionGraph(
-                lambda x: self.amp * np.sin(x - dx),
-                **self.sine_graph_config
-                )
+            lambda x: self.amp * np.sin(x - dx),
+            **self.sine_graph_config
+        )
         return c
+
 
 class UpdateFunctionWithDt2(Scene):
     def construct(self):
-        #Se objects
-        self.t_offset=0
-        orbit=Ellipse(color=GREEN).scale(2.5)
-        planet=Dot()
-        text=TextMobject("Update function")
+        # Se objects
+        self.t_offset = 0
+        orbit = Ellipse(color=GREEN).scale(2.5)
+        planet = Dot()
+        text = TextMobject("Update function")
 
         planet.move_to(orbit.point_from_proportion(0))
 
-        def update_planet(mob,dt):
-            rate=dt*0.3
-            mob.move_to(orbit.point_from_proportion((self.t_offset + rate)%1))
+        def update_planet(mob, dt):
+            rate = dt*0.3
+            mob.move_to(orbit.point_from_proportion(
+                (self.t_offset + rate) % 1))
             self.t_offset += rate
 
         planet.add_updater(update_planet)
-        self.add(orbit,planet)
+        self.add(orbit, planet)
         self.wait(4)
         self.play(Write(text))
         self.wait(4)
@@ -3053,214 +3232,224 @@ class UpdateFunctionWithDt2(Scene):
         self.play(FadeOut(text))
         self.wait()
 
+
 class UpdateCurve(Scene):
     def construct(self):
         def f(dx=1):
             return FunctionGraph(lambda x: 2*np.exp(-2 * (x - dx) ** 2))
 
         c = f()
-        axes=Axes(y_min=-3, y_max=3)
- 
+        axes = Axes(y_min=-3, y_max=3)
+
         def update_curve(c, alpha):
             dx = interpolate(1, 4, alpha)
             c_c = f(dx)
             c.become(c_c)
- 
+
         self.play(ShowCreation(axes), ShowCreation(c))
         self.wait()
         # self.play(UpdateFromAlphaFunc(c,update_curve),rate_func=there_and_back,run_time=4)
-        self.play(c.shift,RIGHT*3,rate_func=there_and_back,run_time=4)
+        self.play(c.shift, RIGHT*3, rate_func=there_and_back, run_time=4)
         self.wait()
-        
+
+
 class InterpolateColorScene(Scene):
     def construct(self):
         shape = Square(fill_opacity=1).scale(2)
         shape.set_color(RED)
 
-        def update_color(mob,alpha):
-            dcolor = interpolate(0,mob.alpha_color,alpha)
-            mob.set_color(self.interpolate_color_mob(mob.initial_state,shape.new_color,dcolor))
+        def update_color(mob, alpha):
+            dcolor = interpolate(0, mob.alpha_color, alpha)
+            mob.set_color(self.interpolate_color_mob(
+                mob.initial_state, shape.new_color, dcolor))
 
         self.add(shape)
-        self.change_init_values(shape,TEAL,0.5)
-        self.play(UpdateFromAlphaFunc(shape,update_color))
+        self.change_init_values(shape, TEAL, 0.5)
+        self.play(UpdateFromAlphaFunc(shape, update_color))
 
-        self.change_init_values(shape,PINK,0.9)
-        self.play(UpdateFromAlphaFunc(shape,update_color))
+        self.change_init_values(shape, PINK, 0.9)
+        self.play(UpdateFromAlphaFunc(shape, update_color))
         self.wait()
 
-    def interpolate_color_mob(self,mob,color,alpha):
-        return interpolate_color(mob.get_color(),color,alpha)
+    def interpolate_color_mob(self, mob, color, alpha):
+        return interpolate_color(mob.get_color(), color, alpha)
 
-    def change_init_values(self,mob,color,alpha):
+    def change_init_values(self, mob, color, alpha):
         mob.initial_state = mob.copy()
         mob.new_color = color
         mob.alpha_color = alpha
 
+
 class SuccessionExample1Fail(Scene):
     def construct(self):
-        number_line=NumberLine(x_min=-2,x_max=2)
-        text=TextMobject("Text")\
-             .next_to(number_line,DOWN)
-        dashed_line=DashedLine(
-                                number_line.get_left(),
-                                number_line.get_right(),
-                                color=YELLOW,
-                              ).set_stroke(width=11)
+        number_line = NumberLine(x_min=-2, x_max=2)
+        text = TextMobject("Text")\
+            .next_to(number_line, DOWN)
+        dashed_line = DashedLine(
+            number_line.get_left(),
+            number_line.get_right(),
+            color=YELLOW,
+        ).set_stroke(width=11)
 
         self.add(number_line)
         self.wait(0.3)
         self.play(
-                ShowCreationThenDestruction(
-                                dashed_line,
-                                submobject_mode="all_at_once"
-                                            ),
-                run_time=5
-            )
+            ShowCreationThenDestruction(
+                dashed_line,
+                submobject_mode="all_at_once"
+            ),
+            run_time=5
+        )
         self.play(Write(text))
 
         self.wait()
 
+
 class SuccessionExample1(Scene):
     def construct(self):
-        number_line=NumberLine(x_min=-2,x_max=2)
-        text=TextMobject("Text")\
-             .next_to(number_line,DOWN)
-        dashed_line=DashedLine(
-                                number_line.get_left(),
-                                number_line.get_right(),
-                                color=YELLOW,
-                              ).set_stroke(width=11)
+        number_line = NumberLine(x_min=-2, x_max=2)
+        text = TextMobject("Text")\
+            .next_to(number_line, DOWN)
+        dashed_line = DashedLine(
+            number_line.get_left(),
+            number_line.get_right(),
+            color=YELLOW,
+        ).set_stroke(width=11)
 
         self.add(number_line)
         self.wait(0.3)
-        
+
         self.play(
-                    LaggedStart(
-                        *[ShowCreationThenDestruction(dashed_segment)
-                        for dashed_segment in dashed_line],
-                        run_time=5
-                    ),
-                    AnimationGroup(
-                        Animation(Mobject(),run_time=2.1),
-                        Write(text),lag_ratio=1
-                    )
+            LaggedStart(
+                *[ShowCreationThenDestruction(dashed_segment)
+                  for dashed_segment in dashed_line],
+                run_time=5
+            ),
+            AnimationGroup(
+                Animation(Mobject(), run_time=2.1),
+                Write(text), lag_ratio=1
             )
+        )
         self.wait()
+
 
 class SuccessionExample2(Scene):
     def construct(self):
-        number_line=NumberLine(x_min=-2,x_max=2)
-        triangle=RegularPolygon(3,start_angle=-PI/2)\
-                   .scale(0.2)\
-                   .next_to(number_line.get_left(),UP,buff=SMALL_BUFF)
-        text_1=TextMobject("1")\
-               .next_to(number_line.get_tick(-1),DOWN)
-        text_2=TextMobject("2")\
-               .next_to(number_line.get_tick(0),DOWN)
-        text_3=TextMobject("3")\
-               .next_to(number_line.get_tick(1),DOWN)
-        text_4=TextMobject("4")\
-               .next_to(number_line.get_tick(2),DOWN)
+        number_line = NumberLine(x_min=-2, x_max=2)
+        triangle = RegularPolygon(3, start_angle=-PI/2)\
+            .scale(0.2)\
+            .next_to(number_line.get_left(), UP, buff=SMALL_BUFF)
+        text_1 = TextMobject("1")\
+            .next_to(number_line.get_tick(-1), DOWN)
+        text_2 = TextMobject("2")\
+            .next_to(number_line.get_tick(0), DOWN)
+        text_3 = TextMobject("3")\
+            .next_to(number_line.get_tick(1), DOWN)
+        text_4 = TextMobject("4")\
+            .next_to(number_line.get_tick(2), DOWN)
 
         self.add(number_line)
         self.play(ShowCreation(triangle))
         self.wait(0.3)
-        
+
         self.play(
-                    ApplyMethod(triangle.shift,RIGHT*4,rate_func=linear,run_time=4),
-                    AnimationGroup(
-                        Animation(Mobject(),run_time=1),
-                        Write(text_1),lag_ratio=1
-                    ),
-                    AnimationGroup(
-                        Animation(Mobject(),run_time=2),
-                        Write(text_2),lag_ratio=1
-                    ),
-                    AnimationGroup(
-                        Animation(Mobject(),run_time=3),
-                        Write(text_3),lag_ratio=1
-                    ),
-                    AnimationGroup(
-                        Animation(Mobject(),run_time=4),
-                        Write(text_4),lag_ratio=1
-                    )
+            ApplyMethod(triangle.shift, RIGHT*4, rate_func=linear, run_time=4),
+            AnimationGroup(
+                Animation(Mobject(), run_time=1),
+                Write(text_1), lag_ratio=1
+            ),
+            AnimationGroup(
+                Animation(Mobject(), run_time=2),
+                Write(text_2), lag_ratio=1
+            ),
+            AnimationGroup(
+                Animation(Mobject(), run_time=3),
+                Write(text_3), lag_ratio=1
+            ),
+            AnimationGroup(
+                Animation(Mobject(), run_time=4),
+                Write(text_4), lag_ratio=1
             )
+        )
 
         self.wait()
+
 
 class SuccessionExample2Compact(Scene):
     def construct(self):
-        number_line=NumberLine(x_min=-2,x_max=2)
-        triangle=RegularPolygon(3,start_angle=-PI/2)\
-                   .scale(0.2)\
-                   .next_to(number_line.get_left(),UP,buff=SMALL_BUFF)
-        numbers=VGroup(
-             *[TextMobject("%s"%i)\
-              .next_to(number_line.get_tick(i-2),DOWN) for i in range(1,5)]
-            )
+        number_line = NumberLine(x_min=-2, x_max=2)
+        triangle = RegularPolygon(3, start_angle=-PI/2)\
+            .scale(0.2)\
+            .next_to(number_line.get_left(), UP, buff=SMALL_BUFF)
+        numbers = VGroup(
+            *[TextMobject("%s" % i)
+              .next_to(number_line.get_tick(i-2), DOWN) for i in range(1, 5)]
+        )
 
         self.add(number_line)
         self.play(ShowCreation(triangle))
         self.wait(0.3)
-        
+
         self.play(
-                    ApplyMethod(triangle.shift,RIGHT*4,rate_func=linear,run_time=4),
-                    *[AnimationGroup(
-                        Animation(Mobject(),run_time=i+1),
-                        Write(numbers[i]),lag_ratio=1
-                    )for i in range(4)],
-            )
+            ApplyMethod(triangle.shift, RIGHT*4, rate_func=linear, run_time=4),
+            *[AnimationGroup(
+                Animation(Mobject(), run_time=i+1),
+                Write(numbers[i]), lag_ratio=1
+            )for i in range(4)],
+        )
 
         self.wait()
+
 
 class SuccessionExample3(Scene):
     def construct(self):
-        number_line=NumberLine(x_min=-2,x_max=2)
-        text_1=TextMobject("Theorem of")\
-             .next_to(number_line,DOWN)
-        text_2=TextMobject("Beethoven")\
-             .next_to(number_line,DOWN)
-        dashed_line=DashedLine(
-                                number_line.get_left(),
-                                number_line.get_right(),
-                                color=YELLOW,
-                              ).set_stroke(width=11)
+        number_line = NumberLine(x_min=-2, x_max=2)
+        text_1 = TextMobject("Theorem of")\
+            .next_to(number_line, DOWN)
+        text_2 = TextMobject("Beethoven")\
+            .next_to(number_line, DOWN)
+        dashed_line = DashedLine(
+            number_line.get_left(),
+            number_line.get_right(),
+            color=YELLOW,
+        ).set_stroke(width=11)
 
-        self.add(number_line,text_1)
-        
+        self.add(number_line, text_1)
+
         self.play(
-                    LaggedStart(
-                        *[ShowCreationThenDestruction(dashed_segment)
-                        for dashed_segment in dashed_line],
-                        run_time=5
-                    ),
-                    AnimationGroup(
-                        Animation(Mobject(),run_time=2.1),
-                        ReplacementTransform(text_1,text_2),lag_ratio=1
-                    )
+            LaggedStart(
+                *[ShowCreationThenDestruction(dashed_segment)
+                  for dashed_segment in dashed_line],
+                run_time=5
+            ),
+            AnimationGroup(
+                Animation(Mobject(), run_time=2.1),
+                ReplacementTransform(text_1, text_2), lag_ratio=1
             )
+        )
 
         self.wait()
 
+
 class BecomeTest(Scene):
     def construct(self):
-        c=Circle()
-        l=Line(LEFT,RIGHT)
+        c = Circle()
+        l = Line(LEFT, RIGHT)
 
         self.play(ShowCreation(c))
         self.wait()
         c.become(l)
         self.wait()
 
+
 class FollowTest(Scene):
     def construct(self):
-        p=Dot()
-        c=Circle()
+        p = Dot()
+        c = Circle()
 
         self.play(
             ShowCreation(c),
-            UpdateFromAlphaFunc(p,lambda p: p.move_to(c.get_end()),alpha=0.1)
+            UpdateFromAlphaFunc(p, lambda p: p.move_to(c.get_end()), alpha=0.1)
         )
         self.wait()
 
@@ -3273,52 +3462,55 @@ class FollowTest(Scene):
 # else:
 #     from manimlib.imports import *
 
+
 class SimpleMmodN(Scene):
     def construct(self):
-        circle,lines = self.get_m_mod_n_objects(3,60)
-        self.play(FadeIn(VGroup(circle,lines)))
+        circle, lines = self.get_m_mod_n_objects(3, 60)
+        self.play(FadeIn(VGroup(circle, lines)))
 
-    def get_m_mod_n_objects(self,x,y):
+    def get_m_mod_n_objects(self, x, y):
         circle = Circle().set_height(FRAME_HEIGHT)
         circle.scale(0.85)
         lines = VGroup()
         for i in range(y):
-            start_point = circle.point_from_proportion((i%y)/y)
-            end_point = circle.point_from_proportion(((i*x)%y)/y)
-            line = Line(start_point,end_point).set_stroke(width=1)
+            start_point = circle.point_from_proportion((i % y)/y)
+            end_point = circle.point_from_proportion(((i*x) % y)/y)
+            line = Line(start_point, end_point).set_stroke(width=1)
             lines.add(line)
-        return [circle,lines]
+        return [circle, lines]
+
 
 class MmodN(SimpleMmodN):
     def construct(self):
         circle = Circle().set_height(FRAME_HEIGHT)
         circle.scale(0.85)
-        circle.to_edge(RIGHT,buff=1)
+        circle.to_edge(RIGHT, buff=1)
         self.play(ShowCreation(circle))
-        for x,y in [(2,100),(3,60),(4,60),(5,70)]:
-            self.Example3b1b(self.get_m_mod_n_objects(x,y),x,y)
+        for x, y in [(2, 100), (3, 60), (4, 60), (5, 70)]:
+            self.Example3b1b(self.get_m_mod_n_objects(x, y), x, y)
         self.play(FadeOut(circle))
-       
-    def Example3b1b(self,obj,x,y):
-        circle,lines = obj
+
+    def Example3b1b(self, obj, x, y):
+        circle, lines = obj
         lines.set_stroke(width=1)
-        label = TexMobject(f"f({x},{y})").scale(2.5).to_edge(LEFT,buff=1)
-        VGroup(circle,lines).to_edge(RIGHT,buff=1)
+        label = TexMobject(f"f({x},{y})").scale(2.5).to_edge(LEFT, buff=1)
+        VGroup(circle, lines).to_edge(RIGHT, buff=1)
         self.play(
-                Write(label),
-                self.LaggedStartLines(lines)
-            )
+            Write(label),
+            self.LaggedStartLines(lines)
+        )
         self.wait()
         lines_c = lines.copy()
         lines_c.set_color(PINK)
         lines_c.set_stroke(width=3)
         self.play(
-                self.LaggedStartShowCrationThenDestructionLines(lines_c)
-                )
+            self.LaggedStartShowCrationThenDestructionLines(lines_c)
+        )
         self.wait()
-        self.play(FadeOut(lines),Write(label,rate_func=lambda t: smooth(1-t)))
+        self.play(FadeOut(lines), Write(
+            label, rate_func=lambda t: smooth(1-t)))
 
-    def LaggedStartLines(self,lines):
+    def LaggedStartLines(self, lines):
         # if old_version:
         #     return LaggedStart(
         #             ShowCreation,lines,
@@ -3326,11 +3518,11 @@ class MmodN(SimpleMmodN):
         #         )
         # else:
         return LaggedStartMap(
-                ShowCreation,lines,
-                run_time=4
-            )
+            ShowCreation, lines,
+            run_time=4
+        )
 
-    def LaggedStartShowCrationThenDestructionLines(self,lines):
+    def LaggedStartShowCrationThenDestructionLines(self, lines):
         # if old_version:
         #     return LaggedStart(
         #             ShowCreationThenDestruction,lines,
@@ -3338,11 +3530,12 @@ class MmodN(SimpleMmodN):
         #         )
         # else:
         return LaggedStartMap(
-                ShowCreationThenDestruction,lines,
-                run_time=6
-            )
+            ShowCreationThenDestruction, lines,
+            run_time=6
+        )
 
 #######################################################################################
+
 
 old_version = False
 
@@ -3350,368 +3543,386 @@ if old_version:
     from big_ol_pile_of_manim_imports import *
 else:
     from manimlib.imports import *
-    
+
+
 class EpicycloidSceneSimple(Scene):
     def construct(self):
-       radius1 = 2.4
-       radius2 = radius1/3
-       self.epy(radius1,radius2)
+        radius1 = 2.4
+        radius2 = radius1/3
+        self.epy(radius1, radius2)
 
-    def epy(self,r1,r2):
+    def epy(self, r1, r2):
         # Manim circle
-        c1 = Circle(radius=r1,color=BLUE)
+        c1 = Circle(radius=r1, color=BLUE)
         # Small circle
-        c2 = Circle(radius=r2,color=PURPLE).rotate(PI)
-        c2.next_to(c1,RIGHT,buff=0)
+        c2 = Circle(radius=r2, color=PURPLE).rotate(PI)
+        c2.next_to(c1, RIGHT, buff=0)
         c2.start = c2.copy()
         # Dot
         # .points[0] return the start path coordinate
         # .points[-1] return the end path coordinate
-        dot = Dot(c2.points[0],color=RED)
+        dot = Dot(c2.points[0], color=RED)
         # Line
-        line = Line(c2.get_center(),dot.get_center()).set_stroke(BLACK,2.5)
+        line = Line(c2.get_center(), dot.get_center()).set_stroke(BLACK, 2.5)
         # Path
         path = VMobject(color=RED)
         # Path can't have the same coord twice, so we have to dummy point
-        path.set_points_as_corners([dot.get_center(),dot.get_center()+UP*0.001])
+        path.set_points_as_corners(
+            [dot.get_center(), dot.get_center()+UP*0.001])
         # Path group
-        path_group = VGroup(line,dot,path)
+        path_group = VGroup(line, dot, path)
         # Alpha, from 0 to 1:
         alpha = ValueTracker(0)
-        
-        self.play(ShowCreation(line),ShowCreation(c1),ShowCreation(c2),GrowFromCenter(dot))
+
+        self.play(ShowCreation(line), ShowCreation(c1),
+                  ShowCreation(c2), GrowFromCenter(dot))
 
         # update function of path_group
         def update_group(group):
-            l,mob,previus_path = group
+            l, mob, previus_path = group
             mob.move_to(c2.points[0])
             old_path = path.copy()
             # See manimlib/mobject/types/vectorized_mobject.py
-            old_path.append_vectorized_mobject(Line(old_path.points[-1],mob.get_center()))
+            old_path.append_vectorized_mobject(
+                Line(old_path.points[-1], mob.get_center()))
             old_path.make_smooth()
-            l.put_start_and_end_on(c2.get_center(),mob.get_center())
+            l.put_start_and_end_on(c2.get_center(), mob.get_center())
             path.become(old_path)
 
         # update function of small circle
         def update_c2(c):
             c.become(c.start)
-            c.rotate(TAU*alpha.get_value(),about_point=c1.get_center())
-            c.rotate(TAU*(r1/r2)*alpha.get_value(),about_point=c.get_center())
+            c.rotate(TAU*alpha.get_value(), about_point=c1.get_center())
+            c.rotate(TAU*(r1/r2)*alpha.get_value(), about_point=c.get_center())
 
         path_group.add_updater(update_group)
         c2.add_updater(update_c2)
-        self.add(c2,path_group)
+        self.add(c2, path_group)
         self.play(
-                alpha.set_value,1,
-                rate_func=linear,
-                run_time=6
-                )
+            alpha.set_value, 1,
+            rate_func=linear,
+            run_time=6
+        )
         self.wait(2)
         c2.clear_updaters()
         path_group.clear_updaters()
-        self.play(FadeOut(VGroup(c1,c2,path_group)))
+        self.play(FadeOut(VGroup(c1, c2, path_group)))
 
 
 class EpicycloidSceneComplete(Scene):
     CONFIG = {
-            "camera_config": {"background_color":WHITE},
-            "radius":2.4,
-            "color_path":RED,
-            "divisions":[3,4,5,6]
+        "camera_config": {"background_color": WHITE},
+        "radius": 2.4,
+        "color_path": RED,
+        "divisions": [3, 4, 5, 6]
     }
+
     def construct(self):
         self.show_axes()
         self.show_animation()
 
-    def show_axes(self,partition=3):
+    def show_axes(self, partition=3):
         step_size = self.radius/partition
         # See all options in manimlib/mobject/number_line.py
         x_axis = NumberLine(
-                x_min = -step_size*7, 
-                x_max = step_size*7.8,
-                unit_size = step_size,
-                include_tip = True,
-                include_numbers = True,
-                number_scale_val = 0.5,
-                color=BLACK,
-                exclude_zero_from_default_numbers = True,
-                decimal_number_config = {"color":BLACK}
-                )
+            x_min=-step_size*7,
+            x_max=step_size*7.8,
+            unit_size=step_size,
+            include_tip=True,
+            include_numbers=True,
+            number_scale_val=0.5,
+            color=BLACK,
+            exclude_zero_from_default_numbers=True,
+            decimal_number_config={"color": BLACK}
+        )
         y_axis = NumberLine(
-                x_min = -step_size*5, 
-                x_max = step_size*5.5,
-                unit_size = step_size,
-                include_tip = True,
-                include_numbers = True,
-                number_scale_val = 0.5,
-                color=BLACK,
-                label_direction = UP,
-                exclude_zero_from_default_numbers = True,
-                decimal_number_config = {"color":BLACK}
-                )
-        y_axis.rotate(PI/2,about_point = ORIGIN)
+            x_min=-step_size*5,
+            x_max=step_size*5.5,
+            unit_size=step_size,
+            include_tip=True,
+            include_numbers=True,
+            number_scale_val=0.5,
+            color=BLACK,
+            label_direction=UP,
+            exclude_zero_from_default_numbers=True,
+            decimal_number_config={"color": BLACK}
+        )
+        y_axis.rotate(PI/2, about_point=ORIGIN)
         # rotate labels in y_axis
         for number in y_axis.numbers:
-            number.rotate(-PI/2,about_point = number.get_center())
+            number.rotate(-PI/2, about_point=number.get_center())
 
-        self.play(Write(x_axis),Write(y_axis))
+        self.play(Write(x_axis), Write(y_axis))
         self.wait()
 
     def show_animation(self):
         c = True
         for i in self.divisions:
-            self.epy(self.radius,self.radius/i,c)
+            self.epy(self.radius, self.radius/i, c)
             c = False
-        
-    def epy(self,r1,r2,animation):
+
+    def epy(self, r1, r2, animation):
         # Manim circle
-        c1 = Circle(radius=r1,color=BLUE)
+        c1 = Circle(radius=r1, color=BLUE)
         # Small circle
-        c2 = Circle(radius=r2,color=BLACK).rotate(PI)
-        c2.next_to(c1,RIGHT,buff=0)
+        c2 = Circle(radius=r2, color=BLACK).rotate(PI)
+        c2.next_to(c1, RIGHT, buff=0)
         c2.start = c2.copy()
         # Dot
-        dot = Dot(c2.point_from_proportion(0),color=self.color_path)
+        dot = Dot(c2.point_from_proportion(0), color=self.color_path)
         # Line
-        line = Line(c2.get_center(),dot.get_center()).set_stroke(BLACK,2.5)
+        line = Line(c2.get_center(), dot.get_center()).set_stroke(BLACK, 2.5)
         # Path
         path = VMobject(color=self.color_path)
-        path.set_points_as_corners([dot.get_center(),dot.get_center()+UP*0.001])
+        path.set_points_as_corners(
+            [dot.get_center(), dot.get_center()+UP*0.001])
         # Path group
-        path_group = VGroup(line,dot,path)
+        path_group = VGroup(line, dot, path)
         # Alpha
         alpha = ValueTracker(0)
-        
+
         # If the animation start then shows the animation
         if animation:
-            self.play(ShowCreation(line),ShowCreation(c1),ShowCreation(c2),GrowFromCenter(dot))
+            self.play(ShowCreation(line), ShowCreation(c1),
+                      ShowCreation(c2), GrowFromCenter(dot))
         else:
             self.remove(self.dot)
             self.add_foreground_mobjects(dot)
-            self.play(ShowCreation(line),ShowCreation(c2))
+            self.play(ShowCreation(line), ShowCreation(c2))
             self.remove_foreground_mobjects(dot)
-            self.add(c1,c2,path)
+            self.add(c1, c2, path)
 
         # update function of path_group
         def update_group(group):
-            l,mob,previus_path = group
+            l, mob, previus_path = group
             mob.move_to(c2.point_from_proportion(0))
             old_path = path.copy()
-            old_path.append_vectorized_mobject(Line(old_path.points[-1],dot.get_center()))
+            old_path.append_vectorized_mobject(
+                Line(old_path.points[-1], dot.get_center()))
             old_path.make_smooth()
-            l.put_start_and_end_on(c2.get_center(),dot.get_center())
+            l.put_start_and_end_on(c2.get_center(), dot.get_center())
             path.become(old_path)
 
         # update function of small circle
         def update_c2(c):
             c.become(c.start)
-            c.rotate(TAU*alpha.get_value(),about_point=c1.get_center())
-            c.rotate(TAU*(r1/r2)*alpha.get_value(),about_point=c.get_center())
+            c.rotate(TAU*alpha.get_value(), about_point=c1.get_center())
+            c.rotate(TAU*(r1/r2)*alpha.get_value(), about_point=c.get_center())
 
         path_group.add_updater(update_group)
         c2.add_updater(update_c2)
-        self.add(c2,path_group)
+        self.add(c2, path_group)
         self.play(
-                alpha.set_value,1,
-                rate_func=linear,
-                run_time=6
-                )
+            alpha.set_value, 1,
+            rate_func=linear,
+            run_time=6
+        )
         self.wait()
         c2.clear_updaters()
         path_group.clear_updaters()
         self.dot = dot
-        self.play(FadeOut(path),FadeOut(c2),FadeOut(line))
+        self.play(FadeOut(path), FadeOut(c2), FadeOut(line))
 
 # With alpha parameter in updater function
 
+
 class EpicycloidSceneSimple_alpha(Scene):
     def construct(self):
-       radius1 = 2.4
-       radius2 = radius1/3
-       self.epy(radius1,radius2)
+        radius1 = 2.4
+        radius2 = radius1/3
+        self.epy(radius1, radius2)
 
-    def epy(self,r1,r2):
+    def epy(self, r1, r2):
         # Manim circle
-        c1 = Circle(radius=r1,color=BLUE)
+        c1 = Circle(radius=r1, color=BLUE)
         # Small circle
-        c2 = Circle(radius=r2,color=PURPLE).rotate(PI)
-        c2.next_to(c1,RIGHT,buff=0)
+        c2 = Circle(radius=r2, color=PURPLE).rotate(PI)
+        c2.next_to(c1, RIGHT, buff=0)
         c2.start = c2.copy()
         # Dot
-        dot = Dot(c2.points[0],color=YELLOW)
+        dot = Dot(c2.points[0], color=YELLOW)
         # Line
-        line = Line(c2.get_center(),dot.get_center()).set_stroke(BLACK,2.5)
+        line = Line(c2.get_center(), dot.get_center()).set_stroke(BLACK, 2.5)
         # Path
         path = VMobject(color=RED)
-        path.set_points_as_corners([dot.get_center(),dot.get_center()+UP*0.001])
+        path.set_points_as_corners(
+            [dot.get_center(), dot.get_center()+UP*0.001])
         # Path group
-        path_group = VGroup(line,dot,path)
-        
-        self.play(ShowCreation(line),ShowCreation(c1),ShowCreation(c2),GrowFromCenter(dot))
+        path_group = VGroup(line, dot, path)
+
+        self.play(ShowCreation(line), ShowCreation(c1),
+                  ShowCreation(c2), GrowFromCenter(dot))
 
         # update function of path_group
         def update_group(group):
-            l,mob,previus_path = group
+            l, mob, previus_path = group
             mob.move_to(c2.points[0])
             old_path = path.copy()
-            old_path.append_vectorized_mobject(Line(old_path.points[-1],dot.get_center()))
+            old_path.append_vectorized_mobject(
+                Line(old_path.points[-1], dot.get_center()))
             old_path.make_smooth()
-            l.put_start_and_end_on(c2.get_center(),dot.get_center())
+            l.put_start_and_end_on(c2.get_center(), dot.get_center())
             path.become(old_path)
 
         # update function of small circle
-        def update_c2(c,alpha):
+        def update_c2(c, alpha):
             c.become(c.start)
-            c.rotate(TAU*alpha,about_point=c1.get_center())
-            c.rotate(TAU*(r1/r2)*alpha,about_point=c.get_center())
+            c.rotate(TAU*alpha, about_point=c1.get_center())
+            c.rotate(TAU*(r1/r2)*alpha, about_point=c.get_center())
 
         path_group.add_updater(update_group)
         self.add(path_group)
-        
+
         self.play(
-                UpdateFromAlphaFunc(c2,update_c2,rate_func=linear,run_time=6)
-                )
+            UpdateFromAlphaFunc(c2, update_c2, rate_func=linear, run_time=6)
+        )
         self.wait()
 
 
 class EpicycloidSceneComplete_alpha(Scene):
     CONFIG = {
-            "camera_config": {"background_color":WHITE},
-            "radius":2.4,
-            "color_path":RED,
-            "divisions":[3,4,5,6]
+        "camera_config": {"background_color": WHITE},
+        "radius": 2.4,
+        "color_path": RED,
+        "divisions": [3, 4, 5, 6]
     }
+
     def construct(self):
         self.show_axes()
         self.show_animation()
 
-    def show_axes(self,partition=3):
+    def show_axes(self, partition=3):
         step_size = self.radius/partition
         # See all options in manimlib/mobject/number_line.py
         x_axis = NumberLine(
-                x_min = -step_size*7, 
-                x_max = step_size*7.8,
-                unit_size = step_size,
-                include_tip = True,
-                include_numbers = True,
-                number_scale_val = 0.5,
-                color=BLACK,
-                exclude_zero_from_default_numbers = True,
-                decimal_number_config = {"color":BLACK}
-                )
+            x_min=-step_size*7,
+            x_max=step_size*7.8,
+            unit_size=step_size,
+            include_tip=True,
+            include_numbers=True,
+            number_scale_val=0.5,
+            color=BLACK,
+            exclude_zero_from_default_numbers=True,
+            decimal_number_config={"color": BLACK}
+        )
         y_axis = NumberLine(
-                x_min = -step_size*5, 
-                x_max = step_size*5.5,
-                unit_size = step_size,
-                include_tip = True,
-                include_numbers = True,
-                number_scale_val = 0.5,
-                color=BLACK,
-                label_direction = UP,
-                exclude_zero_from_default_numbers = True,
-                decimal_number_config = {"color":BLACK}
-                )
-        y_axis.rotate(PI/2,about_point = ORIGIN)
+            x_min=-step_size*5,
+            x_max=step_size*5.5,
+            unit_size=step_size,
+            include_tip=True,
+            include_numbers=True,
+            number_scale_val=0.5,
+            color=BLACK,
+            label_direction=UP,
+            exclude_zero_from_default_numbers=True,
+            decimal_number_config={"color": BLACK}
+        )
+        y_axis.rotate(PI/2, about_point=ORIGIN)
         # rotate labels in y_axis
         for number in y_axis.numbers:
-            number.rotate(-PI/2,about_point = number.get_center())
+            number.rotate(-PI/2, about_point=number.get_center())
 
-        self.play(Write(x_axis),Write(y_axis))
+        self.play(Write(x_axis), Write(y_axis))
         self.wait()
 
     def show_animation(self):
         c = True
         for i in self.divisions:
-            self.epy(self.radius,self.radius/i,c)
+            self.epy(self.radius, self.radius/i, c)
             c = False
-        
-    def epy(self,r1,r2,animation):
+
+    def epy(self, r1, r2, animation):
         # Manim circle
-        c1 = Circle(radius=r1,color=BLUE)
+        c1 = Circle(radius=r1, color=BLUE)
         # Small circle
-        c2 = Circle(radius=r2,color=BLACK).rotate(PI)
-        c2.next_to(c1,RIGHT,buff=0)
+        c2 = Circle(radius=r2, color=BLACK).rotate(PI)
+        c2.next_to(c1, RIGHT, buff=0)
         c2.start = c2.copy()
         # Dot
-        dot = Dot(c2.points[0],color=self.color_path)
+        dot = Dot(c2.points[0], color=self.color_path)
         # Line
-        line = Line(c2.get_center(),dot.get_center()).set_stroke(BLACK,2.5)
+        line = Line(c2.get_center(), dot.get_center()).set_stroke(BLACK, 2.5)
         # Path
         path = VMobject(color=self.color_path)
-        path.set_points_as_corners([dot.get_center(),dot.get_center()+UP*0.001])
+        path.set_points_as_corners(
+            [dot.get_center(), dot.get_center()+UP*0.001])
         # Path group
-        path_group = VGroup(line,dot,path)
-        
+        path_group = VGroup(line, dot, path)
+
         # If the animation start then shows the animation
         if animation:
-            self.play(ShowCreation(line),ShowCreation(c1),ShowCreation(c2),GrowFromCenter(dot))
+            self.play(ShowCreation(line), ShowCreation(c1),
+                      ShowCreation(c2), GrowFromCenter(dot))
         else:
             self.remove(self.dot)
             self.add_foreground_mobjects(dot)
-            self.play(ShowCreation(line),ShowCreation(c2))
+            self.play(ShowCreation(line), ShowCreation(c2))
             self.remove_foreground_mobjects(dot)
-            self.add(c1,c2,path)
+            self.add(c1, c2, path)
 
         # update function of path_group
         def update_group(group):
-            l,mob,previus_path = group
+            l, mob, previus_path = group
             mob.move_to(c2.points[0])
             old_path = path.copy()
-            old_path.append_vectorized_mobject(Line(old_path.points[-1],dot.get_center()))
+            old_path.append_vectorized_mobject(
+                Line(old_path.points[-1], dot.get_center()))
             old_path.make_smooth()
-            l.put_start_and_end_on(c2.get_center(),dot.get_center())
+            l.put_start_and_end_on(c2.get_center(), dot.get_center())
             path.become(old_path)
 
         # update function of small circle
-        def update_c2(c,alpha):
+        def update_c2(c, alpha):
             c.become(c.start)
-            c.rotate(TAU*alpha,about_point=c1.get_center())
-            c.rotate(TAU*(r1/r2)*alpha,about_point=c.get_center())
+            c.rotate(TAU*alpha, about_point=c1.get_center())
+            c.rotate(TAU*(r1/r2)*alpha, about_point=c.get_center())
 
         path_group.add_updater(update_group)
         self.add(path_group)
-        
+
         self.play(
-                UpdateFromAlphaFunc(c2,update_c2,rate_func=linear,run_time=5)
-                )
+            UpdateFromAlphaFunc(c2, update_c2, rate_func=linear, run_time=5)
+        )
         self.wait()
         self.dot = dot
-        self.play(FadeOut(path),FadeOut(c2),FadeOut(line))
+        self.play(FadeOut(path), FadeOut(c2), FadeOut(line))
 
 ############################################################################################
 
 # update eamples
+
 
 class TangentVector(Scene):
     def construct(self):
         figure = Ellipse(color=RED).scale(2)
         dot = Dot()
         alpha = ValueTracker(0)
-        vector = self.get_tangent_vector(alpha.get_value(),figure,scale=2)
+        vector = self.get_tangent_vector(alpha.get_value(), figure, scale=2)
         dot.add_updater(lambda m: m.move_to(vector.get_start()))
         self.play(
             ShowCreation(figure),
             GrowFromCenter(dot),
             GrowArrow(vector)
-            )
+        )
         vector.add_updater(
             lambda m: m.become(
-                    self.get_tangent_vector(alpha.get_value()%1,figure,scale=2)
-                )
+                self.get_tangent_vector(alpha.get_value() % 1, figure, scale=2)
             )
-        self.add(vector,dot)
+        )
+        self.add(vector, dot)
         self.play(alpha.increment_value, 2, run_time=8, rate_func=linear)
         self.wait()
 
     def get_tangent_vector(self, proportion, curve, dx=0.001, scale=1):
         coord_i = curve.point_from_proportion(proportion)
         coord_f = curve.point_from_proportion(proportion + dx)
-        reference_line = Line(coord_i,coord_f)
+        reference_line = Line(coord_i, coord_f)
         unit_vector = reference_line.get_unit_vector() * scale
         vector = Arrow(coord_i, coord_i + unit_vector, buff=0)
         return vector
 
 # TEST - Make a line tangent to the curve
+
 
 class D0t(Dot):
     CONFIG = {
@@ -3720,7 +3931,8 @@ class D0t(Dot):
         "stroke_color": RED,
         "stroke_width": 1.7,
     }
-    
+
+
 class ParabolaCreation(GraphScene):
     CONFIG = {
         "x_min": -6,
@@ -3731,245 +3943,267 @@ class ParabolaCreation(GraphScene):
         "y_min": 0,
         "y_max": 7,
     }
+
     def construct(self):
         self.setup_axes()
         self.x_axis.remove(self.x_axis[1])
         self.y_axis.remove(self.y_axis[1])
         self.play(Write(self.axes))
 
-        h = 0; k = 1; p = 1
-        parabola_function = lambda x: ((x-h)**2)/(4*p) + k
+        h = 0
+        k = 1
+        p = 1
+        def parabola_function(x): return ((x-h)**2)/(4*p) + k
 
         parabola_right = self.get_graph(
-                parabola_function,
-                x_min = 0,
-                x_max = 5,
-                color = BLUE
-            )
-        
+            parabola_function,
+            x_min=0,
+            x_max=5,
+            color=BLUE
+        )
 
         parabola_left = self.get_graph(
-                parabola_function,
-                x_min = 0,
-                x_max = -5,
-                color = BLUE
-            )
-        anim_kwargs = {"run_time":5,"rate_func":linear}
-        self.move_dot_path(parabola_right,anim_kwargs)
-        self.move_dot_path(parabola_left,anim_kwargs)
+            parabola_function,
+            x_min=0,
+            x_max=-5,
+            color=BLUE
+        )
+        anim_kwargs = {"run_time": 5, "rate_func": linear}
+        self.move_dot_path(parabola_right, anim_kwargs)
+        self.move_dot_path(parabola_left, anim_kwargs)
 
-    def move_dot_path(self,parabola,anim_kwargs):
-        h = 0; k = 1; p = 1
+    def move_dot_path(self, parabola, anim_kwargs):
+        h = 0
+        k = 1
+        p = 1
         parabola_copy = parabola.copy()
-        focus = D0t(self.coords_to_point(0,2))
-        dot_guide = D0t(self.coords_to_point(h,p))
-        dot_d = D0t(self.coords_to_point(0,0))
-        circle = Circle(radius=1).move_to(self.coords_to_point(h,p))
-        line_f_d = DashedLine(focus.get_center(),dot_guide.get_center())
-        line_d_d = DashedLine(dot_guide.get_center(),dot_d.get_center())
+        focus = D0t(self.coords_to_point(0, 2))
+        dot_guide = D0t(self.coords_to_point(h, p))
+        dot_d = D0t(self.coords_to_point(0, 0))
+        circle = Circle(radius=1).move_to(self.coords_to_point(h, p))
+        line_f_d = DashedLine(focus.get_center(), dot_guide.get_center())
+        line_d_d = DashedLine(dot_guide.get_center(), dot_d.get_center())
 
-
-        group = VGroup(circle,line_f_d,line_d_d,dot_d)
+        group = VGroup(circle, line_f_d, line_d_d, dot_d)
 
         def update_group(group):
-            c,f_d,d_d,d = group
-            d.move_to(self.coords_to_point(dot_guide.get_center()[0],0))
+            c, f_d, d_d, d = group
+            d.move_to(self.coords_to_point(dot_guide.get_center()[0], 0))
             radius = get_norm(focus.get_center() - dot_guide.get_center())
-            new_c = Circle(radius = radius)
+            new_c = Circle(radius=radius)
             new_c.move_to(dot_guide)
             c.become(new_c)
-            f_d.become(DashedLine(focus.get_center(),dot_guide.get_center()))
-            d_d.become(DashedLine(dot_guide.get_center(),dot_d.get_center()))
+            f_d.become(DashedLine(focus.get_center(), dot_guide.get_center()))
+            d_d.become(DashedLine(dot_guide.get_center(), dot_d.get_center()))
 
         group.add_updater(update_group)
 
         self.play(
-            FadeInFromLarge(circle,scale_factor=2),
-            *[GrowFromCenter(mob) for mob in [line_f_d,line_d_d,dot_guide,dot_d,focus]],
-            )
+            FadeInFromLarge(circle, scale_factor=2),
+            *[GrowFromCenter(mob) for mob in [line_f_d,
+                                              line_d_d, dot_guide, dot_d, focus]],
+        )
         self.add(
             group,
             focus,
             dot_guide,
-            )
+        )
         self.wait()
         self.add(parabola)
         self.bring_to_back(parabola)
         self.bring_to_back(self.axes)
         self.play(
-            MoveAlongPath(dot_guide,parabola_copy),
+            MoveAlongPath(dot_guide, parabola_copy),
             ShowCreation(parabola),
             **anim_kwargs
-            )
+        )
         group.clear_updaters()
         self.wait(1.2)
-        self.play(FadeOut(VGroup(group,dot_guide,focus)))
+        self.play(FadeOut(VGroup(group, dot_guide, focus)))
+
 
 class EpicycloidScene(Scene):
     def construct(self):
-       radius1 = 2.4
-       radius2 = radius1/3
-       self.epy(radius1,radius2)
+        radius1 = 2.4
+        radius2 = radius1/3
+        self.epy(radius1, radius2)
 
-    def epy(self,r1,r2):
+    def epy(self, r1, r2):
         # Manim circle
-        c1 = Circle(radius=r1,color=BLUE)
+        c1 = Circle(radius=r1, color=BLUE)
         # Small circle
-        c2 = Circle(radius=r2,color=PURPLE).rotate(PI)
-        c2.next_to(c1,RIGHT,buff=0)
+        c2 = Circle(radius=r2, color=PURPLE).rotate(PI)
+        c2.next_to(c1, RIGHT, buff=0)
         c2.start = c2.copy()
         # Dot
         # .points[0] return the start path coordinate
         # .points[-1] return the end path coordinate
-        dot = Dot(c2.points[0],color=RED)
+        dot = Dot(c2.points[0], color=RED)
         # Line
-        line = Line(c2.get_center(),dot.get_center()).set_stroke(BLACK,2.5)
+        line = Line(c2.get_center(), dot.get_center()).set_stroke(BLACK, 2.5)
         # Path
         path = VMobject(color=RED)
         # Path can't have the same coord twice, so we have to dummy point
-        path.set_points_as_corners([dot.get_center(),dot.get_center()+UP*0.001])
+        path.set_points_as_corners(
+            [dot.get_center(), dot.get_center()+UP*0.001])
         # Path group
-        path_group = VGroup(line,dot,path)
+        path_group = VGroup(line, dot, path)
         # Alpha, from 0 to 1:
         alpha = ValueTracker(0)
-        
-        self.play(ShowCreation(line),ShowCreation(c1),ShowCreation(c2),GrowFromCenter(dot))
+
+        self.play(ShowCreation(line), ShowCreation(c1),
+                  ShowCreation(c2), GrowFromCenter(dot))
 
         # update function of path_group
         def update_group(group):
-            l,mob,previus_path = group
+            l, mob, previus_path = group
             mob.move_to(c2.points[0])
             old_path = path.copy()
             # See manimlib/mobject/types/vectorized_mobject.py
-            old_path.append_vectorized_mobject(Line(old_path.points[-1],mob.get_center()))
+            old_path.append_vectorized_mobject(
+                Line(old_path.points[-1], mob.get_center()))
             old_path.make_smooth()
-            l.put_start_and_end_on(c2.get_center(),mob.get_center())
+            l.put_start_and_end_on(c2.get_center(), mob.get_center())
             path.become(old_path)
 
         # update function of small circle
         def update_c2(c):
             c.become(c.start)
-            c.rotate(TAU*alpha.get_value(),about_point=c1.get_center())
-            c.rotate(TAU*(r1/r2)*alpha.get_value(),about_point=c.get_center())
+            c.rotate(TAU*alpha.get_value(), about_point=c1.get_center())
+            c.rotate(TAU*(r1/r2)*alpha.get_value(), about_point=c.get_center())
 
         path_group.add_updater(update_group)
         c2.add_updater(update_c2)
-        self.add(c2,path_group)
+        self.add(c2, path_group)
         self.play(
-                alpha.set_value,1,
-                rate_func=linear,
-                run_time=6
-                )
+            alpha.set_value, 1,
+            rate_func=linear,
+            run_time=6
+        )
         self.wait(2)
         c2.clear_updaters()
         path_group.clear_updaters()
-        self.play(FadeOut(VGroup(c1,c2,path_group)))
-        
+        self.play(FadeOut(VGroup(c1, c2, path_group)))
+
 # The calculations were based on the book of:
 # Design Of Machinery - Robert Norton 4th Edition - Chapter 4 - Position Analysis
 
+
 class SliderCrankMechanism(Scene):
-    CONFIG={
-        "a":2,
-        "b":-6.5,
-        "c":1.7,
-        "theta_in":70,
-        "theta_end":70-2.5*360,
-        "slider_color":RED,
-        "crank_color":BLUE,
-        "piston_color":GREEN,
-        "anchor_color":TEAL,
-        "line_stroke":10
+    CONFIG = {
+        "a": 2,
+        "b": -6.5,
+        "c": 1.7,
+        "theta_in": 70,
+        "theta_end": 70-2.5*360,
+        "slider_color": RED,
+        "crank_color": BLUE,
+        "piston_color": GREEN,
+        "anchor_color": TEAL,
+        "line_stroke": 10
     }
+
     def construct(self):
         O2 = Dot().shift(LEFT*4+DOWN*1.5)
-        a  = self.a
-        b  = self.b
-        c  = self.c
-        theta_in  = self.theta_in
+        a = self.a
+        b = self.b
+        c = self.c
+        theta_in = self.theta_in
         theta_end = self.theta_end
         slider_color = self.slider_color
         piston_color = self.piston_color
         radio = 0.08
 
-        base_down=Line(LEFT*4,RIGHT*4)
+        base_down = Line(LEFT*4, RIGHT*4)
         base_down.shift(0.1*DOWN)
-        anchor_point = Dot(O2.get_center(),radius=radio)
-        semi_circle_anchor = Dot(O2.get_center(),radius=0.2,color=self.anchor_color)
-        anchor_rect = Square(side_length=0.4).set_stroke(None,0).set_fill(self.anchor_color,1).move_to(O2.get_center()+DOWN*semi_circle_anchor.get_width()/2)
+        anchor_point = Dot(O2.get_center(), radius=radio)
+        semi_circle_anchor = Dot(
+            O2.get_center(), radius=0.2, color=self.anchor_color)
+        anchor_rect = Square(side_length=0.4).set_stroke(None, 0).set_fill(
+            self.anchor_color, 1).move_to(O2.get_center()+DOWN*semi_circle_anchor.get_width()/2)
 
+        anchor_group = VGroup(semi_circle_anchor, anchor_rect)
 
-        anchor_group = VGroup(semi_circle_anchor,anchor_rect)
+        slider = self.position_slider(
+            O2.get_center(), theta_in, a, slider_color)
+        theta_3 = np.arcsin((a*np.sin(theta_in*DEGREES)-c)/b)*180/PI
+        piston = self.position_piston(
+            O2.get_center(), theta_in, theta_3, a, b, c, piston_color)
+        crank = Line(slider.get_end(), piston.get_center()).set_stroke(
+            self.crank_color, self.line_stroke)
+        point_bm = Dot(slider.get_end(), radius=radio)
+        point_mp = Dot(crank.get_end(), radius=radio)
+        grupo = VGroup(slider, piston, crank, point_mp, point_bm)
 
-        slider      = self.position_slider(O2.get_center(),theta_in,a,slider_color)
-        theta_3     = np.arcsin((a*np.sin(theta_in*DEGREES)-c)/b)*180/PI
-        piston      = self.position_piston(O2.get_center(),theta_in,theta_3,a,b,c,piston_color)
-        crank       = Line(slider.get_end(),piston.get_center()).set_stroke(self.crank_color,self.line_stroke)
-        point_bm    = Dot(slider.get_end(),radius=radio)
-        point_mp    = Dot(crank.get_end(),radius=radio)
-        grupo       = VGroup(slider,piston,crank,point_mp,point_bm)
-
-        base_down.next_to(piston,DOWN,buff=0).shift(LEFT)
-        self.play(*[FadeIn(objeto)for objeto in [anchor_group,base_down]],
-                    ShowCreation(slider),DrawBorderThenFill(piston),ShowCreation(crank),
-                    GrowFromCenter(point_mp),GrowFromCenter(point_bm),GrowFromCenter(anchor_point),
-                    )
+        base_down.next_to(piston, DOWN, buff=0).shift(LEFT)
+        self.play(*[FadeIn(objeto)for objeto in [anchor_group, base_down]],
+                  ShowCreation(slider), DrawBorderThenFill(
+                      piston), ShowCreation(crank),
+                  GrowFromCenter(point_mp), GrowFromCenter(
+                      point_bm), GrowFromCenter(anchor_point),
+                  )
         self.add_foreground_mobject(anchor_point)
         alpha = ValueTracker(self.theta_in)
 
         def update(grupo):
             dx = alpha.get_value()
-            slider       = self.position_slider(O2.get_center(),dx,self.a,self.slider_color)
+            slider = self.position_slider(
+                O2.get_center(), dx, self.a, self.slider_color)
 
-            theta_3   = np.arcsin(np.sign(dx)*((self.a*np.sin(dx*DEGREES)-self.c)/self.b))
+            theta_3 = np.arcsin(
+                np.sign(dx)*((self.a*np.sin(dx*DEGREES)-self.c)/self.b))
 
-            piston      = self.position_piston(O2.get_center(),dx,theta_3*180/PI,self.a,self.b,self.c,self.piston_color)
-            crank    = Line(slider.get_end(),piston.get_center()).set_stroke(self.crank_color,self.line_stroke)
-            point_bm    = Dot(slider.get_end(),radius=radio)
-            point_mp    = Dot(crank.get_end(),radius=radio)
+            piston = self.position_piston(
+                O2.get_center(), dx, theta_3*180/PI, self.a, self.b, self.c, self.piston_color)
+            crank = Line(slider.get_end(), piston.get_center()).set_stroke(
+                self.crank_color, self.line_stroke)
+            point_bm = Dot(slider.get_end(), radius=radio)
+            point_mp = Dot(crank.get_end(), radius=radio)
 
-            nuevo_grupo = VGroup(slider,piston,crank,point_mp,point_bm)
+            nuevo_grupo = VGroup(slider, piston, crank, point_mp, point_bm)
             grupo.become(nuevo_grupo)
             return grupo
 
         self.play(
-            alpha.set_value,self.theta_end,
-            UpdateFromFunc(grupo,update),
-            run_time=8,rate_func=double_smooth)
+            alpha.set_value, self.theta_end,
+            UpdateFromFunc(grupo, update),
+            run_time=8, rate_func=double_smooth)
         self.wait()
 
-    def position_slider(self,origin,theta_2,length,color):
+    def position_slider(self, origin, theta_2, length, color):
         end_point_x = length * np.cos(theta_2 * DEGREES)
         end_point_y = length * np.sin(theta_2 * DEGREES)
         end_point = origin + np.array([end_point_x, end_point_y, 0])
-        slider = Line(origin,end_point, color=color).set_stroke(None,self.line_stroke)
+        slider = Line(origin, end_point, color=color).set_stroke(
+            None, self.line_stroke)
         return slider
 
-    def position_piston(self,origin,theta_2,theta_3,a,b,c,color):
+    def position_piston(self, origin, theta_2, theta_3, a, b, c, color):
         d = a * np.cos(theta_2 * DEGREES) - b * np.cos(theta_3 * DEGREES)
         end_point = origin + RIGHT * d + UP * c
         piston = Rectangle(color=color, height=1, witdh=1.5)\
-                 .set_fill(color,0.7).scale(0.7).move_to(origin+RIGHT * d + UP*c)
+            .set_fill(color, 0.7).scale(0.7).move_to(origin+RIGHT * d + UP*c)
         return piston
-    
+
+
 class TriangleScene(Scene):
     def construct(self):
         circle = Circle(radius=3)
-        base_line = Line(ORIGIN,RIGHT*3,color=ORANGE)
-        side_1 = Line(ORIGIN,RIGHT*3,color=BLUE)
-        side_2 = Line(RIGHT*3,RIGHT*3,color=PURPLE)
-        sides = VGroup(side_1,side_2)
-        
+        base_line = Line(ORIGIN, RIGHT*3, color=ORANGE)
+        side_1 = Line(ORIGIN, RIGHT*3, color=BLUE)
+        side_2 = Line(RIGHT*3, RIGHT*3, color=PURPLE)
+        sides = VGroup(side_1, side_2)
+
         def triangle_update(mob):
-            side_1,side_2 = mob
-            new_side_1 = Line(ORIGIN,circle.points[-1],color=BLUE)
-            new_side_2 = Line(RIGHT*3,circle.points[-1],color=PURPLE)
+            side_1, side_2 = mob
+            new_side_1 = Line(ORIGIN, circle.points[-1], color=BLUE)
+            new_side_2 = Line(RIGHT*3, circle.points[-1], color=PURPLE)
             side_1.become(new_side_1)
             side_2.become(new_side_2)
 
         sides.add_updater(triangle_update)
-        self.add(base_line,sides)
-        self.play(ShowCreation(circle,run_time=3))
+        self.add(base_line, sides)
+        self.play(ShowCreation(circle, run_time=3))
 
         self.wait()
 
@@ -3979,110 +4213,119 @@ class TriangleScene(Scene):
 class FunctionTracker(Scene):
     def construct(self):
         # f(x) = x**2
-        fx = lambda x: x.get_value()**2
+        def fx(x): return x.get_value()**2
         # ValueTrackers definition
         x_value = ValueTracker(0)
         fx_value = ValueTracker(fx(x_value))
         # DecimalNumber definition
-        x_tex = DecimalNumber(x_value.get_value()).add_updater(lambda v: v.set_value(x_value.get_value()))
-        fx_tex = DecimalNumber(fx_value.get_value()).add_updater(lambda v: v.set_value(fx(x_value)))
+        x_tex = DecimalNumber(x_value.get_value()).add_updater(
+            lambda v: v.set_value(x_value.get_value()))
+        fx_tex = DecimalNumber(fx_value.get_value()).add_updater(
+            lambda v: v.set_value(fx(x_value)))
         # TeX labels definition
         x_label = TexMobject("x = ")
         fx_label = TexMobject("x^2 = ")
         # Grouping of labels and numbers
-        group = VGroup(x_tex,fx_tex,x_label,fx_label).scale(2.6)
-        VGroup(x_tex, fx_tex).arrange_submobjects(DOWN,buff=3)
+        group = VGroup(x_tex, fx_tex, x_label, fx_label).scale(2.6)
+        VGroup(x_tex, fx_tex).arrange_submobjects(DOWN, buff=3)
         # Align labels and numbers
-        x_label.next_to(x_tex,LEFT, buff=0.7,aligned_edge=x_label.get_bottom())
-        fx_label.next_to(fx_tex,LEFT, buff=0.7,aligned_edge=fx_label.get_bottom())
+        x_label.next_to(x_tex, LEFT, buff=0.7,
+                        aligned_edge=x_label.get_bottom())
+        fx_label.next_to(fx_tex, LEFT, buff=0.7,
+                         aligned_edge=fx_label.get_bottom())
 
         self.add(group.move_to(ORIGIN))
         self.wait(3)
         self.play(
-            x_value.set_value,30,
+            x_value.set_value, 30,
             rate_func=linear,
             run_time=10
-            )
+        )
         self.wait()
         self.play(
-            x_value.set_value,0,
+            x_value.set_value, 0,
             rate_func=linear,
             run_time=10
-            )
+        )
         self.wait(3)
 
 
 class FunctionTrackerWithNumberLine(Scene):
     def construct(self):
         # f(x) = x**2
-        fx = lambda x: x.get_value()**2
+        def fx(x): return x.get_value()**2
         # ValueTrackers definition
         x_value = ValueTracker(0)
         fx_value = ValueTracker(fx(x_value))
         # DecimalNumber definition
-        x_tex = DecimalNumber(x_value.get_value()).add_updater(lambda v: v.set_value(x_value.get_value()))
-        fx_tex = DecimalNumber(fx_value.get_value()).add_updater(lambda v: v.set_value(fx(x_value)))
+        x_tex = DecimalNumber(x_value.get_value()).add_updater(
+            lambda v: v.set_value(x_value.get_value()))
+        fx_tex = DecimalNumber(fx_value.get_value()).add_updater(
+            lambda v: v.set_value(fx(x_value)))
         # TeX labels definition
         x_label = TexMobject("x = ")
         fx_label = TexMobject("x^2 = ")
         # Grouping of labels and numbers
-        group = VGroup(x_tex,fx_tex,x_label,fx_label).scale(2)
+        group = VGroup(x_tex, fx_tex, x_label, fx_label).scale(2)
         # Set the labels position
-        x_label.next_to(x_tex,LEFT, buff=0.7,aligned_edge=x_label.get_bottom())
-        fx_label.next_to(fx_tex,LEFT, buff=0.7,aligned_edge=fx_label.get_bottom())
+        x_label.next_to(x_tex, LEFT, buff=0.7,
+                        aligned_edge=x_label.get_bottom())
+        fx_label.next_to(fx_tex, LEFT, buff=0.7,
+                         aligned_edge=fx_label.get_bottom())
         # Grouping numbers and labels
-        x_group = VGroup(x_label,x_tex)
-        fx_group = VGroup(fx_label,fx_tex)
+        x_group = VGroup(x_label, x_tex)
+        fx_group = VGroup(fx_label, fx_tex)
         # Align labels and numbers
-        VGroup(x_group, fx_group).arrange_submobjects(RIGHT,buff=2,aligned_edge=DOWN).to_edge(UP)
+        VGroup(x_group, fx_group).arrange_submobjects(
+            RIGHT, buff=2, aligned_edge=DOWN).to_edge(UP)
         # Get NumberLine,Arrow and label from x
         x_number_line_group = self.get_number_line_group(
-            "x",30,0.2,step_label=10,v_tracker=x_value,tick_frequency=2
-            )
-        x_number_line_group.to_edge(LEFT,buff=1)
+            "x", 30, 0.2, step_label=10, v_tracker=x_value, tick_frequency=2
+        )
+        x_number_line_group.to_edge(LEFT, buff=1)
         # Get NumberLine,Arrow and label from f(x)
         fx_number_line_group = self.get_number_line_group(
-            "x^2",900,0.012,step_label=100,v_tracker=fx_tex,
+            "x^2", 900, 0.012, step_label=100, v_tracker=fx_tex,
             tick_frequency=50
-            )
-        fx_number_line_group.next_to(x_number_line_group,DOWN,buff=1).to_edge(LEFT,buff=1)
+        )
+        fx_number_line_group.next_to(
+            x_number_line_group, DOWN, buff=1).to_edge(LEFT, buff=1)
 
         self.add(
             x_number_line_group,
             fx_number_line_group,
             group
-            )
+        )
         self.wait()
         self.play(
-            x_value.set_value,30,
+            x_value.set_value, 30,
             rate_func=linear,
             run_time=10
-            )
+        )
         self.wait()
         self.play(
-            x_value.set_value,0,
+            x_value.set_value, 0,
             rate_func=linear,
             run_time=10
-            )
+        )
         self.wait(3)
 
-
-    def get_numer_labels_to_numberline(self,number_line,x_max=None,x_min=0,buff=0.2,step_label=1,**tex_kwargs):
+    def get_numer_labels_to_numberline(self, number_line, x_max=None, x_min=0, buff=0.2, step_label=1, **tex_kwargs):
         # This method return the labels of the NumberLine
         labels = VGroup()
         x_max = number_line.x_max
-        for x in range(x_min,x_max+1,step_label):
-            x_label = TexMobject(f"{x}",**tex_kwargs)
+        for x in range(x_min, x_max+1, step_label):
+            x_label = TexMobject(f"{x}", **tex_kwargs)
             # See manimlib/mobject/number_line.py CONFIG dictionary
-            x_label.next_to(number_line.number_to_point(x),DOWN,buff=buff)
+            x_label.next_to(number_line.number_to_point(x), DOWN, buff=buff)
             labels.add(x_label)
         return labels
 
-    def get_number_line_group(self,label,x_max,unit_size,v_tracker,step_label=1,**number_line_config):
+    def get_number_line_group(self, label, x_max, unit_size, v_tracker, step_label=1, **number_line_config):
         # Set the Label (x,or x**2)
         number_label = TexMobject(label)
-        # Set the arrow 
-        arrow = Arrow(UP,DOWN,buff=0).set_height(0.5)
+        # Set the arrow
+        arrow = Arrow(UP, DOWN, buff=0).set_height(0.5)
         # Set the number_line
         number_line = NumberLine(
             x_min=0,
@@ -4090,25 +4333,29 @@ class FunctionTrackerWithNumberLine(Scene):
             unit_size=unit_size,
             numbers_with_elongated_ticks=[],
             **number_line_config
-            )
+        )
         # Get the labels from number_line
-        labels = self.get_numer_labels_to_numberline(number_line,step_label=step_label,height=0.2)
+        labels = self.get_numer_labels_to_numberline(
+            number_line, step_label=step_label, height=0.2)
         # Set the arrow position
-        arrow.next_to(number_line.number_to_point(0),UP,buff=0)
+        arrow.next_to(number_line.number_to_point(0), UP, buff=0)
         # Grouping arrow and number_label
-        label = VGroup(arrow,number_label)
+        label = VGroup(arrow, number_label)
         # Set the position of number_label
-        number_label.next_to(arrow,UP,buff=0.1)
+        number_label.next_to(arrow, UP, buff=0.1)
         # Grouping all elements
-        numer_group = VGroup(label,number_line,labels)
+        numer_group = VGroup(label, number_line, labels)
         # Set the updater to the arrow and number_label
-        label.add_updater(lambda mob: mob.next_to(number_line.number_to_point(v_tracker.get_value()),UP,buff=0))
+        label.add_updater(lambda mob: mob.next_to(
+            number_line.number_to_point(v_tracker.get_value()), UP, buff=0))
 
         return numer_group
 
-#HSL color, see https://pypi.org/project/colour/
-def HSL(hue,saturation=1,lightness=0.5):
-    return Color(hsl=(hue,saturation,lightness))
+# HSL color, see https://pypi.org/project/colour/
+
+
+def HSL(hue, saturation=1, lightness=0.5):
+    return Color(hsl=(hue, saturation, lightness))
 
 
 # This function is come and go, but linear
@@ -4118,82 +4365,129 @@ def double_linear(t):
     else:
         return linear(1-(t-0.5)*2)
 
+
 class ValueTrackerWithColor(Scene):
     def construct(self):
         gradient_rectangle = Rectangle(
-                                    width=FRAME_WIDTH-1,
-                                    height=1,
-                                    fill_opacity=1,
-                                    # Gradient direction
-                                    sheen_direction=RIGHT,
-                                    stroke_width=0
-                                    )
+            width=FRAME_WIDTH-1,
+            height=1,
+            fill_opacity=1,
+            # Gradient direction
+            sheen_direction=RIGHT,
+            stroke_width=0
+        )
         square = Square(fill_opacity=1)
-        square.to_edge(UP,buff=1)
-        gradient_rectangle.to_edge(DOWN,buff=1)
+        square.to_edge(UP, buff=1)
+        gradient_rectangle.to_edge(DOWN, buff=1)
 
         gradient_rectangle.set_color(color=self.get_hsl_set_colors())
 
         color_tracker = ValueTracker(0)
 
-        color_label = Integer(color_tracker.get_value(),unit="^\\circ")
-        color_label.add_updater(lambda v: v.set_value(color_tracker.get_value()).next_to(square,UP))
+        color_label = Integer(color_tracker.get_value(), unit="^\\circ")
+        color_label.add_updater(lambda v: v.set_value(
+            color_tracker.get_value()).next_to(square, UP))
 
-        square.add_updater(lambda s: s.set_color(HSL(color_tracker.get_value()/360)))
+        square.add_updater(lambda s: s.set_color(
+            HSL(color_tracker.get_value()/360)))
 
         line_color = Line(
-                        gradient_rectangle.get_corner(UL),
-                        gradient_rectangle.get_corner(UR)
-                        )
-        arrow = Arrow(LEFT,RIGHT)
-        arrow.add_updater(lambda a: a.put_start_and_end_on(square.get_bottom()+DOWN*0.3,line_color.point_from_proportion(color_tracker.get_value()/360)))
+            gradient_rectangle.get_corner(UL),
+            gradient_rectangle.get_corner(UR)
+        )
+        arrow = Arrow(LEFT, RIGHT)
+        arrow.add_updater(lambda a: a.put_start_and_end_on(square.get_bottom(
+        )+DOWN*0.3, line_color.point_from_proportion(color_tracker.get_value()/360)))
 
-        self.add(gradient_rectangle,square,color_label,arrow)
+        self.add(gradient_rectangle, square, color_label, arrow)
         self.wait(3)
         self.play(
-            color_tracker.set_value,360,
+            color_tracker.set_value, 360,
             rate_func=double_linear,
             run_time=20,
-            )
+        )
         self.wait(3)
 
-    def get_hsl_set_colors(self,saturation=1,lightness=0.5):
-        return [*[HSL(i/360,saturation,lightness) for i in range(360)]]
+    def get_hsl_set_colors(self, saturation=1, lightness=0.5):
+        return [*[HSL(i/360, saturation, lightness) for i in range(360)]]
 
 
 class MmodNTracker(Scene):
     CONFIG = {
         "number_of_lines": 400,
-        "gradient_colors":[RED,YELLOW,BLUE],
-        "end_value":100,
-        "total_time":180,
+        "gradient_colors": [RED, YELLOW, BLUE],
+        "end_value": 100,
+        "total_time": 180,
     }
+
     def construct(self):
         circle = Circle().set_height(FRAME_HEIGHT*0.9)
         mod_tracker = ValueTracker(0)
-        lines = self.get_m_mod_n_objects(circle,mod_tracker.get_value())
+        lines = self.get_m_mod_n_objects(circle, mod_tracker.get_value())
         lines.add_updater(
             lambda mob: mob.become(
-                self.get_m_mod_n_objects(circle,mod_tracker.get_value())
-                )
+                self.get_m_mod_n_objects(circle, mod_tracker.get_value())
             )
-        self.add(circle,lines)
+        )
+        self.add(circle, lines)
         self.wait(3)
         self.play(
-            mod_tracker.set_value,self.end_value,
+            mod_tracker.set_value, self.end_value,
             rate_func=linear,
             run_time=self.total_time
-            )
+        )
         self.wait(3)
 
-    def get_m_mod_n_objects(self,circle,x,y=None):
-        if y==None:
+    def get_m_mod_n_objects(self, circle, x, y=None):
+        if y == None:
             y = self.number_of_lines
         lines = VGroup()
         for i in range(y):
-            start_point = circle.point_from_proportion((i%y)/y)
-            end_point = circle.point_from_proportion(((i*x)%y)/y)
-            line = Line(start_point,end_point).set_stroke(width=1)
+            start_point = circle.point_from_proportion((i % y)/y)
+            end_point = circle.point_from_proportion(((i*x) % y)/y)
+            line = Line(start_point, end_point).set_stroke(width=1)
             lines.add(line)
         lines.set_color_by_gradient(*self.gradient_colors)
         return lines
+
+# My Project 1 test
+
+
+class ForFun(Scene):
+    def construct(self):
+        text = TextMobject(r'\sf Just  making  for\\NOTHING!')
+
+        self.play(
+            Write(text),
+            run_time=5
+        )
+        self.wait(2)
+
+
+class Preamble(Scene):
+    def construct(self):
+        ctext = TextMobject(r'\sf 我的第一个视频').scale(2)
+        etext = TextMobject(r'My first manim vedio').set_width(ctext.get_width())
+        text=VGroup(ctext,etext)\
+            .arrange_submobjects(DOWN,buff=0.5)
+
+        self.play(Write(text))
+
+class Epilogue(Scene):
+    CONFIG={
+        'producer':'Rangers',
+        'anim_engine':r'{\tt manim}\\{\scriptsize by}\\{\sf Grant Sanderson}\\(3Blue1Brown)',
+        'bgm':'notkonw',
+        'font':[
+            '1'
+        ],
+        'refs':[
+            '1'
+        ],
+    }
+    def construct(self):
+        a_e = TextMobject(self.anim_engine)
+        a_e[0][-2:-7:-1].set_color(RED)
+        a_e[0][-8:-12:-1].set_color(RED)
+
+        self.play(Write(a_e))

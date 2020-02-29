@@ -9,20 +9,35 @@
 \usepackage{relsize}
 \usepackage{textcomp}
 \usepackage{mathrsfs}
-\usepackage{calligra}
 \usepackage{wasysym}
 \usepackage{ragged2e}
 \usepackage{physics}
 \usepackage{xcolor}
-\usepackage{microtype}
+% \usepackage{microtype}
 
-% \usepackage{mathpazo} % 改变了字体
-\usepackage{tikz}
+%% font
+% \usepackage{mathpazo}
+% \usepackage{mathptmx} 
+% \usepackage{times}
+% \usepackage{chancery}
+% \usepackage{tgchorus}
+\usepackage[T1,OT1]{fontenc}
+\usepackage{palatino}  % english defalut font
+\usepackage{calligra}  % hand-writing \calligra
+\newcommand{\sz}[1]{\fontencoding{OT1}\fontfamily{pplj}\fontseries{m}\selectfont #1}   % non-aligned number
+\newcommand{\gt}[1]{\fontencoding{OT1}\fontfamily{pgoth}\fontseries{m}\selectfont #1}  % Gothic font
+
+%% xelatex font
+% \usepackage{fontspec}
+% \usepackage{xeCJK}
+% \setCJKmainfont[BoldFont={SimHei}]{Noto Serif CJK SC}
+% \setCJKmonofont{SimSun}
+% \setCJKsansfont{方正粗金陵简体}  % \sf Chinese title font
+% \setmainfont{Palatino-Roman}    % \sf English hand-writing font
+% \setsansfont{Zapfino}
+
 \usepackage[siunitx,RPvoltages,european]{circuitikz}
-
-\usepackage[T1]{fontenc}
-
-% \DeclareFixedFont{\myfont}{OT1}{pgoth}{m}{n}{11pt}
+\usepackage{tikz}
 
 % \DisableLigatures{encoding = *, family = * }
 
