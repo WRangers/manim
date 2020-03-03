@@ -4450,7 +4450,158 @@ class MmodNTracker(Scene):
         lines.set_color_by_gradient(*self.gradient_colors)
         return lines
 
-# My Project 1 test
+# Sceen Grid
+
+class Grid(VGroup):
+    CONFIG = {
+        "height": 6.0,
+        "width": 6.0,
+    }
+
+    def __init__(self, rows, columns, **kwargs):
+        digest_config(self, kwargs, locals())
+        super().__init__(**kwargs)
+
+        x_step = self.width / self.columns
+        y_step = self.height / self.rows
+
+        for x in np.arange(0, self.width + x_step, x_step):
+            self.add(Line(
+                [x - self.width / 2., -self.height / 2., 0],
+                [x - self.width / 2., self.height / 2., 0],
+            ))
+        for y in np.arange(0, self.height + y_step, y_step):
+            self.add(Line(
+                [-self.width / 2., y - self.height / 2., 0],
+                [self.width / 2., y - self.height / 2., 0]
+            ))
+
+
+class ScreenGrid(VGroup):
+    CONFIG = {
+        "rows": 8,
+        "columns": 14,
+        "height": FRAME_Y_RADIUS * 2,
+        "width": 14,
+        "grid_stroke": 0.5,
+        "grid_color": WHITE,
+        "axis_color": RED,
+        "axis_stroke": 2,
+        "labels_scale": 0.25,
+        "labels_buff": 0,
+        "number_decimals": 2
+    }
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        rows = self.rows
+        columns = self.columns
+        grid = Grid(width=self.width, height=self.height, rows=rows, columns=columns)
+        grid.set_stroke(self.grid_color, self.grid_stroke)
+
+        vector_ii = ORIGIN + np.array((- self.width / 2, - self.height / 2, 0))
+        vector_si = ORIGIN + np.array((- self.width / 2, self.height / 2, 0))
+        vector_sd = ORIGIN + np.array((self.width / 2, self.height / 2, 0))
+
+        axes_x = Line(LEFT * self.width / 2, RIGHT * self.width / 2)
+        axes_y = Line(DOWN * self.height / 2, UP * self.height / 2)
+
+        axes = VGroup(axes_x, axes_y).set_stroke(self.axis_color, self.axis_stroke)
+
+        divisions_x = self.width / columns
+        divisions_y = self.height / rows
+
+        directions_buff_x = [UP, DOWN]
+        directions_buff_y = [RIGHT, LEFT]
+        dd_buff = [directions_buff_x, directions_buff_y]
+        vectors_init_x = [vector_ii, vector_si]
+        vectors_init_y = [vector_si, vector_sd]
+        vectors_init = [vectors_init_x, vectors_init_y]
+        divisions = [divisions_x, divisions_y]
+        orientations = [RIGHT, DOWN]
+        labels = VGroup()
+        set_changes = zip([columns, rows], divisions, orientations, [0, 1], vectors_init, dd_buff)
+        for c_and_r, division, orientation, coord, vi_c, d_buff in set_changes:
+            for i in range(1, c_and_r):
+                for v_i, directions_buff in zip(vi_c, d_buff):
+                    ubication = v_i + orientation * division * i
+                    coord_point = round(ubication[coord], self.number_decimals)
+                    label = Text(f"{coord_point}",font="Arial",stroke_width=0).scale(self.labels_scale)
+                    label.next_to(ubication, directions_buff, buff=self.labels_buff)
+                    labels.add(label)
+
+        self.add(grid, axes, labels)
+
+
+class CoordScreen(Scene):
+    def construct(self):
+        screen_grid = ScreenGrid()
+        dot = Dot([1, 1, 0])
+        self.add(screen_grid)
+        self.play(FadeIn(dot))
+        self.wait()
+
+# Advanced animation ----------------------------------------------------------------------------------------
+
+# class Scene(Scene):
+#     CONFIG = {
+#         "camera_config":{"background_color":"#161616"},
+#         "include_grid":True
+#     }
+#     def setup(self):
+#         if self.include_grid:
+#             self.add(ScreenGrid().fade(0.7))
+
+class ToEdgeAnimation3(Scene):
+    def construct(self):
+        mob = Circle()
+
+        self.add(mob)
+        self.play(
+                #            edge, buff
+                mob.to_edge, UP  , 0
+            )
+        self.wait()
+
+class ToEdgeAnimation4(Scene):
+    def construct(self):
+        mob = Circle()
+
+        self.add(mob)
+        self.play(
+                # To modify only a single paramter
+                # the edge = LEFT by default
+                mob.to_edge,{"buff":0},
+            )
+        self.wait()
+
+class ToEdgeAnimation5(Scene):
+    def construct(self):
+        mob = Circle()
+
+        self.add(mob)
+        self.play(
+                # Order matters
+                mob.scale,0.5,
+                mob.to_edge,{"buff":0},
+            )
+        self.wait()
+
+class ToEdgeAnimation6(Scene):
+    def construct(self):
+        mob = Circle()
+        mob.generate_target()
+        # Order still matters
+        mob.target.scale(0.1)
+        mob.target.to_edge(RIGHT,buff=0)
+
+        self.add(mob)
+        self.play(
+                MoveToTarget(mob)
+            )
+        self.wait()
+
+# My Project O1 ---------------------------------------------------------------------------------------------
 
 
 class ForFun(Scene):
@@ -4467,27 +4618,38 @@ class ForFun(Scene):
 class Preamble(Scene):
     def construct(self):
         ctext = TextMobject(r'\sf 我的第一个视频').scale(2)
-        etext = TextMobject(r'My first manim vedio').set_width(ctext.get_width())
-        text=VGroup(ctext,etext)\
-            .arrange_submobjects(DOWN,buff=0.5)
+        etext = TextMobject(r'My first manim vedio').set_width(
+            ctext.get_width())
+        text = VGroup(ctext, etext)\
+            .arrange_submobjects(DOWN, buff=0.5)
 
         self.play(Write(text))
 
+
 class Epilogue(Scene):
-    CONFIG={
-        'producer':'Rangers',
-        'anim_engine':r'{\tt manim}\\{\scriptsize by}\\{\sf Grant Sanderson}\\(3Blue1Brown)',
-        'bgm':'notkonw',
-        'font':[
+    CONFIG = {
+        'producer': 'Rangers',
+        'anim_engine': r'{\tt manim}\\{\scriptsize by}\\{\sf Grant Sanderson}\\「3Blue1Brown」',
+        'bgm': 'notkonw',
+        'fonts': [
             '1'
         ],
-        'refs':[
+        'refs': [
             '1'
         ],
     }
-    def construct(self):
-        a_e = TextMobject(self.anim_engine)
-        a_e[0][-2:-7:-1].set_color(RED)
-        a_e[0][-8:-12:-1].set_color(RED)
 
+    def construct(self):
+        # producer
+
+        # anmimation engine
+        a_e = TextMobject(self.anim_engine)
+        a_e[0][-2:-7:-1].set_color('#8d6135')
+        a_e[0][-8:-12:-1].set_color('#74c1e4')
         self.play(Write(a_e))
+
+        # background music
+
+        # fonts
+
+        # references

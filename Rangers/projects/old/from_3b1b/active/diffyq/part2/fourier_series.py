@@ -376,7 +376,7 @@ class FourierOfTexPaths(FourierOfPiSymbol, MovingCameraScene):
     CONFIG = {
         "n_vectors": 100,
         "name_color": WHITE,
-        "animated_name": "Abc",
+        "animated_name": r"\sf 7",
         "time_per_symbol": 5,
         "slow_factor": 1 / 5,
         "parametric_function_step_size": 0.01,
