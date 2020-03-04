@@ -4601,55 +4601,15 @@ class ToEdgeAnimation6(Scene):
             )
         self.wait()
 
-# My Project O1 ---------------------------------------------------------------------------------------------
-
-
-class ForFun(Scene):
+class TestSuccession(Scene):
     def construct(self):
-        text = TextMobject(r'\sf Just  making  for\\NOTHING!')
+        line=Line(LEFT,RIGHT)
+        p=Dot().move_to(line.get_end())
 
         self.play(
-            Write(text),
-            run_time=5
+            LaggedStart(
+                *[ShowCreation(line),
+                FadeIn(p)],
+                lag_ratio=0.5,
+            )
         )
-        self.wait(2)
-
-
-class Preamble(Scene):
-    def construct(self):
-        ctext = TextMobject(r'\sf 我的第一个视频').scale(2)
-        etext = TextMobject(r'My first manim vedio').set_width(
-            ctext.get_width())
-        text = VGroup(ctext, etext)\
-            .arrange_submobjects(DOWN, buff=0.5)
-
-        self.play(Write(text))
-
-
-class Epilogue(Scene):
-    CONFIG = {
-        'producer': 'Rangers',
-        'anim_engine': r'{\tt manim}\\{\scriptsize by}\\{\sf Grant Sanderson}\\「3Blue1Brown」',
-        'bgm': 'notkonw',
-        'fonts': [
-            '1'
-        ],
-        'refs': [
-            '1'
-        ],
-    }
-
-    def construct(self):
-        # producer
-
-        # anmimation engine
-        a_e = TextMobject(self.anim_engine)
-        a_e[0][-2:-7:-1].set_color('#8d6135')
-        a_e[0][-8:-12:-1].set_color('#74c1e4')
-        self.play(Write(a_e))
-
-        # background music
-
-        # fonts
-
-        # references
