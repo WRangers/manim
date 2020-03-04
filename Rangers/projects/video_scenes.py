@@ -108,6 +108,9 @@ class Preamble(Scene):
         'e_title': 'My First Video',
         'series': r'\scriptsize The Geometry Meaning of Linear Algebra\\ \# \sz{0}',
         # 'episode': '#',
+        'saying': r'数缺形时少直观，形少数时难入微；\\数形结合百般好，割裂分家万事休。',
+        'saying_author': '——华罗庚',
+        'statement': r'\scriptsize 本视频内容主要根据《线性代数的几何意义》制作'
     }
 
     def construct(self):
@@ -144,6 +147,23 @@ class Preamble(Scene):
             Write(text)
         )
         self.wait(2)
+
+        mgroup = [FadeOut(i) for i in self.mobjects]
+
+        self.play(*mgroup)
+
+        # saying and statement
+        saying_text = TextMobject(self.saying)
+        author = TextMobject(self.saying_author)\
+            .move_to(saying_text.get_corner(DR)+np.array([0, -0.8, 0]))
+
+        stat = TextMobject(self.statement)\
+            .to_edge(UP, buff=0.1)
+
+        self.add(stat)
+        self.play(Write(saying_text), run_time=3)
+        self.play(Write(author))
+        self.wait(7)
 
 
 class Epilogue(Scene):
@@ -214,7 +234,7 @@ class Epilogue(Scene):
         bgm_text = TextMobject(r'\huge Background Music')\
             .to_edge(UP, buff=2)
         bgms = TextMobject(*self.bgm)\
-            .to_edge(DOWN,buff=3)
+            .to_edge(DOWN, buff=3)
 
         self.play(
             Write(bgm_text),
@@ -252,21 +272,31 @@ class Epilogue(Scene):
         self.wait(0.1)
 
         # references
-        refs=TextMobject(r'\huge Bibliography')
-
-
+        refs = TextMobject(r'\huge Bibliography')
 
         # acknowledgement
-        ack=TextMobject(r'\huge Acknowledgement')\
+        ack = TextMobject(r'\huge Acknowledgement')\
             .to_edge(UP, buff=2)
-        ack_text=TextMobject(
-            r"Particularly acknowledging Prof.Guangqian Ren's\\"+
-            r'authorization and supporting.\\ \vspace{0.7em}'+
+        ack_text = TextMobject(
+            r"Particularly acknowledging Prof.Guangqian Ren's\\" +
+            r'authorization and supporting.\\ \vspace{0.7em}' +
             r'特别鸣谢任广千教授对此系列视频的授权与支持。'
-        ).next_to(ack,DOWN,buff=1)
+        ).next_to(ack, DOWN, buff=1)
 
         self.play(Write(ack))
-        self.play(Write(ack_text),run_time=5)
-
+        self.play(Write(ack_text), run_time=5)
         self.wait(2)
+        self.play(
+            FadeOut(ack),
+            FadeOut(ack_text)
+        )
+        self.wait(0.1)
 
+        # nothing
+        jtext = TextMobject(r'\sf Just  making  for\\NOTHING!')
+
+        self.play(
+            Write(jtext),
+            run_time=5
+        )
+        self.wait(2)
