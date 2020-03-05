@@ -1,4 +1,4 @@
-from Rangers.projects.video_scenes import *
+from thD7.video_scenes import *
 
 class SS_1_Preamble(Preamble):
     CONFIG = {
