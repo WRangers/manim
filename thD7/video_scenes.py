@@ -1,6 +1,4 @@
 from manimlib.imports import *
-from Rangers.projects.utils import set_gpus
-from Rangers.from_others.fourier_series import FourierOfPiSymbol
 
 
 class ForFun(Scene):
