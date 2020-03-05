@@ -2,105 +2,6 @@ from manimlib.imports import *
 from thD7.from_others.fourier_series import FourierOfPiSymbol
 
 
-class ForFun(Scene):
-    def construct(self):
-        text = TextMobject(r'\sf Just  making  for\\NOTHING!')
-
-        self.play(
-            Write(text),
-            run_time=5
-        )
-        self.wait(2)
-
-
-class LogoShow(FourierOfPiSymbol, MovingCameraScene):
-    CONFIG = {
-        "n_vectors": 300,
-        "name_color": WHITE,
-        "animated_name": r"\sf 7",
-        "time_per_symbol": 5,
-        "slow_factor": 1 / 5,
-        "parametric_function_step_size": 0.01,
-        "logo": r'\large ${\sf{7}}^{\sf th}$ \sf D',
-    }
-
-    def construct(self):
-        set_gpus([0, 1])
-
-        sthd = TextMobject(self.logo).scale(3)
-
-        name = TextMobject(self.animated_name)
-        max_width = FRAME_WIDTH - 2
-        max_height = FRAME_HEIGHT - 2
-        name.set_width(max_width)
-        if name.get_height() > max_height:
-            name.set_height(max_height)
-
-        frame = self.camera.frame
-        frame.save_state()
-
-        vectors = VGroup(VectorizedPoint())
-        circles = VGroup(VectorizedPoint())
-        for path in name.family_members_with_points():
-            for subpath in path.get_subpaths():
-                sp_mob = VMobject()
-                sp_mob.set_points(subpath)
-                coefs = self.get_coefficients_of_path(sp_mob)
-                new_vectors = self.get_rotating_vectors(
-                    coefficients=coefs
-                )
-                new_circles = self.get_circles(new_vectors)
-                self.set_decreasing_stroke_widths(new_circles)
-
-                drawn_path = self.get_drawn_path(new_vectors)
-                drawn_path.clear_updaters()
-                drawn_path.set_stroke(self.name_color, 3)
-
-                static_vectors = VMobject().become(new_vectors)
-                static_circles = VMobject().become(new_circles)
-                # static_circles = new_circles.deepcopy()
-                # static_vectors.clear_updaters()
-                # static_circles.clear_updaters()
-
-                self.play(
-                    Transform(vectors, static_vectors, remover=True),
-                    Transform(circles, static_circles, remover=True),
-                    frame.set_height, 1.5 * name.get_height(),
-                    frame.move_to, path,
-                )
-
-                self.add(new_vectors, new_circles)
-                self.vector_clock.set_value(0)
-                self.play(
-                    ShowCreation(drawn_path),
-                    rate_func=linear,
-                    run_time=self.time_per_symbol
-                )
-                self.remove(new_vectors, new_circles)
-                self.add(static_vectors, static_circles)
-
-                vectors = static_vectors
-                circles = static_circles
-        self.play(
-            FadeOut(vectors),
-            FadeOut(circles),
-            run_time=2
-        )
-        self.wait(0.2)
-
-        drawn_path.generate_target()
-        drawn_path.target.set_width(sthd[0][0].get_width())
-        drawn_path.target.move_to(sthd.get_corner(DL), aligned_edge=DL)
-        drawn_path.target.fade(1)
-
-        self.play(LaggedStart(
-            *[MoveToTarget(drawn_path), Write(sthd)],
-            lag_ratio=0.5),
-            run_time=2,
-        )
-        self.wait(3)
-
-
 class Preamble(Scene):
     CONFIG = {
         'c_title': '我的第一个视频',
@@ -298,3 +199,106 @@ class Epilogue(Scene):
             run_time=5
         )
         self.wait(2)
+
+
+class ForFun(Scene):
+    def construct(self):
+        text = TextMobject(r'\sf Just  making  for\\NOTHING!')
+
+        self.play(
+            Write(text),
+            run_time=5
+        )
+        self.wait(2)
+
+# this class is based on https://github.com/3b1b/manim/blob
+# /master/from_3b1b/active/diffyq/part2/fourier_series.py
+# class FourierOfPiSymbol
+
+
+class LogoShow(FourierOfPiSymbol, MovingCameraScene):
+    CONFIG = {
+        "n_vectors": 300,
+        "name_color": WHITE,
+        "animated_name": r"\sf 7",
+        "time_per_symbol": 5,
+        "slow_factor": 1 / 5,
+        "parametric_function_step_size": 0.01,
+        "logo": r'\large ${\sf{7}}^{\sf th}$ \sf D',
+    }
+
+    def construct(self):
+        set_gpus([0, 1])
+
+        sthd = TextMobject(self.logo).scale(3)
+
+        name = TextMobject(self.animated_name)
+        max_width = FRAME_WIDTH - 2
+        max_height = FRAME_HEIGHT - 2
+        name.set_width(max_width)
+        if name.get_height() > max_height:
+            name.set_height(max_height)
+
+        frame = self.camera.frame
+        frame.save_state()
+
+        vectors = VGroup(VectorizedPoint())
+        circles = VGroup(VectorizedPoint())
+        for path in name.family_members_with_points():
+            for subpath in path.get_subpaths():
+                sp_mob = VMobject()
+                sp_mob.set_points(subpath)
+                coefs = self.get_coefficients_of_path(sp_mob)
+                new_vectors = self.get_rotating_vectors(
+                    coefficients=coefs
+                )
+                new_circles = self.get_circles(new_vectors)
+                self.set_decreasing_stroke_widths(new_circles)
+
+                drawn_path = self.get_drawn_path(new_vectors)
+                drawn_path.clear_updaters()
+                drawn_path.set_stroke(self.name_color, 3)
+
+                static_vectors = VMobject().become(new_vectors)
+                static_circles = VMobject().become(new_circles)
+                # static_circles = new_circles.deepcopy()
+                # static_vectors.clear_updaters()
+                # static_circles.clear_updaters()
+
+                self.play(
+                    Transform(vectors, static_vectors, remover=True),
+                    Transform(circles, static_circles, remover=True),
+                    frame.set_height, 1.5 * name.get_height(),
+                    frame.move_to, path,
+                )
+
+                self.add(new_vectors, new_circles)
+                self.vector_clock.set_value(0)
+                self.play(
+                    ShowCreation(drawn_path),
+                    rate_func=linear,
+                    run_time=self.time_per_symbol
+                )
+                self.remove(new_vectors, new_circles)
+                self.add(static_vectors, static_circles)
+
+                vectors = static_vectors
+                circles = static_circles
+        self.play(
+            FadeOut(vectors),
+            FadeOut(circles),
+            run_time=2
+        )
+        self.wait(0.2)
+
+        drawn_path.generate_target()
+        drawn_path.target.set_width(sthd[0][0].get_width())
+        drawn_path.target.move_to(sthd.get_corner(DL), aligned_edge=DL)
+        drawn_path.target.fade(1)
+
+        self.play(LaggedStart(
+            *[MoveToTarget(drawn_path), Write(sthd)],
+            lag_ratio=0.5),
+            run_time=2,
+        )
+        self.wait(3)
