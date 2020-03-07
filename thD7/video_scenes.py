@@ -4,12 +4,12 @@ from thD7.from_others.fourier_series import FourierOfPiSymbol
 
 class Preamble(Scene):
     CONFIG = {
-        'c_title': '我的第一个视频',
-        'e_title': 'My First Video',
-        'series': r'\scriptsize The Geometry Meaning of Linear Algebra Series\\ \# \sz{0}',
-        'saying': r'数缺形时少直观，形少数时难入微；\\数形结合百般好，割裂分家万事休。',
-        'saying_author': '——华罗庚',
-        'statement': r'\scriptsize 本视频内容主要根据《线性代数的几何意义》制作'
+        'c_title': '',
+        'e_title': '',
+        'series': None,
+        'saying': None,
+        'saying_author': None,
+        'statement': None,
     }
 
     def construct(self):
@@ -19,30 +19,37 @@ class Preamble(Scene):
         ctext = TextMobject(r'\sf '+self.c_title).scale(1.5)
         etext = TextMobject(self.e_title).scale(1.5)
         text = VGroup(ctext, etext)\
-            .arrange_submobjects(DOWN, buff=0.5)\
-            .shift(0.5*UP)
+            .arrange_submobjects(DOWN, buff=0.5)
 
-        p = Dot(0.5*UP)
+        p = Dot()
         cw = ctext.get_width()
         ew = etext.get_width()
         length = cw/2 if cw > ew else ew/2
-        line1 = Line(0.5*UP, np.array([-length, 0.5, 0]))
-        line2 = Line(0.5*UP, np.array([length, 0.5, 0]))
+        line1 = Line(ORIGIN, np.array([-length, 0, 0]))
+        line2 = Line(ORIGIN, np.array([length, 0, 0]))
+
+        # series name
+        if self.series:
+            text.shift(0.5*UP)
+            p.shift(0.5*UP)
+            line1.shift(0.5*UP)
+            line2.shift(0.5*UP)
+
+            sn = TextMobject(self.series).\
+                to_edge(DOWN, buff=1.7)
 
         self.play(
             FadeIn(p),
             ShowCreation(line1),
             ShowCreation(line2),
         )
-
-        # series name
-        sn = TextMobject(self.series).\
-            to_edge(DOWN, buff=1.7)
-
-        self.play(
-            Write(sn),
-            Write(text)
-        )
+        if self.series:
+            self.play(
+                Write(sn),
+                Write(text)
+            )
+        else:
+            self.play(Write(text))
         self.wait(2)
 
         mgroup = [FadeOut(i) for i in self.mobjects]
@@ -69,9 +76,7 @@ class Epilogue(Scene):
         'producer': r'\large ${\sf{7}}^{\sf th}$ \sf Dimension',
         'anim_engine':
         r'{\scriptsize by}\\{\sf Grant Sanderson}\\「3Blue1Brown」',
-        'bgm': [
-            r'Arryo Seco\\',
-        ],
+        'bgm': None,
         'cfonts': [
             r'\bf 思源黑体',
             r'思源宋体',
@@ -80,10 +85,7 @@ class Epilogue(Scene):
             r'Palatino',
             r'\sf Zapfino',
         ],
-        'refs': [
-            r'',
-        ],
-        'acknowledgement': True,
+        'acknowledgement': False,
     }
 
     def construct(self):
@@ -169,9 +171,6 @@ class Epilogue(Scene):
         )
         self.wait(0.1)
 
-        # references
-        refs = TextMobject(r'\huge Bibliography')
-
         # acknowledgement
         if self.acknowledgement:
             ack = TextMobject(r'\huge Acknowledgement')\
@@ -199,6 +198,7 @@ class Epilogue(Scene):
             run_time=5
         )
         self.wait(2)
+
 
 
 class ForFun(Scene):

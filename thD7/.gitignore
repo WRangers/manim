@@ -4,3 +4,11 @@ __pycache__
 test.ipynb
 ss.py
 try.py
+
+ctex_template.tex
+ctex_template.aux
+ctex_template.log
+ctex_template.pdf
+ctex_template.synctex.gz
+
+temporate.py
