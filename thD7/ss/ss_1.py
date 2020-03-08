@@ -116,7 +116,7 @@ class Introduction(Scene):
 
 class Defination(Scene):
     def construct(self):
-        title=Title('Time Invariant')
+        title=Title(r'\LARGE Time Invariant')
         defin=TextMobject(r"""
             \parbox[c][][c]{20em}{
                 If a system is initially in its zero state and an arbitrary input signal $f(t)$ causes
@@ -134,6 +134,6 @@ class Defination(Scene):
             run_time=7
         )
         self.wait()
-
         
+
 
