@@ -7,9 +7,6 @@ class Preamble(Scene):
         'c_title': '',
         'e_title': '',
         'series': None,
-        'saying': None,
-        'saying_author': None,
-        'statement': None,
     }
 
     def construct(self):
@@ -56,19 +53,26 @@ class Preamble(Scene):
 
         self.play(*mgroup)
 
-        # saying and statement
-        if self.saying:
-            saying_text = TextMobject(self.saying)
-            author = TextMobject(self.saying_author)\
-                .move_to(saying_text.get_corner(DR)+np.array([0, -0.8, 0]))
 
-            stat = TextMobject(self.statement)\
-                .to_edge(UP, buff=0.1)
+class QuoteScene(Scene):
+    CONFIG = {
+        'quotation': None,
+        'author': None,
+        'statement': None,
+    }
 
-            self.add(stat)
-            self.play(Write(saying_text), run_time=3)
-            self.play(Write(author))
-            self.wait(7)
+    def construct(self):
+        quote_text = TextMobject(self.quotation)
+        author_text = TextMobject(self.author)\
+            .move_to(quote_text.get_corner(DR)+np.array([0, -0.8, 0]))
+
+        statement_text = TextMobject(self.statement)\
+            .to_edge(UP, buff=0.1)
+
+        self.add(statement_text)
+        self.play(Write(quote_text), run_time=3)
+        self.play(Write(author_text))
+        self.wait(7)
 
 
 class Epilogue(Scene):
@@ -200,7 +204,6 @@ class Epilogue(Scene):
         self.wait(2)
 
 
-
 class ForFun(Scene):
     def construct(self):
         text = TextMobject(r'\sf Just  making  for\\NOTHING!')
@@ -216,7 +219,7 @@ class ForFun(Scene):
 # class FourierOfPiSymbol
 
 
-class LogoShow(FourierOfPiSymbol, MovingCameraScene):
+class Show7thD(FourierOfPiSymbol, MovingCameraScene):
     CONFIG = {
         "n_vectors": 300,
         "name_color": WHITE,
