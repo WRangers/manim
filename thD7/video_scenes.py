@@ -71,8 +71,8 @@ class QuoteScene(Scene):
 
         self.add(statement_text)
         self.play(Write(quote_text), run_time=3)
-        self.play(Write(author_text))
-        self.wait(7)
+        self.play(Write(author_text),run_time=2)
+        self.wait(5)
 
 
 class Epilogue(Scene):
