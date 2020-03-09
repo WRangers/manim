@@ -27,6 +27,8 @@ manim.egg-info/
 primes.py
 /media_dir.txt
 
+compile_shell _for_surface.py
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
