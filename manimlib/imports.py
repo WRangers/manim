@@ -29,6 +29,7 @@ from manimlib.animation.specialized import *
 from manimlib.animation.transform import *
 from manimlib.animation.update import *
 from manimlib.animation.physics import *
+from manimlib.animation.magical_moving import *
 
 from manimlib.camera.camera import *
 from manimlib.camera.mapping_camera import *
