@@ -24,7 +24,7 @@ class Introduction(Scene):
         set_gpus([0, 1])
 
         que = TextMobject(r'How do you judge whether a \\ system is time-invariant or not?')\
-            .scale(1.5).set_color(BLUE)
+            .scale(1.5).set_color(BLUE_E)
         self.play(Write(que))
         self.wait(2)
 
@@ -79,7 +79,7 @@ class Introduction(Scene):
         )
 
         ans = TextMobject(
-            r'$y(t)$ is a time-variant system.').scale(1.5).set_color(BLUE)
+            r'$y(t)$ is a time-variant system.').scale(1.5).set_color(BLUE_E)
         self.play(Write(ans))
         self.wait(4)
 
@@ -105,7 +105,7 @@ class Introduction(Scene):
         self.wait()
 
         text = TextMobject('That is what we are going to talk about.')\
-            .set_color(BLUE).scale(1.5)
+            .set_color(BLUE_E).scale(1.5)
         self.play(
             *[FadeOut(i) for i in self.mobjects],
             Write(text)
@@ -114,7 +114,6 @@ class Introduction(Scene):
 
 
 class Defination(Scene):
-
     def construct(self):
         set_gpus([0, 1])
 
@@ -123,6 +122,9 @@ class Defination(Scene):
         self.defination()
         self.system()
         self.graph()
+        self.wait(3)
+        self.play(*[Uncreate(i) for i in self.mobjects], run_time=2)
+        self.wait()
 
     def defination(self):
         defin = TextMobject(r"""
@@ -142,23 +144,23 @@ class Defination(Scene):
             run_time=7
         )
         self.wait(5)
-        self.play(FadeOutAndShiftDown(defin))
+        self.play(FadeOut(defin))
 
     def system(self):
         self.add(self.title)
 
-        system = TexMobject(r'System').set_color(BLUE)\
+        system = TexMobject(r'System').set_color(BLUE_E)\
             .shift(DOWN*0.5)
-        rect = Rectangle().surround(system).set_color(BLUE)
+        rect = Rectangle().surround(system).set_color(BLUE_E)
         self.signal_text = TextMobject(r'Signal $f(t)$')\
             .shift(DOWN*0.5).next_to(rect, direction=LEFT, buff=1.5)
         self.response_text = TextMobject(r'Response $y(t)$')\
             .shift(DOWN*0.5).next_to(rect, direction=RIGHT, buff=1.5)
 
         arrow1 = Arrow(self.signal_text.get_right(), rect.get_left())\
-            .set_color(BLUE)
+            .set_color(BLUE_E)
         arrow2 = Arrow(rect.get_right(), self.response_text.get_left())\
-            .set_color(BLUE)
+            .set_color(BLUE_E)
 
         self.play(Write(system))
         self.wait()
@@ -192,7 +194,7 @@ class Defination(Scene):
                 lambda x: 5.5*(x-dx)*np.exp(-x+dx)*(x > dx),
                 x_min=0,
                 x_max=5.65,
-            ).align_to(axes1.c2p(0.0), DL)
+            ).align_to(axes1.c2p(0, 0), DL)
 
         def response(dx=3):
             return FunctionGraph(
@@ -257,3 +259,927 @@ class Defination(Scene):
 
         self.play(ShowCreation(right_rect))
         self.play(Write(right))
+
+# preparing scene
+
+
+class TwoGraphScene(Scene):
+    CONFIG = {
+        'axes1_x_min': -3,
+        'axes1_x_max': 3,
+        'axes1_y_min': -2,
+        'axes1_y_max': 2,
+        'axes1_center_point': LEFT*3.5,
+        'graph1_function': None,
+        'axes2_x_min': -3,
+        'axes2_x_max': 3,
+        'axes2_y_min': -2,
+        'axes2_y_max': 2,
+        'axes2_center_point': RIGHT*3.5,
+        'graph2_function': None,
+    }
+
+    def axes(self):
+        self.axes1 = Axes(
+            x_min=self.axes1_x_min,
+            x_max=self.axes1_x_max,
+            y_min=self.axes1_y_min,
+            y_max=self.axes1_y_max,
+            center_point=self.axes1_center_point,
+        )
+        self.axes2 = Axes(
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            y_min=self.axes2_y_min,
+            y_max=self.axes2_y_max,
+            center_point=self.axes2_center_point,
+        )
+
+    def graph1(self, dx=0):
+        return FunctionGraph(
+            self.graph1_function,
+            x_min=self.axes1_x_min,
+            x_max=self.axes1_x_max,
+        ).move_to(self.axes1.c2p(0, 0))
+        # There is a problem about the alignment.
+
+    def graph2(self, dx=0):
+        return FunctionGraph(
+            self.graph2_function,
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=RED
+        ).move_to(self.axes2.c2p(0, 0))
+
+
+class Interval(NumberLine):
+    CONFIG = {
+        "x_min": -2,
+        "x_max": 2,
+        "unit_size": 1.5,
+        "tick_frequency": 0.2,
+        "numbers_with_elongated_ticks": [-2, 2],
+        "include_numbers": True,
+        "numbers_to_show": [-2.0, -1.0, 0.0, 1.0, 2.0],
+        "number_at_center": 0,
+        "decimal_number_config": {
+            "num_decimal_places": 1,
+        }
+    }
+
+#
+
+
+class UnderstandingTI(TwoGraphScene):
+    CONFIG = {
+        'axes1_center_point': LEFT*3.5+DOWN,
+        'axes2_center_point': RIGHT*3.5+DOWN,
+    }
+
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.setuptext()
+        self.showtext()
+        self.showgraph()
+        self.numberlines()
+        self.numberpoints()
+        self.graphmoving(2)
+        # geometry explanation
+        self.compare()
+
+    #
+    def setuptext(self):
+        self.signal = TextMobject('Signal ', r'$f(t)=\sin (t)$')
+        self.system = TextMobject('System ', r'$y(t)=f(t) \cdot f(t)$')\
+            .shift(3*RIGHT)
+
+        self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(t+t_0) \cdot f(t+t_0)$')\
+            .shift(1.8*DOWN).scale(0.7)
+        self.response[1].set_color(BLUE_E)
+
+        self.signal_t0 = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
+        self.system_t0 = TextMobject(
+            r'System\\', r'$y(t+t_0)=f(t+t_0) \cdot f(t+t_0)$')
+        self.signal_t0[1].set_color(YELLOW)
+        self.system_t0[1].set_color(RED)
+
+    #
+    def showtext(self):
+        self.signal.generate_target()
+        self.signal.target.shift(3*LEFT)
+
+        self.play(Write(self.signal))
+        self.wait()
+        self.play(
+            MoveToTarget(self.signal),
+            Write(self.system)
+        )
+        self.wait()
+        self.play(Indicate(self.system[0][0:6]))
+        self.wait(7)
+
+    #
+    def showgraph(self):
+        self.play(
+            self.signal.shift, UP*3,
+            self.system.shift, UP*3,
+        )
+
+        self.axes()
+        self.play(ShowCreation(self.axes1),
+                  ShowCreation(self.axes2), run_time=2)
+        self.wait()
+
+        self.signal_t0.move_to(self.axes1.c2p(0, 4))
+        self.system_t0.move_to(self.axes2.c2p(0, 4))
+
+        self.set_graph()
+
+        self.play(
+            ShowCreation(self.signal_graph),
+            ShowCreation(self.system_graph),
+            self.signal[1].set_color, YELLOW,
+            self.system[1].set_color, RED,
+            run_time=2
+        )
+        self.wait()
+        self.play(
+            Transform(self.signal, self.signal_t0),
+            Transform(self.system, self.system_t0),
+            Write(self.response)
+        )
+        self.wait()
+        self.play(ShowCreation(self.response_graph))
+        self.wait()
+
+    def set_graph(self):
+        self.signal_graph = self.graph1().set_color(YELLOW)
+        self.system_graph = self.graph2().set_color(RED_E)
+        self.response_graph = self.graph3().set_color(BLUE_E)
+
+    def graph1(self, dx=0):
+        return FunctionGraph(
+            lambda x: np.sin(x+dx),
+            x_min=self.axes1_x_min,
+            x_max=self.axes1_x_max,
+        ).move_to(self.axes1.c2p(0, 0))
+
+    def graph2(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(x+dx)**2,
+            # lambda x: np.sin(x-dx)*np.sin(x),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=RED
+        ).move_to(self.axes2.c2p(0, 0))
+        f.shift(UP*f.get_height()/2)
+        return f
+
+    def graph3(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(x+dx)**2,
+            # lambda x: np.sin(x-dx)*np.sin(x),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=BLUE_E
+        ).move_to(self.axes1.c2p(0, 0))
+        f.shift(UP*f.get_height()/2)
+        return f
+    #
+
+    def numberlines(self):
+        self.sig_numline = Interval().shift(3.5*LEFT+UP*2)
+        self.sys_numline = self.sig_numline.deepcopy().shift(RIGHT*7)
+        self.res_numline = self.sig_numline.deepcopy().next_to(
+            self.response, DOWN, buff=0.2)
+
+        self.play(
+            ShowCreation(self.sig_numline),
+            ShowCreation(self.sys_numline),
+            ShowCreation(self.res_numline),
+            run_time=2
+        )
+        self.wait()
+
+        self.sig_offset = TextMobject('|offset of the signal graph|').scale(0.6)\
+            .next_to(self.sig_numline, DOWN, buff=0.1)
+        self.sys_offset = TextMobject('|offset of the system graph|').scale(0.6)\
+            .next_to(self.sys_numline, DOWN, buff=0.1)
+        self.res_offset = TextMobject('|offset of the response graph|').scale(0.6)\
+            .next_to(self.res_numline, DOWN, buff=0.1)
+
+        self.play(
+            Write(self.sig_offset),
+            Write(self.sys_offset),
+            Write(self.res_offset)
+        )
+        self.wait()
+
+    def numberpoints(self):
+        self.t0_text = TexMobject('t_0 = ')
+
+        self.t0 = ValueTracker(0)
+        self.t0_num = DecimalNumber(self.t0.get_value())\
+            .add_updater(lambda v: v.set_value(self.t0.get_value()))
+
+        self.t0_group = VGroup(self.t0_text, self.t0_num)\
+            .arrange(RIGHT, buff=0.2).shift(0.5*UP)
+
+        self.sig_point = Dot(self.sig_numline.n2p(self.t0.get_value())).set_color(YELLOW)\
+            .add_updater(lambda m: m.move_to(self.sig_numline.n2p(self.t0.get_value())))
+        self.sys_point = Dot(self.sys_numline.n2p(self.t0.get_value())).set_color(RED)\
+            .add_updater(lambda m: m.move_to(self.sys_numline.n2p(self.t0.get_value())))
+        self.res_point = Dot(self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+            .add_updater(lambda m: m.move_to(self.res_numline.n2p(self.t0.get_value())))
+
+        zero_point = self.sig_numline.n2p(0)
+        self.sig_line = Line(self.sig_numline.n2p(0), self.sig_numline.n2p(self.t0.get_value())).set_color(YELLOW)\
+            .add_updater(
+                lambda m: m.become(Line(self.sig_numline.n2p(0), self.sig_numline.n2p(self.t0.get_value()))
+                                   .set_color(YELLOW)))
+        self.sys_line = Line(self.sys_numline.n2p(0), self.sys_numline.n2p(self.t0.get_value())).set_color(RED)\
+            .add_updater(
+                lambda m: m.become(Line(self.sys_numline.n2p(0), self.sys_numline.n2p(self.t0.get_value()))
+                                   .set_color(RED)))
+        self.res_line = Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+            .add_updater(
+                lambda m: m.become(Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value()))
+                                   .set_color(BLUE_E)))
+
+        self.play(
+            Write(self.t0_group),
+            ShowCreation(self.sig_point),
+            ShowCreation(self.sys_point),
+            ShowCreation(self.res_point),
+            ShowCreation(self.sys_line),
+            ShowCreation(self.sig_line),
+            ShowCreation(self.res_line),
+        )
+        self.wait()
+
+    #
+    def graphmoving(self, value=2):
+        self.shift_num = value
+        self.play(
+            self.t0.increment_value, value,
+            UpdateFromAlphaFunc(self.signal_graph,
+                                self.signal_graph_update_fuction),
+            UpdateFromAlphaFunc(self.system_graph,
+                                self.system_graph_update_fuction),
+            UpdateFromAlphaFunc(self.response_graph,
+                                self.response_graph_update_fuction),
+            run_time=6
+        )
+        self.wait(2)
+
+    def signal_graph_update_fuction(self, f, alpha):
+        dx = interpolate(0, self.shift_num, alpha)
+        f.become(self.graph1(dx))
+
+    def system_graph_update_fuction(self, f, alpha):
+        dx = interpolate(0, self.shift_num, alpha)
+        f.become(self.graph2(dx))
+
+    def response_graph_update_fuction(self, f, alpha):
+        dx = interpolate(0, self.shift_num, alpha)
+        f.become(self.graph3(dx))
+    #
+
+    def compare(self):
+        self.play(
+            *[FadeOut(i)
+              for i in [self.t0_group, self.axes1, self.axes2,
+                        self.signal_graph, self.system_graph, self.response_graph,
+                        self.sig_offset, self.sys_offset, self.res_offset]]
+        )
+
+        sig_group = VGroup(
+            self.signal, self.sig_numline, self.sig_line, self.sig_point
+        )
+        sys_group = VGroup(
+            self.system, self.sys_numline, self.sys_line, self.sys_point
+        )
+
+        self.play(
+            sig_group.shift, 3.5*RIGHT,
+            sys_group.move_to, ORIGIN,
+            self.response.scale, 10/7
+        )
+        self.wait()
+        self.play(
+            Indicate(self.signal[0]),
+            Indicate(self.response[0])
+        )
+        self.wait()
+        self.play(
+            Indicate(self.system[0], color=RED),
+            Indicate(self.response[0], color=RED)
+        )
+
+
+class UnderstandingTV(UnderstandingTI):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.changesystem()
+        self.setuptext(0.7)
+        self.setupgraph()
+        self.setupnumberlines()
+        self.setupnumberpoints(1/2)
+        self.showup()
+        self.graphmoving(2)
+        # geometry explanation
+        self.compare(10/7)
+
+    #
+    def changesystem(self):
+        signal = TextMobject(r'Signal $f(t)=\sin (t)$').shift(3*LEFT)
+        system = TextMobject(r'System $y(t)=f(t) \cdot f(t)$')\
+            .shift(3*RIGHT)
+        system2 = TextMobject(r'System $y(t)=f(t) \cdot \sin(t)$')\
+            .shift(3*RIGHT)
+        text = TextMobject('What is the difference?').scale(1.5)\
+            .set_color(YELLOW)
+
+        self.add(signal, system)
+        self.wait()
+        self.play(Transform(system, system2))
+        self.wait()
+        self.play(*[FadeOut(i) for i in self.mobjects], Write(text))
+        self.wait()
+        self.play(FadeOut(text))
+        self.wait()
+
+    #
+    def setuptext(self, scale=0.7):
+        self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(t+t_0) \cdot \sin (t)$')\
+            .shift(1.8*DOWN).scale(scale)
+        self.response[1].set_color(BLUE_E)
+
+        self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
+        self.system = TextMobject(
+            r'System\\', r'$y(t+t_0)=f(t+t_0) \cdot f(t+t_0)$')
+        self.signal[1].set_color(YELLOW)
+        self.system[1].set_color(RED)
+
+    #
+    def setupgraph(self):
+        self.axes()
+        self.signal.shift(3*UP).set_x(self.axes1.c2p(0, 0)[0])
+        self.system.shift(3*UP).set_x(self.axes2.c2p(0, 0)[0])
+
+        self.set_graph()
+
+    def set_graph(self):
+        self.signal_graph = self.graph1()
+        self.system_graph = self.graph2()
+        self.response_graph = self.graph3()
+
+    def graph3(self, dx=0):
+        f = FunctionGraph(
+            # lambda x: np.sin(x-dx)**2,
+            lambda x: np.sin(x+dx)*np.sin(x),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=BLUE_E
+        ).move_to(self.axes1.c2p(0, 0))
+        f.shift(UP*f.get_height()/2)
+        return f
+
+    #
+    def setupnumberlines(self):
+        self.sig_numline = Interval().shift(3.5*LEFT+UP*2)
+        self.sys_numline = self.sig_numline.deepcopy().shift(RIGHT*7)
+        self.res_numline = self.sig_numline.deepcopy().next_to(
+            self.response, DOWN, buff=0.2)
+
+        self.sig_offset = TextMobject('|offset of the signal graph|').scale(0.6)\
+            .next_to(self.sig_numline, DOWN, buff=0.1)
+        self.sys_offset = TextMobject('|offset of the system graph|').scale(0.6)\
+            .next_to(self.sys_numline, DOWN, buff=0.1)
+        self.res_offset = TextMobject('|offset of the response graph|').scale(0.6)\
+            .next_to(self.res_numline, DOWN, buff=0.1)
+
+    #
+    def setupnumberpoints(self, offset=1/2):
+        self.t0_text = TexMobject('t_0 = ')
+
+        self.t0 = ValueTracker(0)
+        self.t0_num = DecimalNumber(self.t0.get_value())\
+            .add_updater(lambda v: v.set_value(self.t0.get_value()))
+
+        self.t0_group = VGroup(self.t0_text, self.t0_num)\
+            .arrange(RIGHT, buff=0.2).shift(0.5*UP)
+
+        self.sig_point = Dot(self.sig_numline.n2p(self.t0.get_value())).set_color(YELLOW)\
+            .add_updater(lambda m: m.move_to(self.sig_numline.n2p(self.t0.get_value())))
+        self.sys_point = Dot(self.sys_numline.n2p(self.t0.get_value())).set_color(RED)\
+            .add_updater(lambda m: m.move_to(self.sys_numline.n2p(self.t0.get_value())))
+        self.res_point = Dot(self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+            .add_updater(lambda m: m.move_to(self.res_numline.n2p(self.t0.get_value()*offset)))
+
+        zero_point = self.sig_numline.n2p(0)
+        self.sig_line = Line(self.sig_numline.n2p(0), self.sig_numline.n2p(self.t0.get_value())).set_color(YELLOW)\
+            .add_updater(
+                lambda m: m.become(Line(self.sig_numline.n2p(0), self.sig_numline.n2p(self.t0.get_value()))
+                                   .set_color(YELLOW)))
+        self.sys_line = Line(self.sys_numline.n2p(0), self.sys_numline.n2p(self.t0.get_value())).set_color(RED)\
+            .add_updater(
+                lambda m: m.become(Line(self.sys_numline.n2p(0), self.sys_numline.n2p(self.t0.get_value()))
+                                   .set_color(RED)))
+        self.res_line = Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+            .add_updater(
+                lambda m: m.become(Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value()*offset))
+                                   .set_color(BLUE_E)))
+
+    #
+    def showup(self):
+        self.play(
+            *[ShowCreation(i) for i in [self.t0_group, self.axes1, self.axes2,
+                                        self.signal_graph, self.system_graph, self.response_graph,
+                                        self.sig_offset, self.sys_offset, self.res_offset,
+                                        self.signal, self.system, self.response,
+                                        self.sig_numline, self.sys_numline, self.res_numline,
+                                        self.sig_point, self.sys_point, self.res_point,
+                                        self.sig_line, self.sys_line, self.res_line]],
+            run_time=2
+        )
+        self.wait()
+
+    #
+    def graphmoving(self, value=2):
+        self.shift_num = value
+        self.play(
+            self.t0.increment_value, value,
+            UpdateFromAlphaFunc(self.signal_graph,
+                                self.signal_graph_update_fuction),
+            UpdateFromAlphaFunc(self.system_graph,
+                                self.system_graph_update_fuction),
+            UpdateFromAlphaFunc(self.response_graph,
+                                self.response_graph_update_fuction),
+            run_time=6
+        )
+        self.wait()
+
+    #
+    def compare(self, scale=10/7):
+        self.play(
+            *[FadeOut(i)
+              for i in [self.t0_group, self.axes1, self.axes2,
+                        self.signal_graph, self.system_graph, self.response_graph,
+                        self.sig_offset, self.sys_offset, self.res_offset]]
+        )
+
+        sig_group = VGroup(
+            self.signal, self.sig_numline, self.sig_line, self.sig_point
+        )
+        sys_group = VGroup(
+            self.system, self.sys_numline, self.sys_line, self.sys_point
+        )
+
+        self.play(
+            sig_group.shift, 3.5*RIGHT,
+            sys_group.move_to, ORIGIN,
+            self.response.scale, scale
+        )
+        self.wait()
+        self.play(
+            Indicate(self.signal[0]),
+            Indicate(self.response[0])
+        )
+        self.wait()
+        self.play(
+            Indicate(self.system[0], color=RED),
+            Indicate(self.response[0], color=RED)
+        )
+        self.wait()
+
+
+class SignalWithScaleUp(UnderstandingTV):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.statement()
+        self.setuptext(0.7)
+        self.setupgraph()
+        self.setupnumberlines()
+        self.setupnumberpoints(1/2)
+        self.showup()
+        # algebra explain
+        self.graphmoving(-2)
+
+    #
+    def statement(self):
+        text = TextMobject('Systems consists of the signals with scaling.')
+
+        systems = []
+        for i in ['y(t)=f(2t)',
+                  'y(t)=f(\\frac{1}{7}t)',
+                  'y(t)=f(t) \\cdot f(2t)',
+                  'y(t)=f(2t-7)']:
+            systems.append(TexMobject(i).scale(1.2))
+
+        systems[0].move_to(np.array([5, 2, 0]))
+        systems[1].move_to(np.array([2, -2, 0]))
+        systems[2].move_to(np.array([-3, 3, 0]))
+        systems[3].move_to(np.array([-4, -3, 0]))
+
+        self.play(Write(text))
+        self.wait()
+        self.play(
+            *[WriteRandom(i[0]) for i in systems]
+        )
+        self.wait()
+        self.play(
+            Indicate(systems[0][0][-3]),
+            Indicate(systems[1][0][-5:-2]),
+            Indicate(systems[2][0][-3]),
+            Indicate(systems[3][0][-5]),
+        )
+        self.wait()
+        self.play(
+            *[UnWriteRandom(i[0]) for i in systems]
+        )
+        self.wait()
+
+        signal = TextMobject(r'Signal $f(t)=\sin (t)$').shift(LEFT*3+DOWN)
+        system = TextMobject(r'System $y(t)=f(2t)$').shift(RIGHT*3+DOWN)
+
+        self.play(
+            text.shift, UP,
+            Write(system),
+            Write(signal),
+        )
+        self.wait()
+        self.play(
+            *[FadeOut(i) for i in self.mobjects]
+        )
+
+    #
+    def setuptext(self, scale=0.7):
+        self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(2t+t_0)$')\
+            .shift(1.8*DOWN).scale(scale)
+        self.response[1].set_color(BLUE_E)
+
+        self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
+        self.system = TextMobject(
+            r'System\\', r'$y(t+t_0)=f[2(t+t_0)]$')
+        self.signal[1].set_color(YELLOW)
+        self.system[1].set_color(RED)
+
+    def graph2(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(2*(x+dx)),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=RED
+        ).move_to(self.axes2.c2p(0, 0))
+        return f
+
+    def graph3(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(2*x+dx),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=BLUE_E
+        ).move_to(self.axes1.c2p(0, 0))
+        return f
+
+
+class AlgebraExplain(SignalWithScaleUp):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.setuptext(0.7)
+        self.setupgraph()
+        self.setupnumberlines()
+        self.setupnumberpoints(1/2)
+        self.showup()
+        self.explain()
+
+    def showup(self):
+        self.add(
+            *[i for i in [self.t0_group, self.axes1, self.axes2,
+                          self.signal_graph, self.system_graph, self.response_graph,
+                          self.sig_offset, self.sys_offset, self.res_offset,
+                          self.signal, self.system, self.response,
+                          self.sig_numline, self.sys_numline, self.res_numline,
+                          self.sig_point, self.sys_point, self.res_point,
+                          self.sig_line, self.sys_line, self.res_line]],
+        )
+        self.wait()
+
+    def explain(self):
+        title = Title(r'\LARGE Algebra Explanation').set_color(GREEN)
+
+        signal = TextMobject(
+            r'Signal\\', r'$f(t)=\sin (t)$').move_to(3.5*LEFT+UP)
+        system = TextMobject(
+            r'System\\', r'$y(t)=f(2t)$').move_to(3.5*RIGHT+UP)
+        signal[1].set_color(YELLOW)
+        system[1].set_color(RED)
+        response = self.response.deepcopy()
+
+        self.play(
+            Transform(self.signal, signal),
+            Transform(self.system, system),
+            *[FadeOut(i)
+              for i in self.mobjects if i not in [self.signal, self.system]],
+            Write(title)
+        )
+        self.wait()
+
+        t1 = TexMobject('f(t)', '\\longrightarrow y_f(t)').shift(DOWN)
+        self.play(Write(t1))
+        self.wait()
+        self.play(Indicate(self.system[1]))
+        self.wait()
+
+        t2 = TexMobject('f(t)', '\\longrightarrow y_f(t)',
+                        '=f(2t)').shift(DOWN)
+        self.play(
+            t1.align_to, t2, LEFT,
+            Write(t2[2])
+        )
+        self.wait()
+
+        t3 = TexMobject('f_1(t)', '=f(t+t_0)').next_to(t2, DOWN)
+        self.play(Write(t3))
+        self.wait()
+        self.play(Indicate(t1))
+        self.wait()
+
+        t4 = TexMobject(
+            'f_1(t)', r'\longrightarrow y_{f_1}(t)').next_to(t3, DOWN)
+        t4_0 = t3[0].deepcopy()
+        t4_1 = t1[1].deepcopy()
+        self.play(Transform(t4_1, t4[1]),
+                  t4_0.move_to, t4[0])
+        self.wait()
+        self.play(Indicate(t1), Indicate(t2[2]))
+        self.wait()
+        t4_g = VGroup(t4_0, t4_1)
+
+        t5 = TexMobject(
+            'f_1(t)', r'\longrightarrow y_{f_1}(t)', '=f_1(2t)').next_to(t3, DOWN)
+        t5_2 = t2[2].deepcopy()
+        self.play(
+            t4_g.align_to, t5, LEFT,
+            Transform(t5_2, t5[2])
+        )
+        self.wait()
+        self.play(Indicate(t3))
+        self.wait()
+        t5_g = VGroup(t4_g, t5_2)
+
+        t6 = TexMobject(
+            'f_1(t)', r'\longrightarrow y_{f_1}(t)', '=f_1(2t)', '=f(2t+t_0)').next_to(t3, DOWN)
+        t6_3 = t3[1].deepcopy()
+        self.play(
+            Transform(t6_3, t6[3]),
+            t5_g.align_to, t6, LEFT
+        )
+        self.wait()
+
+        self.response.scale(10/7).shift(UP*2)
+        self.play(Write(self.response))
+        self.wait()
+
+
+class BackToBeginning(Scene):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.tobegin()
+        self.tonow()
+        self.explain()
+
+    def tobegin(self):
+        pass
+
+    def tonow(self):
+        pass
+
+    def explain(self):
+        title = Title(r'\LARGE Algebra Explanation').set_color(GREEN)
+
+        signal = TextMobject(
+            r'Signal\\', r'$f(t)=\sin (t)$').move_to(3.5*LEFT+UP)
+        system = TextMobject(
+            r'System\\', r'$y(t)=f(-2t+1)\cdot \sin (t)$').move_to(3.5*RIGHT+UP)
+        signal[1].set_color(YELLOW)
+        system[1].set_color(RED)
+
+        self.add(title, system, signal)
+
+        t1 = TexMobject('f(t)\\longrightarrow y_f(t)').shift(DOWN)
+        t2 = TexMobject('f_1(t)', '=f(t+t_0)').next_to(t1, DOWN)
+        t3 = TextMobject(r"""
+            $$
+            \begin{aligned}
+            f_{1}(t) \longrightarrow y_{f_1}(t) & =f_1(-2 t+1) \cdot \sin (t) \\
+                                                & =f\left(-2 t+1+t_{0}\right) \cdot \sin (t)
+            \end{aligned}
+            $$
+        """).next_to(t1, DOWN).shift(RIGHT*0.4)
+        self.play(Write(t1))
+        self.wait()
+        self.play(Write(t2))
+        self.wait()
+
+        t_g = VGroup(t1, t2)
+        self.play(Write(t3),
+                  t_g.shift, UP*0.7)
+        self.wait()
+
+        self.play(
+            Indicate(t3[0][-16:-11]),
+            Indicate(t3[0][-32:-27])
+        )
+        self.wait()
+
+
+class SignalWithScaleDown(SignalWithScaleUp):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.statement()
+        self.setuptext(0.7)
+        self.setupgraph()
+        self.setupnumberlines()
+        self.setupnumberpoints(2)
+        self.showup()
+        self.graphmoving(1)
+
+    def statement(self):
+        text = TextMobject(r'What about the system $y(t)=f(\frac{1}{2}t)$ ?').scale(1.5)\
+            .set_color(YELLOW)
+
+        self.play(
+            Write(text)
+        )
+        self.wait()
+        self.play(FadeOut(text))
+
+    def setuptext(self, scale=0.7):
+        self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(\frac{1}{2}t+t_0)$')\
+            .shift(1.8*DOWN).scale(scale)
+        self.response[1].set_color(BLUE_E)
+
+        self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
+        self.system = TextMobject(
+            r'System\\', r'$y(t+t_0)=f[\frac{1}{2}(t+t_0)]$')
+        self.signal[1].set_color(YELLOW)
+        self.system[1].set_color(RED)
+
+    def graph2(self, dx=0):  # alignment
+        f = FunctionGraph(
+            lambda x: np.sin(0.5*(x+dx)),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=RED
+        ).align_to(self.axes2.c2p(0, 1), UP).shift(RIGHT*3.5)
+        return f
+
+    def graph3(self, dx=0):  # alignment
+        f = FunctionGraph(
+            lambda x: np.sin(0.5*x+dx),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=BLUE_E
+        ).align_to(self.axes1.c2p(0, 1), UP).shift(LEFT*3.5)
+        return f
+
+    def system_graph_update_fuction(self, f, alpha):
+        dx = interpolate(0, self.shift_num, alpha)
+        f.become(self.graph2(dx))
+
+    def response_graph_update_fuction(self, f, alpha):
+        dx = interpolate(0, self.shift_num, alpha)
+        f.become(self.graph3(dx))
+
+
+class SignalWithShifting(SignalWithScaleUp):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.statement()
+        self.setuptext(0.7)
+        self.setupgraph()
+        self.setupnumberlines()
+        self.setupnumberpoints(1)
+        self.showup()
+        self.graphmoving(-2)
+
+    def statement(self):
+        text = TextMobject('Systems consists of the signals with shift.')
+
+        signal = TextMobject(r'Signal $f(t)=\sin (t)$').shift(LEFT*3+DOWN)
+        system = TextMobject(r'System $y(t)=f(t-1)$').shift(RIGHT*3+DOWN)
+
+        self.play(Write(text))
+        self.wait()
+        self.play(
+            text.shift, UP,
+            Write(system),
+            Write(signal),
+        )
+        self.wait()
+        self.play(
+            *[FadeOut(i) for i in self.mobjects]
+        )
+
+    def setuptext(self, scale=0.7):
+        self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(t-1+t_0)$')\
+            .shift(1.8*DOWN).scale(scale)
+        self.response[1].set_color(BLUE_E)
+
+        self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
+        self.system = TextMobject(
+            r'System\\', r'$y(t+t_0)=f(t+t_0-1)$')
+        self.signal[1].set_color(YELLOW)
+        self.system[1].set_color(RED)
+
+    def graph2(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(x-1+dx),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=RED
+        ).move_to(self.axes2.c2p(0, 0))
+        return f
+
+    def graph3(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(x-1+dx),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=BLUE_E
+        ).move_to(self.axes1.c2p(0, 0))
+        return f
+
+
+class ComprehansiveSystem(SignalWithScaleUp):
+    def construct(self):
+        set_gpus([0, 1])
+
+        self.statement()
+        self.setuptext(0.7)
+        self.setupgraph()
+        self.setupnumberlines()
+        self.setupnumberpoints(-1/2)
+        self.showup()
+        self.graphmoving(-2)
+
+    def statement(self):
+        text = TextMobject('A comprehensive system.')
+
+        signal = TextMobject(r'Signal $f(t)=\sin (t)$').shift(LEFT*3+DOWN)
+        system = TextMobject(
+            r'System $y(t)=f(-2t+1)\cdot \sin(t)$').shift(RIGHT*3+DOWN)
+
+        self.play(Write(text))
+        self.wait()
+        self.play(
+            text.shift, UP,
+            Write(system),
+            Write(signal),
+        )
+        self.wait()
+        self.play(
+            *[FadeOut(i) for i in self.mobjects]
+        )
+
+    def setuptext(self, scale=0.7):
+        self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f\left(-2 t+1+t_{0}\right) \cdot \sin (t)$')\
+            .shift(1.8*DOWN).scale(scale)
+        self.response[1].set_color(BLUE_E)
+
+        self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
+        self.system = TextMobject(
+            r'System\\', r'$y(t+t_0)=f\left[-2 \left( t+t_{0} \right) +1\right] \cdot \sin (t)$')
+        self.signal[1].set_color(YELLOW)
+        self.system[1].set_color(RED).scale(0.9)
+
+    def graph2(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(-2*x+1-2*dx),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=RED
+        ).move_to(self.axes2.c2p(0, 0))
+        return f
+
+    def graph3(self, dx=0):
+        f = FunctionGraph(
+            lambda x: np.sin(-2*x+1+dx),
+            x_min=self.axes2_x_min,
+            x_max=self.axes2_x_max,
+            color=BLUE_E
+        ).move_to(self.axes1.c2p(0, 0))
+        return f
+
+class Summary(Scene):
+
+class Capacitance(Scene):
