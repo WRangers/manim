@@ -38,5 +38,4 @@ class Series(Scene):
         for i in series:
             i.align_to(left,LEFT)
 
-
         self.play(LaggedStart(*[FadeIn(i) for i in series]),run_time=7)
