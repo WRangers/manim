@@ -24,7 +24,7 @@ class Introduction(Scene):
         set_gpus([0, 1])
 
         que = TextMobject(r'How do you judge whether a \\ system is time-invariant or not?')\
-            .scale(1.5).set_color(BLUE_E)
+            .scale(1.5).set_color(BLUE)
         self.play(Write(que))
         self.wait(2)
 
@@ -79,7 +79,7 @@ class Introduction(Scene):
         )
 
         ans = TextMobject(
-            r'$y(t)$ is a time-variant system.').scale(1.5).set_color(BLUE_E)
+            r'$y(t)$ is a time-variant system.').scale(1.5).set_color(BLUE)
         self.play(Write(ans))
         self.wait(4)
 
@@ -105,7 +105,7 @@ class Introduction(Scene):
         self.wait()
 
         text = TextMobject('That is what we are going to talk about.')\
-            .set_color(BLUE_E).scale(1.5)
+            .set_color(BLUE).scale(1.5)
         self.play(
             *[FadeOut(i) for i in self.mobjects],
             Write(text)
@@ -149,18 +149,18 @@ class Defination(Scene):
     def system(self):
         self.add(self.title)
 
-        system = TexMobject(r'System').set_color(BLUE_E)\
+        system = TexMobject(r'System').set_color(BLUE)\
             .shift(DOWN*0.5)
-        rect = Rectangle().surround(system).set_color(BLUE_E)
+        rect = Rectangle().surround(system).set_color(BLUE)
         self.signal_text = TextMobject(r'Signal $f(t)$')\
             .shift(DOWN*0.5).next_to(rect, direction=LEFT, buff=1.5)
         self.response_text = TextMobject(r'Response $y(t)$')\
             .shift(DOWN*0.5).next_to(rect, direction=RIGHT, buff=1.5)
 
         arrow1 = Arrow(self.signal_text.get_right(), rect.get_left())\
-            .set_color(BLUE_E)
+            .set_color(BLUE)
         arrow2 = Arrow(rect.get_right(), self.response_text.get_left())\
-            .set_color(BLUE_E)
+            .set_color(BLUE)
 
         self.play(Write(system))
         self.wait()
@@ -356,7 +356,7 @@ class UnderstandingTI(TwoGraphScene):
 
         self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(t+t_0) \cdot f(t+t_0)$')\
             .shift(1.8*DOWN).scale(0.7)
-        self.response[1].set_color(BLUE_E)
+        self.response[1].set_color(BLUE)
 
         self.signal_t0 = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system_t0 = TextMobject(
@@ -416,7 +416,7 @@ class UnderstandingTI(TwoGraphScene):
     def set_graph(self):
         self.signal_graph = self.graph1().set_color(YELLOW)
         self.system_graph = self.graph2().set_color(RED_E)
-        self.response_graph = self.graph3().set_color(BLUE_E)
+        self.response_graph = self.graph3().set_color(BLUE)
 
     def graph1(self, dx=0):
         return FunctionGraph(
@@ -442,7 +442,7 @@ class UnderstandingTI(TwoGraphScene):
             # lambda x: np.sin(x-dx)*np.sin(x),
             x_min=self.axes2_x_min,
             x_max=self.axes2_x_max,
-            color=BLUE_E
+            color=BLUE
         ).move_to(self.axes1.c2p(0, 0))
         f.shift(UP*f.get_height()/2)
         return f
@@ -490,7 +490,7 @@ class UnderstandingTI(TwoGraphScene):
             .add_updater(lambda m: m.move_to(self.sig_numline.n2p(self.t0.get_value())))
         self.sys_point = Dot(self.sys_numline.n2p(self.t0.get_value())).set_color(RED)\
             .add_updater(lambda m: m.move_to(self.sys_numline.n2p(self.t0.get_value())))
-        self.res_point = Dot(self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+        self.res_point = Dot(self.res_numline.n2p(self.t0.get_value())).set_color(BLUE)\
             .add_updater(lambda m: m.move_to(self.res_numline.n2p(self.t0.get_value())))
 
         zero_point = self.sig_numline.n2p(0)
@@ -502,10 +502,10 @@ class UnderstandingTI(TwoGraphScene):
             .add_updater(
                 lambda m: m.become(Line(self.sys_numline.n2p(0), self.sys_numline.n2p(self.t0.get_value()))
                                    .set_color(RED)))
-        self.res_line = Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+        self.res_line = Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value())).set_color(BLUE)\
             .add_updater(
                 lambda m: m.become(Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value()))
-                                   .set_color(BLUE_E)))
+                                   .set_color(BLUE)))
 
         self.play(
             Write(self.t0_group),
@@ -615,7 +615,7 @@ class UnderstandingTV(UnderstandingTI):
     def setuptext(self, scale=0.7):
         self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(t+t_0) \cdot \sin (t)$')\
             .shift(1.8*DOWN).scale(scale)
-        self.response[1].set_color(BLUE_E)
+        self.response[1].set_color(BLUE)
 
         self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system = TextMobject(
@@ -642,7 +642,7 @@ class UnderstandingTV(UnderstandingTI):
             lambda x: np.sin(x+dx)*np.sin(x),
             x_min=self.axes2_x_min,
             x_max=self.axes2_x_max,
-            color=BLUE_E
+            color=BLUE
         ).move_to(self.axes1.c2p(0, 0))
         f.shift(UP*f.get_height()/2)
         return f
@@ -676,7 +676,7 @@ class UnderstandingTV(UnderstandingTI):
             .add_updater(lambda m: m.move_to(self.sig_numline.n2p(self.t0.get_value())))
         self.sys_point = Dot(self.sys_numline.n2p(self.t0.get_value())).set_color(RED)\
             .add_updater(lambda m: m.move_to(self.sys_numline.n2p(self.t0.get_value())))
-        self.res_point = Dot(self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+        self.res_point = Dot(self.res_numline.n2p(self.t0.get_value())).set_color(BLUE)\
             .add_updater(lambda m: m.move_to(self.res_numline.n2p(self.t0.get_value()*offset)))
 
         zero_point = self.sig_numline.n2p(0)
@@ -688,10 +688,10 @@ class UnderstandingTV(UnderstandingTI):
             .add_updater(
                 lambda m: m.become(Line(self.sys_numline.n2p(0), self.sys_numline.n2p(self.t0.get_value()))
                                    .set_color(RED)))
-        self.res_line = Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value())).set_color(BLUE_E)\
+        self.res_line = Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value())).set_color(BLUE)\
             .add_updater(
                 lambda m: m.become(Line(self.res_numline.n2p(0), self.res_numline.n2p(self.t0.get_value()*offset))
-                                   .set_color(BLUE_E)))
+                                   .set_color(BLUE)))
 
     #
     def showup(self):
@@ -820,7 +820,7 @@ class SignalWithScaleUp(UnderstandingTV):
     def setuptext(self, scale=0.7):
         self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(2t+t_0)$')\
             .shift(1.8*DOWN).scale(scale)
-        self.response[1].set_color(BLUE_E)
+        self.response[1].set_color(BLUE)
 
         self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system = TextMobject(
@@ -842,7 +842,7 @@ class SignalWithScaleUp(UnderstandingTV):
             lambda x: np.sin(2*x+dx),
             x_min=self.axes2_x_min,
             x_max=self.axes2_x_max,
-            color=BLUE_E
+            color=BLUE
         ).move_to(self.axes1.c2p(0, 0))
         return f
 
@@ -956,10 +956,10 @@ class BackToBeginning(Scene):
         self.explain()
 
     def tobegin(self):
-        pass
+        pass  #  后期
 
     def tonow(self):
-        pass
+        pass  # 后期
 
     def explain(self):
         title = Title(r'\LARGE Algebra Explanation').set_color(GREEN)
@@ -1025,7 +1025,7 @@ class SignalWithScaleDown(SignalWithScaleUp):
     def setuptext(self, scale=0.7):
         self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(\frac{1}{2}t+t_0)$')\
             .shift(1.8*DOWN).scale(scale)
-        self.response[1].set_color(BLUE_E)
+        self.response[1].set_color(BLUE)
 
         self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system = TextMobject(
@@ -1047,7 +1047,7 @@ class SignalWithScaleDown(SignalWithScaleUp):
             lambda x: np.sin(0.5*x+dx),
             x_min=self.axes2_x_min,
             x_max=self.axes2_x_max,
-            color=BLUE_E
+            color=BLUE
         ).align_to(self.axes1.c2p(0, 1), UP).shift(LEFT*3.5)
         return f
 
@@ -1093,7 +1093,7 @@ class SignalWithShifting(SignalWithScaleUp):
     def setuptext(self, scale=0.7):
         self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f(t-1+t_0)$')\
             .shift(1.8*DOWN).scale(scale)
-        self.response[1].set_color(BLUE_E)
+        self.response[1].set_color(BLUE)
 
         self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system = TextMobject(
@@ -1115,7 +1115,7 @@ class SignalWithShifting(SignalWithScaleUp):
             lambda x: np.sin(x-1+dx),
             x_min=self.axes2_x_min,
             x_max=self.axes2_x_max,
-            color=BLUE_E
+            color=BLUE
         ).move_to(self.axes1.c2p(0, 0))
         return f
 
@@ -1154,7 +1154,7 @@ class ComprehansiveSystem(SignalWithScaleUp):
     def setuptext(self, scale=0.7):
         self.response = TextMobject(r'Response\\', r'$f(t+t_0)\longrightarrow y_f(t)=f\left(-2 t+1+t_{0}\right) \cdot \sin (t)$')\
             .shift(1.8*DOWN).scale(scale)
-        self.response[1].set_color(BLUE_E)
+        self.response[1].set_color(BLUE)
 
         self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system = TextMobject(
@@ -1176,10 +1176,153 @@ class ComprehansiveSystem(SignalWithScaleUp):
             lambda x: np.sin(-2*x+1+dx),
             x_min=self.axes2_x_min,
             x_max=self.axes2_x_max,
-            color=BLUE_E
+            color=BLUE
         ).move_to(self.axes1.c2p(0, 0))
         return f
 
-class Summary(Scene):
-
 class Capacitance(Scene):
+    def construct(self):
+        set_gpus([0,1])
+
+        resistor= TextMobject(r"""
+         \begin{circuitikz}[european]
+         \draw (0,0) to[R] ++(3,0);
+         \end{circuitikz} \\ Resistor
+        """,
+        stroke_width= 1,
+        fill_opacity= 1,
+        stroke_opacity=1)
+        
+        capac=TextMobject(r"""
+         \begin{circuitikz}[american]
+         \draw (0,0) to[C] ++(3,0);
+         \end{circuitikz} 
+        """,
+        stroke_width= 1,
+        fill_opacity= 1,
+        stroke_opacity=1)
+        capac_text=TextMobject('Capacitor').next_to(capac,DOWN,buff=0.3)
+        capacitor=VGroup(capac,capac_text)
+
+        indu=TextMobject(r"""
+         \begin{circuitikz}[american]
+         \draw (0,0) to[L] ++(3,0);
+         \end{circuitikz}
+        """,
+        stroke_width= 1,
+        fill_opacity= 0,
+        stroke_opacity=1)
+        inductor_text=TextMobject('Inductor').next_to(indu,DOWN,buff=0.3)
+        inductor=VGroup(indu,inductor_text)
+
+        group=VGroup(capacitor,resistor,inductor).arrange(DOWN,buff=0.7)
+
+        self.play(ShowCreation(group),run_time=6)
+        self.wait()
+
+        circuit=TextMobject(r"""
+        \begin{circuitikz}[american]
+            \draw (0,0) to[isource, l=$I$] (4,0);
+            \draw (0,0) to (0,2) to[C=$C$, f>_=$i$] ++(4,0) to ++(0,-2);
+        \end{circuitikz}
+        """,
+        stroke_width= 1,
+        fill_opacity= 0,
+        stroke_opacity=1
+        ).move_to(LEFT*3)
+        ut=TexMobject(r'u(t)=\frac{1}{C} \int_{-\infty}^{t} i(\tau) \mathrm{d} \tau')\
+            .move_to(RIGHT*3)
+
+        self.play(
+            capac.move_to,LEFT*3+UP*1.12,
+            capac.set_opacity,0,
+            FadeOut(resistor),
+            FadeOut(inductor),
+            FadeOut(capac_text),
+            Write(ut),
+            Write(circuit)
+        )
+        self.wait()
+        self.play(
+            circuit.shift,UP*3,
+            circuit.scale,0.3,
+            ut.move_to,UP*3+RIGHT*0.6,
+            ut.scale,0.8
+        )
+
+        fourmual=[TexMobject(i) for i in [r'i(t) \rightarrow u(t)=\frac{1}{C} \int_{-\infty}^{t} i(\tau) \mathrm{d} \tau',
+                            r'u\left(t-t_{0}\right)=\frac{1}{C} \int_{-\infty}^{t-t_{0}} i(\tau) \mathrm{d} \tau',
+                            r'i\left(t-t_{0}\right) \rightarrow u_{i}(t)=\frac{1}{C} \int_{-\infty}^{t} i\left(\tau-t_{0}\right) \mathrm{d} \tau',
+                            r'=\frac{1}{C} \int_{-\infty}^{t-t_{0}} i(v) \mathrm{d} v \quad \text{Let } v=\tau-t_0',
+                            r'=u\left(t-t_{0}\right)']]
+        fourmuals=VGroup(*fourmual).arrange(DOWN).scale(0.8).shift(DOWN*0.5)
+        fourmuals[1].shift(RIGHT*0.3)
+        fourmuals[2].shift(LEFT*0.05)
+        fourmuals[3].shift(RIGHT*2.5)
+        fourmuals[4].shift(RIGHT*0.5)
+        for i in fourmuals:
+            self.play(Write(i))
+            self.wait()
+
+
+class Summary(Scene):
+    def construct(self):
+        set_gpus([0,1])
+
+        title=Title('\LARGE Summary').set_color(GREEN)
+        text=[r'\parbox[c][][c]{20em}{Systems that consist of signal $f(\cdot)$ with inverse and scaling are all time-invariant systems.}',
+             r'\parbox[c][][c]{20em}{Systems that consist of both signal $f(\cdot)$ and computation like timing $t \text{ or } \cos(t)$, ect. are time-invariant systems as well.}']
+        summary=BulletedList(text).shift(DOWN)
+        summary.fade_all_but(0,opacity=0.3)
+
+        self.play(Write(title))
+        self.wait()
+        self.play(
+            Write(summary),
+            run_time=6
+        )
+        self.wait()
+        self.play(summary.fade_all_but,1,opacity=0.3)
+        self.wait()
+
+
+class Exercise(Scene):
+    def construct(self):
+        set_gpus([0,1])
+
+        title=Title(r'\LARGE Exercises').set_color(GREEN)
+
+        e=[
+            r"""
+            y(t)=\frac{\mathrm{d} x(t)}{\mathrm{d} t}
+            """,
+            r"""
+            y(t)=\int_{-\infty}^{2 \pi} x(\tau) \mathrm{d} \tau 
+            """,
+            r"""
+            y(t)=\left\{\begin{array}{ll}
+            0, & t<0 \\
+            x(t)+x(t-2), & t \geqslant 0
+            \end{array}\right.
+            """,
+            r"""
+            y(t)=\left\{\begin{array}{ll}
+            0, & x(t)<0 \\
+            x(t)+x(t-2), & x(t) \geqslant 0
+            \end{array}\right.
+            """, 
+        ]
+
+        # eg=BulletedList(e)
+        eg=VGroup(
+            *[TexMobject(i) for i in e]
+        ).arrange(DOWN)\
+            .scale(0.9).shift(DOWN*0.5)
+        left=eg.get_left()
+        for i in eg:
+            i.align_to(left,LEFT)
+
+        self.play(Write(title))
+        self.wait()
+        self.play(Write(eg))
+        self.wait()
