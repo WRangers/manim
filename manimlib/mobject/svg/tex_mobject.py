@@ -56,7 +56,7 @@ class SingleStringTexMobject(SVGMobject):
         return result
 
     def modify_special_strings(self, tex):
-        tex = self.remove_stray_braces(tex)
+        # tex = self.remove_stray_braces(tex)   暂时去掉 Rangers
         should_add_filler = reduce(op.or_, [
             # Fraction line needs something to be over
             tex == "\\over",
