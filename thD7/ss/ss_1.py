@@ -14,6 +14,7 @@ class SS_1_Epilogue(Epilogue):
     CONFIG = {
         'bgm': [
             r'Arryo Seco~-~Curtis Schweitzer\\',
+            r'Winter I- First Snow~-~Curtis Schweitzer\\',
         ],
         'acknowledgement': None,
     }
@@ -113,7 +114,7 @@ class Introduction(Scene):
         self.wait()
 
 
-class Defination(Scene):
+class Definition(Scene):
     def construct(self):
         set_gpus([0, 1])
 
@@ -956,7 +957,7 @@ class BackToBeginning(Scene):
         self.explain()
 
     def tobegin(self):
-        pass  #  后期
+        pass  # 后期
 
     def tonow(self):
         pass  # 后期
@@ -1180,62 +1181,64 @@ class ComprehansiveSystem(SignalWithScaleUp):
         ).move_to(self.axes1.c2p(0, 0))
         return f
 
-class Capacitance(Scene):
-    def construct(self):
-        set_gpus([0,1])
 
-        resistor= TextMobject(r"""
+class Capacitance(Scene):  
+    # ctex=false
+    def construct(self):
+        set_gpus([0, 1])
+
+        resistor = TextMobject(r"""
          \begin{circuitikz}[european]
          \draw (0,0) to[R] ++(3,0);
          \end{circuitikz} \\ Resistor
         """,
-        stroke_width= 1,
-        fill_opacity= 1,
-        stroke_opacity=1)
-        
-        capac=TextMobject(r"""
+                               stroke_width=1,
+                               fill_opacity=1,
+                               stroke_opacity=1)
+
+        capac = TextMobject(r"""
          \begin{circuitikz}[american]
          \draw (0,0) to[C] ++(3,0);
          \end{circuitikz} 
         """,
-        stroke_width= 1,
-        fill_opacity= 1,
+        stroke_width=1,
+        fill_opacity=1,
         stroke_opacity=1)
-        capac_text=TextMobject('Capacitor').next_to(capac,DOWN,buff=0.3)
-        capacitor=VGroup(capac,capac_text)
+        capac_text = TextMobject('Capacitor').next_to(capac, DOWN, buff=0.3)
+        capacitor = VGroup(capac, capac_text)
 
-        indu=TextMobject(r"""
+        indu = TextMobject(r"""
          \begin{circuitikz}[american]
          \draw (0,0) to[L] ++(3,0);
          \end{circuitikz}
         """,
-        stroke_width= 1,
-        fill_opacity= 0,
-        stroke_opacity=1)
-        inductor_text=TextMobject('Inductor').next_to(indu,DOWN,buff=0.3)
-        inductor=VGroup(indu,inductor_text)
+                           stroke_width=1,
+                           fill_opacity=0,
+                           stroke_opacity=1)
+        inductor_text = TextMobject('Inductor').next_to(indu, DOWN, buff=0.3)
+        inductor = VGroup(indu, inductor_text)
 
-        group=VGroup(capacitor,resistor,inductor).arrange(DOWN,buff=0.7)
+        group = VGroup(capacitor, resistor, inductor).arrange(DOWN, buff=0.7)
 
-        self.play(ShowCreation(group),run_time=6)
+        self.play(ShowCreation(group), run_time=6)
         self.wait()
 
-        circuit=TextMobject(r"""
+        circuit = TextMobject(r"""
         \begin{circuitikz}[american]
             \draw (0,0) to[isource, l=$I$] (4,0);
             \draw (0,0) to (0,2) to[C=$C$, f>_=$i$] ++(4,0) to ++(0,-2);
         \end{circuitikz}
         """,
-        stroke_width= 1,
-        fill_opacity= 0,
-        stroke_opacity=1
-        ).move_to(LEFT*3)
-        ut=TexMobject(r'u(t)=\frac{1}{C} \int_{-\infty}^{t} i(\tau) \mathrm{d} \tau')\
+                              stroke_width=1,
+                              fill_opacity=0,
+                              stroke_opacity=1
+                              ).move_to(LEFT*3)
+        ut = TexMobject(r'u(t)=\frac{1}{C} \int_{-\infty}^{t} i(\tau) \mathrm{d} \tau')\
             .move_to(RIGHT*3)
 
         self.play(
-            capac.move_to,LEFT*3+UP*1.12,
-            capac.set_opacity,0,
+            capac.move_to, LEFT*3+UP*1.12,
+            capac.set_opacity, 0,
             FadeOut(resistor),
             FadeOut(inductor),
             FadeOut(capac_text),
@@ -1244,18 +1247,18 @@ class Capacitance(Scene):
         )
         self.wait()
         self.play(
-            circuit.shift,UP*3,
-            circuit.scale,0.3,
-            ut.move_to,UP*3+RIGHT*0.6,
-            ut.scale,0.8
+            circuit.shift, UP*3,
+            circuit.scale, 0.3,
+            ut.move_to, UP*3+RIGHT*0.6,
+            ut.scale, 0.8
         )
 
-        fourmual=[TexMobject(i) for i in [r'i(t) \rightarrow u(t)=\frac{1}{C} \int_{-\infty}^{t} i(\tau) \mathrm{d} \tau',
-                            r'u\left(t-t_{0}\right)=\frac{1}{C} \int_{-\infty}^{t-t_{0}} i(\tau) \mathrm{d} \tau',
-                            r'i\left(t-t_{0}\right) \rightarrow u_{i}(t)=\frac{1}{C} \int_{-\infty}^{t} i\left(\tau-t_{0}\right) \mathrm{d} \tau',
-                            r'=\frac{1}{C} \int_{-\infty}^{t-t_{0}} i(v) \mathrm{d} v \quad \text{Let } v=\tau-t_0',
-                            r'=u\left(t-t_{0}\right)']]
-        fourmuals=VGroup(*fourmual).arrange(DOWN).scale(0.8).shift(DOWN*0.5)
+        fourmual = [TexMobject(i) for i in [r'i(t) \rightarrow u(t)=\frac{1}{C} \int_{-\infty}^{t} i(\tau) \mathrm{d} \tau',
+                                            r'u\left(t-t_{0}\right)=\frac{1}{C} \int_{-\infty}^{t-t_{0}} i(\tau) \mathrm{d} \tau',
+                                            r'i\left(t-t_{0}\right) \rightarrow u_{i}(t)=\frac{1}{C} \int_{-\infty}^{t} i\left(\tau-t_{0}\right) \mathrm{d} \tau',
+                                            r'=\frac{1}{C} \int_{-\infty}^{t-t_{0}} i(v) \mathrm{d} v \quad \text{Let } v=\tau-t_0',
+                                            r'=u\left(t-t_{0}\right)']]
+        fourmuals = VGroup(*fourmual).arrange(DOWN).scale(0.8).shift(DOWN*0.5)
         fourmuals[1].shift(RIGHT*0.3)
         fourmuals[2].shift(LEFT*0.05)
         fourmuals[3].shift(RIGHT*2.5)
@@ -1267,13 +1270,13 @@ class Capacitance(Scene):
 
 class Summary(Scene):
     def construct(self):
-        set_gpus([0,1])
+        set_gpus([0, 1])
 
-        title=Title('\LARGE Summary').set_color(GREEN)
-        text=[r'\parbox[c][][c]{20em}{Systems that consist of signal $f(\cdot)$ with inverse and scaling are all time-invariant systems.}',
-             r'\parbox[c][][c]{20em}{Systems that consist of both signal $f(\cdot)$ and computation like timing $t \text{ or } \cos(t)$, ect. are time-invariant systems as well.}']
-        summary=BulletedList(text).shift(DOWN)
-        summary.fade_all_but(0,opacity=0.3)
+        title = Title('\LARGE Summary').set_color(GREEN)
+        text = [r'\parbox[c][][c]{20em}{Systems that consist of signal $f(\cdot)$ with inverse and scaling are all time-invariant systems.}',
+                r'\parbox[c][][c]{20em}{Systems that consist of both signal $f(\cdot)$ and computation like timing $t \text{ or } \cos(t)$, ect. are time-invariant systems as well.}']
+        summary = BulletedList(text).shift(DOWN)
+        summary.fade_all_but(0, opacity=0.3)
 
         self.play(Write(title))
         self.wait()
@@ -1282,17 +1285,17 @@ class Summary(Scene):
             run_time=6
         )
         self.wait()
-        self.play(summary.fade_all_but,1,opacity=0.3)
+        self.play(summary.fade_all_but, 1, opacity=0.3)
         self.wait()
 
 
 class Exercise(Scene):
     def construct(self):
-        set_gpus([0,1])
+        set_gpus([0, 1])
 
-        title=Title(r'\LARGE Exercises').set_color(GREEN)
+        title = Title(r'\LARGE Exercises').set_color(GREEN)
 
-        e=[
+        e = [
             r"""
             y(t)=\frac{\mathrm{d} x(t)}{\mathrm{d} t}
             """,
@@ -1310,17 +1313,16 @@ class Exercise(Scene):
             0, & x(t)<0 \\
             x(t)+x(t-2), & x(t) \geqslant 0
             \end{array}\right.
-            """, 
+            """,
         ]
 
-        # eg=BulletedList(e)
-        eg=VGroup(
+        eg = VGroup(
             *[TexMobject(i) for i in e]
         ).arrange(DOWN)\
             .scale(0.9).shift(DOWN*0.5)
-        left=eg.get_left()
+        left = eg.get_left()
         for i in eg:
-            i.align_to(left,LEFT)
+            i.align_to(left, LEFT)
 
         self.play(Write(title))
         self.wait()
