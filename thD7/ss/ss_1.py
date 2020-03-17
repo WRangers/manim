@@ -620,7 +620,7 @@ class UnderstandingTV(UnderstandingTI):
 
         self.signal = TextMobject(r'Signal\\', r'$f(t+t_0)=\sin (t+t_0)$')
         self.system = TextMobject(
-            r'System\\', r'$y(t+t_0)=f(t+t_0) \cdot f(t+t_0)$')
+            r'System\\', r'$y(t+t_0)=f(t+t_0) \cdot \sin(t+t_0)$')
         self.signal[1].set_color(YELLOW)
         self.system[1].set_color(RED)
 
