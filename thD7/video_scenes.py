@@ -1,6 +1,9 @@
 from manimlib.imports import *
 from thD7.from_others.fourier_series import FourierOfPiSymbol
 
+'''
+    Scenes for the series of signals and systems.
+'''
 
 class Preamble(Scene):
     CONFIG = {
