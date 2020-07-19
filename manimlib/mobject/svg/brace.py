@@ -9,6 +9,7 @@ from manimlib.mobject.svg.tex_mobject import TextMobject
 from manimlib.mobject.types.vectorized_mobject import VMobject
 from manimlib.utils.config_ops import digest_config
 from manimlib.utils.space_ops import get_norm
+import copy
 
 
 class Brace(TexMobject):
@@ -124,11 +125,11 @@ class BraceLabel(VMobject):
         self.change_label(*text)
         return self
 
-    # def copy(self):
-    #     copy_mobject = copy.copy(self)
-    #     copy_mobject.brace = self.brace.copy()
-    #     copy_mobject.label = self.label.copy()
-    #     copy_mobject.submobjects = [copy_mobject.brace, copy_mobject.label]
+    def copy(self):
+        copy_mobject = copy.copy(self)
+        copy_mobject.brace = self.brace.copy()
+        copy_mobject.label = self.label.copy()
+        copy_mobject.submobjects = [copy_mobject.brace, copy_mobject.label]
 
         return copy_mobject
 
